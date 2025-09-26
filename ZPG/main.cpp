@@ -16,6 +16,7 @@
 #include <stdio.h>
 
 #include "ShaderProgram.h"
+#include "Shader.h"
 
 int direction = 1;
 
@@ -138,14 +139,8 @@ int main(void)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
 
-
-	//create and compile shaders
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertex_shader, NULL);
-	glCompileShader(vertexShader);
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragment_shader, NULL);
-	glCompileShader(fragmentShader);
+	Shader vertexShader(GL_VERTEX_SHADER, vertex_shader);
+	Shader fragmentShader(GL_FRAGMENT_SHADER, fragment_shader);
 
 	ShaderProgram shaderProgram(vertexShader, fragmentShader);
 	if (!shaderProgram.setShaderProgram()) {

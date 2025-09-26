@@ -1,31 +1,27 @@
 #include "ShaderProgram.h"
 #include <stdio.h>
 
-ShaderProgram::ShaderProgram(GLuint vertexShader, GLuint fragmentShader)
-    : id(0)
-{
+ShaderProgram::ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader) {
     id = glCreateProgram();
-    glAttachShader(id, vertexShader);
-    glAttachShader(id, fragmentShader);
+    glAttachShader(id, vertexShader.getId()); // Use getId() to retrieve the shader ID
+    glAttachShader(id, fragmentShader.getId());
     glLinkProgram(id);
+
+    // Check for linking errors
+    GLint success;
+    glGetProgramiv(id, GL_LINK_STATUS, &success);
+    if (!success) {
+        char infoLog[512];
+        glGetProgramInfoLog(id, 512, NULL, infoLog);
+        fprintf(stderr, "ERROR::SHADER_PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+    }
 }
 
 bool ShaderProgram::setShaderProgram() {
-    GLint status;
-    glGetProgramiv(id, GL_LINK_STATUS, &status);
-    if (status == GL_FALSE) {
-        GLint infoLogLength;
-        glGetProgramiv(id, GL_INFO_LOG_LENGTH, &infoLogLength);
-        GLchar* strInfoLog = new GLchar[infoLogLength + 1];
-        glGetProgramInfoLog(id, infoLogLength, NULL, strInfoLog);
-        fprintf(stderr, "Linker failure: %s\n", strInfoLog);
-        delete[] strInfoLog;
-        return false;
-    }
     glUseProgram(id);
     return true;
 }
 
 ShaderProgram::~ShaderProgram() {
-    if (id) glDeleteProgram(id);
+    glDeleteProgram(id);
 }

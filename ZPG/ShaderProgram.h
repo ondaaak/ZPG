@@ -1,9 +1,10 @@
 #pragma once
 #include <GL/glew.h>
+#include "Shader.h"
 
 class ShaderProgram {
 public:
-    ShaderProgram(GLuint vertexShader, GLuint fragmentShader);
+    ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader); 
     bool setShaderProgram();
     ~ShaderProgram();
 
