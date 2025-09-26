@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "Application.h"
 
 int direction = 1;
 
@@ -148,8 +147,6 @@ int main(void)
 	glViewport(0, 0, width, height);
 
 	
-	Application* app = new Application();
-	app->run();
 	
 	//--
 	// vertex buffer object(VBO)
