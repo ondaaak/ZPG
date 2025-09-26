@@ -18,6 +18,7 @@
 #include "ShaderProgram.h"
 #include "Shader.h"
 #include "DrawableObject.h"
+#include "Scene.h"
 
 int direction = 1;
 
@@ -123,15 +124,18 @@ int main(void)
 	glViewport(0, 0, width, height);
 
 	
-	DrawableObject object(points, sizeof(points) / sizeof(float));
+	//DrawableObject object(points, sizeof(points) / sizeof(float));
 
 	Shader vertexShader(GL_VERTEX_SHADER, vertex_shader);
 	Shader fragmentShader(GL_FRAGMENT_SHADER, fragment_shader);
-
 	ShaderProgram shaderProgram(vertexShader, fragmentShader);
 	if (!shaderProgram.setShaderProgram()) {
 		exit(EXIT_FAILURE);
 	}
+
+	DrawableObject* object = new DrawableObject(points, sizeof(points) / sizeof(float));
+	Scene scene(&shaderProgram);
+	scene.addObject(object);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -139,14 +143,13 @@ int main(void)
 
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		shaderProgram.setShaderProgram();
-		object.draw(); // vykreslení objektu
+		scene.render();
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}
 
+	delete object;
 	glfwDestroyWindow(window);
-
 	glfwTerminate();
 	exit(EXIT_SUCCESS);
 }
