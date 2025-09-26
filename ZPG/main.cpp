@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "ShaderProgram.h"
 
 int direction = 1;
 
@@ -163,6 +164,8 @@ int main(void)
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
+
+
 	//create and compile shaders
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertex_shader, NULL);
@@ -170,22 +173,13 @@ int main(void)
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragment_shader, NULL);
 	glCompileShader(fragmentShader);
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, fragmentShader);
-	glAttachShader(shaderProgram, vertexShader);
-	glLinkProgram(shaderProgram);
 
-	GLint status;
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &status);
-	if (status == GL_FALSE)
-	{
-		GLint infoLogLength;
-		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &infoLogLength);
-		GLchar* strInfoLog = new GLchar[infoLogLength + 1];
-		glGetProgramInfoLog(shaderProgram, infoLogLength, NULL, strInfoLog);
-		fprintf(stderr, "Linker failure: %s\n", strInfoLog);
-		delete[] strInfoLog;
+	ShaderProgram shaderProgram(vertexShader, fragmentShader);
+	if (!shaderProgram.setShaderProgram()) {
+		// případně ukonči aplikaci nebo ošetři chybu
 	}
+
+
 
 
 	glMatrixMode(GL_PROJECTION);
@@ -197,7 +191,7 @@ int main(void)
 	while (!glfwWindowShouldClose(window)) {
 		// clear color and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glUseProgram(shaderProgram);
+		shaderProgram.setShaderProgram();
 		glBindVertexArray(VAO);
 		// draw triangles
 		glDrawArrays(GL_TRIANGLES, 0, 6); //mode,first,count
