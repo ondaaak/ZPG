@@ -1,0 +1,28 @@
+#include "DrawableObject.h"
+
+DrawableObject::DrawableObject(const float* vertices, size_t vertexCount)
+    : VBO(0), VAO(0), count(static_cast<GLsizei>(vertexCount / 3)) // 3 floats per vertex
+{
+    glGenBuffers(1, &VBO);
+    glGenVertexArrays(1, &VAO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(float), vertices, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+    glBindVertexArray(0);
+}
+
+DrawableObject::~DrawableObject() {
+    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &VAO);
+}
+
+void DrawableObject::draw() const {
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, count);
+    glBindVertexArray(0);
+}
