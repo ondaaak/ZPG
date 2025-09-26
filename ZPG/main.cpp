@@ -32,22 +32,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 }
 
-static void window_focus_callback(GLFWwindow* window, int focused) { printf("window_focus_callback \n"); }
-
-static void window_iconify_callback(GLFWwindow* window, int iconified) { printf("window_iconify_callback \n"); }
-
-static void window_size_callback(GLFWwindow* window, int width, int height) {
-	printf("resize %d, %d \n", width, height);
-	glViewport(0, 0, width, height);
-}
-
-static void cursor_callback(GLFWwindow* window, double x, double y) { printf("cursor_callback \n"); }
-
-static void button_callback(GLFWwindow* window, int button, int action, int mode) {
-	if (action == GLFW_PRESS) printf("button_callback [%d,%d,%d]\n", button, action, mode);
-}
-
-
 float points[] = {
 	-0.5f, 0.5f, 0.0f,
 	0.5f, 0.5f, 0.0f,
@@ -112,20 +96,9 @@ int main(void)
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 
-/*
+
 	// Sets the key callback
-	glfwSetKeyCallback(window, key_callback);
-
-	glfwSetCursorPosCallback(window, cursor_callback);
-
-	glfwSetMouseButtonCallback(window, button_callback);
-
-	glfwSetWindowFocusCallback(window, window_focus_callback);
-
-	glfwSetWindowIconifyCallback(window, window_iconify_callback);
-
-	glfwSetWindowSizeCallback(window, window_size_callback);
-	*/
+	//glfwSetKeyCallback(window, key_callback);
 
 	// start GLEW extension handler
 	glewExperimental = GL_TRUE;
@@ -176,10 +149,8 @@ int main(void)
 
 	ShaderProgram shaderProgram(vertexShader, fragmentShader);
 	if (!shaderProgram.setShaderProgram()) {
-		// případně ukonči aplikaci nebo ošetři chybu
+		exit(EXIT_FAILURE);
 	}
-
-
 
 
 	glMatrixMode(GL_PROJECTION);
