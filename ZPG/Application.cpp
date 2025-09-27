@@ -6,13 +6,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-float points[] = {
+float square[] = {
     -0.5f, 0.5f, 0.0f,
      0.5f, 0.5f, 0.0f,
      0.5f, -0.5f, 0.0f,
     -0.5f, -0.5f, 0.0f,
     -0.5f, 0.5f, 0.0f,
      0.5f, -0.5f, 0.0f,
+};
+
+float triangle[] = {
+     -0.3f, 0.1f, 0.0f,
+     0.3f, 0.1f, 0.0f,
+     0.0f, 0.8f, 0.0f,
 };
 
 const char* vertex_shader =
@@ -30,6 +36,14 @@ const char* fragment_shader =
 "out vec4 frag_colour;"
 "void main () {"
 "     frag_colour = vec4 (position.x, position.y, position.z, 1.0);"
+"}";
+
+const char* fragment_shader2 =
+"#version 330\n"
+"in vec4 position;"
+"out vec4 frag_colour;"
+"void main () {"
+"     frag_colour = vec4 (1.0, 0.5, 0.5, 1.0);"
 "}";
 
 Application::Application()
@@ -59,12 +73,16 @@ bool Application::init() {
 
     Shader* vertexShader = new Shader(GL_VERTEX_SHADER, vertex_shader);
     Shader* fragmentShader = new Shader(GL_FRAGMENT_SHADER, fragment_shader);
+    Shader* fragmentShader2 = new Shader(GL_FRAGMENT_SHADER, fragment_shader2);
     ShaderProgram* shaderProgram = new ShaderProgram(*vertexShader, *fragmentShader);
+    ShaderProgram* shaderProgram2 = new ShaderProgram(*vertexShader, *fragmentShader2);
     shaderProgram->setShaderProgram();
 
-    DrawableObject* object = new DrawableObject(points, sizeof(points) / sizeof(float), shaderProgram);
+    DrawableObject* squareObject = new DrawableObject(square, sizeof(square) / sizeof(float), shaderProgram);
+	DrawableObject* triangleObject = new DrawableObject(triangle, sizeof(triangle) / sizeof(float), shaderProgram2);
     scene = new Scene();
-    scene->addObject(object);
+    scene->addObject(squareObject);
+	scene->addObject(triangleObject);
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
