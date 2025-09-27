@@ -3,11 +3,10 @@
 
 ShaderProgram::ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader) {
     id = glCreateProgram();
-    glAttachShader(id, vertexShader.getId()); // Use getId() to retrieve the shader ID
+    glAttachShader(id, vertexShader.getId()); 
     glAttachShader(id, fragmentShader.getId());
     glLinkProgram(id);
 
-    // Check for linking errors
     GLint success;
     glGetProgramiv(id, GL_LINK_STATUS, &success);
     if (!success) {
