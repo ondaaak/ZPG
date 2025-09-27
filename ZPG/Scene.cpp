@@ -1,8 +1,6 @@
 #include "Scene.h"
 
-Scene::Scene(ShaderProgram* shaderProgram)
-    : shaderProgram(shaderProgram)
-{}
+Scene::Scene() {}
 
 Scene::~Scene() {}
 
@@ -11,8 +9,7 @@ void Scene::addObject(DrawableObject* object) {
 }
 
 void Scene::render() {
-    shaderProgram->setShaderProgram();
     for (auto obj : objects) {
-        obj->draw();
+        obj->render(); 
     }
 }

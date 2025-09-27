@@ -62,8 +62,8 @@ bool Application::init() {
     ShaderProgram* shaderProgram = new ShaderProgram(*vertexShader, *fragmentShader);
     shaderProgram->setShaderProgram();
 
-    DrawableObject* object = new DrawableObject(points, sizeof(points) / sizeof(float));
-    scene = new Scene(shaderProgram);
+    DrawableObject* object = new DrawableObject(points, sizeof(points) / sizeof(float), shaderProgram);
+    scene = new Scene();
     scene->addObject(object);
 
     int width, height;
