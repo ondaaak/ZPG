@@ -28,6 +28,8 @@ void DrawableObject::render() const {
     if (shaderProgram) {
         shaderProgram->setShaderProgram();
     }
+
+
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, count);
     glBindVertexArray(0);

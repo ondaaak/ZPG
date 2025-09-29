@@ -22,6 +22,7 @@ public:
 private:
     GLFWwindow* window;
     Scene* scene;
+    ShaderProgram* shaderProgram;
     bool init();
     void cleanup();
 };

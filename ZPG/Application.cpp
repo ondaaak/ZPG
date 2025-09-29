@@ -25,9 +25,9 @@ const char* vertex_shader =
 "#version 330\n"
 "layout(location=0) in vec3 vp;"
 "out vec4 position;"
+"uniform mat4 modelMatrix;"
 "void main () {"
-"     position = vec4 (vp, 1.0);"
-"     gl_Position = position;"
+"     gl_Position = modelMatrix * vec4 (vp, 1.0);"
 "}";
 
 const char* fragment_shader =
@@ -35,7 +35,7 @@ const char* fragment_shader =
 "in vec4 position;"
 "out vec4 frag_colour;"
 "void main () {"
-"     frag_colour = vec4 (position.x, position.y, position.z, 1.0);"
+"     frag_colour = vec4 (1.0, 1.0, 0.0, 1.0);"
 "}";
 
 const char* fragment_shader2 =
@@ -74,15 +74,14 @@ bool Application::init() {
     Shader* vertexShader = new Shader(GL_VERTEX_SHADER, vertex_shader);
     Shader* fragmentShader = new Shader(GL_FRAGMENT_SHADER, fragment_shader);
     Shader* fragmentShader2 = new Shader(GL_FRAGMENT_SHADER, fragment_shader2);
-    ShaderProgram* shaderProgram = new ShaderProgram(*vertexShader, *fragmentShader);
-    ShaderProgram* shaderProgram2 = new ShaderProgram(*vertexShader, *fragmentShader2);
+    shaderProgram = new ShaderProgram(*vertexShader, *fragmentShader);
     shaderProgram->setShaderProgram();
 
     DrawableObject* squareObject = new DrawableObject(square, sizeof(square) / sizeof(float), shaderProgram);
-	DrawableObject* triangleObject = new DrawableObject(triangle, sizeof(triangle) / sizeof(float), shaderProgram2);
+	//DrawableObject* triangleObject = new DrawableObject(triangle, sizeof(triangle) / sizeof(float), shaderProgram2);
     scene = new Scene();
     scene->addObject(squareObject);
-	scene->addObject(triangleObject);
+	//scene->addObject(triangleObject);
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
@@ -107,11 +106,19 @@ void Application::run() {
     int major, minor, revision;
     glfwGetVersion(&major, &minor, &revision);
     printf("Using GLFW %i.%i.%i\n", major, minor, revision);
-
+    glm::mat4 M = glm::mat4(1.0f); // construct identity matrix
+	float angle = 0.1f;
 
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        scene->render();
+		angle += 0.01f;
+        M = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 0.0f, 1.0f));
+        
+        
+        shaderProgram->SetUniform("modelMatrix", M);
+        scene->render(); 
+        
+
         glfwPollEvents();
         glfwSwapBuffers(window);
     }
@@ -123,4 +130,6 @@ void Application::cleanup() {
         glfwDestroyWindow(window);
         glfwTerminate();
     }
+
+    delete shaderProgram;
 }
