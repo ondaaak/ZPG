@@ -47,8 +47,38 @@ const char* fragment_shader2 =
 "     frag_colour = vec4 (1.0, 0.5, 0.5, 1.0);"
 "}";
 
+static Application* app = nullptr;
+
+void Application::switchScene(int sceneNumber) {
+	switch (sceneNumber) {
+	case 1:
+		activeScene = scene1;
+		printf("Switched to Scene 1\n");
+		break;
+	case 2:
+		activeScene = scene2;
+		printf("Switched to Scene 2\n");
+		break;
+	case 3:
+		activeScene = scene3;
+		printf("Switched to Scene 3\n");
+		break;
+	default:
+		printf("Invalid scene number: %d\n", sceneNumber);
+		break;
+	}
+}
+
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_KP_1 && action == GLFW_PRESS) app->switchScene(1);
+    if (key == GLFW_KEY_KP_2 && action == GLFW_PRESS) app->switchScene(2);
+    if (key == GLFW_KEY_KP_3 && action == GLFW_PRESS) app->switchScene(3);
+
+}
+
 Application::Application()
-    : window(nullptr), scene(nullptr)
+	: window(nullptr), scene1(nullptr), scene2(nullptr), scene3(nullptr), activeScene(nullptr)
 {}
 
 Application::~Application() {
@@ -56,6 +86,9 @@ Application::~Application() {
 }
 
 bool Application::init() {
+
+    
+
     if (!glfwInit()) {
         fprintf(stderr, "ERROR: could not start GLFW3\n");
         return false;
@@ -88,9 +121,9 @@ bool Application::init() {
     squareObject->getTransformation().rotate(-1.0f, glm::vec3(0, 0, 1));
 	squareObject->getTransformation().scale(glm::vec3(0.5f, 0.5f, 0.5f));
 
-    scene = new Scene();
-    scene->addObject(squareObject);
-
+    scene1 = new Scene();
+    scene1->addObject(squareObject);
+    activeScene = scene1;
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
@@ -105,7 +138,8 @@ bool Application::init() {
 
 void Application::run() {
     if (!init()) return;
-
+    app = this;
+    glfwSetKeyCallback(window, key_callback);
     // get version info
     printf("OpenGL Version: %s\n", glGetString(GL_VERSION));
     printf("Using GLEW %s\n", glewGetString(GLEW_VERSION));
@@ -119,14 +153,16 @@ void Application::run() {
 
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        scene->render();
+		if (activeScene) activeScene->render();
         glfwPollEvents();
         glfwSwapBuffers(window);
     }
 }
 
 void Application::cleanup() {
-    delete scene;
+    delete scene1;
+	delete scene2;
+	delete scene3;
     if (window) {
         glfwDestroyWindow(window);
         glfwTerminate();

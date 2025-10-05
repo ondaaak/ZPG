@@ -18,10 +18,15 @@ public:
     Application();
     ~Application();
     void run();
+    void switchScene(int sceneNumber);
 
 private:
     GLFWwindow* window;
-    Scene* scene;
+    Scene* activeScene;
+    Scene* scene1; 
+    Scene* scene2;
+    Scene* scene3;
+
     bool init();
     void cleanup();
 };
