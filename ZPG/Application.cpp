@@ -38,7 +38,7 @@ const char* fragment_shader =
 "in vec4 position;"
 "out vec4 frag_colour;"
 "void main () {"
-"     frag_colour = vec4 (0.2, 0.5, 0.5, 1.0);"
+"     frag_colour = vec4 (position.x, position.y, position.z, 1.0);"
 "}";
 
 const char* fragment_shader2 =
@@ -169,7 +169,8 @@ void Application::run() {
     scene2->addObject(sphere2);
     scene2->addObject(sphere3);
     scene2->addObject(sphere4);
-   
+
+    glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
