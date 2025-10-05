@@ -25,9 +25,10 @@ const char* vertex_shader =
 "#version 330\n"
 "layout(location=0) in vec3 vp;"
 "out vec4 position;"
+"uniform mat4 modelMatrix;"
 "void main () {"
 "     position = vec4 (vp, 1.0);"
-"     gl_Position = position;"
+"     gl_Position =  modelMatrix * position;"
 "}";
 
 const char* fragment_shader =
@@ -78,11 +79,16 @@ bool Application::init() {
     ShaderProgram* shaderProgram2 = new ShaderProgram(*vertexShader, *fragmentShader2);
     shaderProgram->setShaderProgram();
 
-    DrawableObject* squareObject = new DrawableObject(square, sizeof(square) / sizeof(float), shaderProgram);
-	DrawableObject* triangleObject = new DrawableObject(triangle, sizeof(triangle) / sizeof(float), shaderProgram2);
+
+    Model* squareModel = new Model(square, sizeof(square) / sizeof(float) / 3); 
+    DrawableObject* squareObject = new DrawableObject(squareModel, shaderProgram); 
+
+	squareObject->getTransformation().setRotation(0.5f, glm::vec3(0, 0, 1));
+
+
     scene = new Scene();
     scene->addObject(squareObject);
-	scene->addObject(triangleObject);
+
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);

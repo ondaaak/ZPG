@@ -1,5 +1,6 @@
 #include "ShaderProgram.h"
 #include <stdio.h>
+#include <glm/gtc/type_ptr.hpp>
 
 ShaderProgram::ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader) {
     id = glCreateProgram();
@@ -23,4 +24,14 @@ bool ShaderProgram::setShaderProgram() {
 
 ShaderProgram::~ShaderProgram() {
     glDeleteProgram(id);
+}
+
+void ShaderProgram::SetUniform(const char* name, const glm::mat4& matrix) {
+    glUseProgram(id);
+    GLint loc = glGetUniformLocation(id, name);
+    if (loc == -1) {
+        fprintf(stderr, "Uniform %s not found in shader!\n", name);
+        return;
+    }
+    glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
 }

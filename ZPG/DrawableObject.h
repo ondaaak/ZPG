@@ -1,16 +1,21 @@
 #pragma once
-#include <GL/glew.h>
+#include "Model.h"
 #include "ShaderProgram.h"
+#include "Transformation.h"
 
 class DrawableObject {
 public:
-    DrawableObject(const float* vertices, size_t vertexCount, ShaderProgram* shaderProgram);
+    DrawableObject(Model* model, ShaderProgram* shaderProgram);
     ~DrawableObject();
+
     void render() const;
 
+    glm::mat4 getModelMatrix() const;
+    Transformation& getTransformation();
+    const Transformation& getTransformation() const;
+
 private:
+    Model* model;
     ShaderProgram* shaderProgram;
-    GLuint VBO;
-    GLuint VAO;
-    GLsizei count;
+    Transformation transformation;
 };
