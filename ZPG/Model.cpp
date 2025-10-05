@@ -1,6 +1,6 @@
 #include "Model.h"
 
-Model::Model(const float* vertices, size_t vertexCount)
+Model::Model(const float* vertices, size_t vertexCount, bool mode)
     : count(static_cast<GLsizei>(vertexCount))
 {
     glGenVertexArrays(1, &VAO);
@@ -8,14 +8,25 @@ Model::Model(const float* vertices, size_t vertexCount)
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(float), vertices, GL_STATIC_DRAW);
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    if (!mode) {
+        glBufferData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(float), vertices, GL_STATIC_DRAW);
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    }
+    else {
+        glBufferData(GL_ARRAY_BUFFER, vertexCount * 6 * sizeof(float), vertices, GL_STATIC_DRAW);
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+
+    }
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
+
 
 Model::~Model() {
     glDeleteBuffers(1, &VBO);
@@ -24,6 +35,6 @@ Model::~Model() {
 
 void Model::draw() const {
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, count);
+    glDrawArrays(GL_TRIANGLES, 0, count);
     glBindVertexArray(0);
 }

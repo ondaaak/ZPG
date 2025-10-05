@@ -10,9 +10,10 @@ public:
 
     void render() const;
 
-    glm::mat4 getModelMatrix() const;
     Transformation& getTransformation();
     const Transformation& getTransformation() const;
+
+    glm::mat4 getModelMatrix() const;
 
 private:
     Model* model;

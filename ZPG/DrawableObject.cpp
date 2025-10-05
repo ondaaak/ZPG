@@ -7,7 +7,7 @@ DrawableObject::DrawableObject(Model* model, ShaderProgram* shaderProgram)
 }
 
 DrawableObject::~DrawableObject() {
-    delete model;
+    
 }
 
 glm::mat4 DrawableObject::getModelMatrix() const {

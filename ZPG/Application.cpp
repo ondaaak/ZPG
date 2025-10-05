@@ -4,6 +4,10 @@
 #include "ShaderProgram.h"
 #include "DrawableObject.h"
 #include "../Models/sphere.h"
+#include "../Models/gift.h"
+#include "../Models/tree.h"
+#include "../Models/bushes.h"
+#include "../Models/suzi_flat.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -30,7 +34,7 @@ const char* vertex_shader =
 "uniform mat4 modelMatrix;"
 "void main () {"
 "     position = vec4 (vp, 1.0);"
-"     gl_Position =  modelMatrix * position;"
+"     gl_Position =  modelMatrix * vec4 (vp, 1.0);"
 "}";
 
 const char* fragment_shader =
@@ -46,7 +50,7 @@ const char* fragment_shader2 =
 "in vec4 position;"
 "out vec4 frag_colour;"
 "void main () {"
-"     frag_colour = vec4 (1.0, 0.5, 0.5, 1.0);"
+"     frag_colour = vec4 (0.2, 0.5, 0.5, 1.0);"
 "}";
 
 static Application* app = nullptr;
@@ -109,9 +113,6 @@ bool Application::init() {
     glfwGetFramebufferSize(window, &width, &height);
     float ratio = width / (float)height;
     glViewport(0, 0, width, height);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
 
     printf("OpenGL Version: %s\n", glGetString(GL_VERSION));
     printf("Using GLEW %s\n", glewGetString(GLEW_VERSION));
@@ -141,11 +142,59 @@ void Application::run() {
     Shader* fragmentShader2 = new Shader(GL_FRAGMENT_SHADER, fragment_shader2);
     ShaderProgram* shaderProgram = new ShaderProgram(*vertexShader, *fragmentShader);
     ShaderProgram* shaderProgram2 = new ShaderProgram(*vertexShader, *fragmentShader2);
-    //shaderProgram->setShaderProgram();
-    Model* triangleModel = new Model(triangle, sizeof(triangle) / sizeof(float) / 3);
-    DrawableObject* triangleObject = new DrawableObject(triangleModel, shaderProgram);
+    
+    
+    Model* triangleModel = new Model(triangle, sizeof(triangle) / sizeof(float) / 3,false);
+    DrawableObject* triangleObject = new DrawableObject(triangleModel, shaderProgram2);
 
-	Model* sphereModel = new Model(sphere, sizeof(sphere) / sizeof(float) / 3);
+    
+    Model* sphereModel = new Model(sphere, sizeof(sphere) / sizeof(float) / 6, true);
+    Model* giftModel = new Model(gift, sizeof(gift) / sizeof(float) / 6, true);
+    Model* treeModel = new Model(tree, sizeof(tree) / sizeof(float) / 6, true);
+    Model* bushModel = new Model(bushes, sizeof(bushes) / sizeof(float) / 6, true);
+
+
+
+
+
+	
+  	
+    for (int i = 0; i < 5; ++i) {
+        DrawableObject* obj = new DrawableObject(sphereModel, shaderProgram2);
+        obj->getTransformation().setPosition(glm::vec3(-0.8f + i * 0.4f, 0.7f, 0.0f));
+        obj->getTransformation().setScale(glm::vec3(0.1f));
+        obj->getTransformation().setRotation(i * 0.5f, glm::vec3(0, 0, 1));
+        scene3->addObject(obj);
+    }
+
+    for (int i = 0; i < 5; ++i) {
+        DrawableObject* obj = new DrawableObject(giftModel, shaderProgram2);
+        obj->getTransformation().setPosition(glm::vec3(-0.8f + i * 0.4f, 0.2f, 0.0f));
+        obj->getTransformation().setScale(glm::vec3(0.8f));
+        obj->getTransformation().setRotation(i * 0.3f, glm::vec3(0, 1, 1));
+        scene3->addObject(obj);
+    }
+    
+    
+    for (int i = 0; i < 5; ++i) {
+        DrawableObject* obj = new DrawableObject(treeModel, shaderProgram);
+        obj->getTransformation().setPosition(glm::vec3(-0.8f + i * 0.4f, -0.1f, 0.0f));
+        obj->getTransformation().setScale(glm::vec3(0.1f));
+        obj->getTransformation().setRotation(i * 0.2f, glm::vec3(1, 0, 0));
+        scene3->addObject(obj);
+    }
+
+    
+    for (int i = 0; i < 5; ++i) {
+        DrawableObject* obj = new DrawableObject(bushModel, shaderProgram);
+        obj->getTransformation().setPosition(glm::vec3(-0.8f + i * 0.4f, -0.5f, 0.0f));
+        obj->getTransformation().setScale(glm::vec3(0.5f));
+        obj->getTransformation().setRotation(i * 0.7f, glm::vec3(1, 1, 0));
+        scene3->addObject(obj);
+    }
+    
+    
+
 	DrawableObject* sphere1 = new DrawableObject(sphereModel, shaderProgram);
     DrawableObject* sphere2 = new DrawableObject(sphereModel, shaderProgram);
     DrawableObject* sphere3 = new DrawableObject(sphereModel, shaderProgram);
@@ -156,28 +205,29 @@ void Application::run() {
     sphere3->getTransformation().scale(glm::vec3(0.2f, 0.2f, 0.2f));
     sphere4->getTransformation().scale(glm::vec3(0.2f, 0.2f, 0.2f));
 
-	sphere1->getTransformation().translate(glm::vec3(-1.5f, -1.5f, 0.0f));
-	sphere2->getTransformation().translate(glm::vec3(1.5f, -1.5f, 0.0f));
-	sphere3->getTransformation().translate(glm::vec3(1.5f, 1.5f, 0.0f));
-	sphere4->getTransformation().translate(glm::vec3(-1.5f, 1.5f, 0.0f));
+	sphere1->getTransformation().setPosition(glm::vec3(-0.5f, 0.5f, 0.0f));
+    sphere2->getTransformation().setPosition(glm::vec3(0.5f, 0.5f, 0.0f));
+    sphere3->getTransformation().setPosition(glm::vec3(-0.5f, -0.5f, 0.0f));
+    sphere4->getTransformation().setPosition(glm::vec3(0.5f, -0.5f, 0.0f));
+    
 
-    triangleObject->getTransformation().translate(glm::vec3(0.0f, 0.3f, 0.0f));
-
-
+    
+    
     scene1->addObject(triangleObject);
+
 	scene2->addObject(sphere1);
     scene2->addObject(sphere2);
     scene2->addObject(sphere3);
     scene2->addObject(sphere4);
+    
+     
 
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        
-        triangleObject->getTransformation().rotate(0.01f, glm::vec3(0, 0, 1));
-
-
+        triangleObject->getTransformation().rotate(0.01f, glm::vec3(0.0f, 0.0f, 1.0f));
+		
 
 		if (activeScene) activeScene->render();
         glfwPollEvents();

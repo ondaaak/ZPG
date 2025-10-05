@@ -3,7 +3,7 @@
 
 class Model {
 public:
-    Model(const float* vertices, size_t vertexCount);
+    Model(const float* vertices, size_t vertexCount, bool mode);
     ~Model();
 
     void draw() const;
