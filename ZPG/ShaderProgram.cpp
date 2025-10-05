@@ -26,12 +26,42 @@ ShaderProgram::~ShaderProgram() {
     glDeleteProgram(id);
 }
 
-void ShaderProgram::SetUniform(const char* name, const glm::mat4& matrix) {
+void ShaderProgram::SetUniform(const char* name, const glm::mat4& value) {
     glUseProgram(id);
     GLint loc = glGetUniformLocation(id, name);
     if (loc == -1) {
         fprintf(stderr, "Uniform %s not found in shader!\n", name);
         return;
     }
-    glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
+    glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void ShaderProgram::SetUniform(const char* name, int value) {
+    glUseProgram(id);
+    GLint loc = glGetUniformLocation(id, name);
+    if (loc == -1) {
+        fprintf(stderr, "Uniform %s not found in shader!\n", name);
+        return;
+    }
+    glUniform1i(loc, value);
+}
+
+void ShaderProgram::SetUniform(const char* name, float value) {
+    glUseProgram(id);
+    GLint loc = glGetUniformLocation(id, name);
+    if (loc == -1) {
+        fprintf(stderr, "Uniform %s not found in shader!\n", name);
+        return;
+    }
+    glUniform1f(loc, value);
+}
+
+void ShaderProgram::SetUniform(const char* name, const glm::vec3& value) {
+    glUseProgram(id);
+    GLint loc = glGetUniformLocation(id, name);
+    if (loc == -1) {
+        fprintf(stderr, "Uniform %s not found in shader!\n", name);
+        return;
+    }
+    glUniform3fv(loc, 1, glm::value_ptr(value));
 }
