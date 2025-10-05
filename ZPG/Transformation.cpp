@@ -1,17 +1,22 @@
-// C++
 #include "Transformation.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 Transformation::Transformation()
-    : position(0.0f), scale(1.0f), angle(0.0f), axis(0.0f, 0.0f, 1.0f) {}
+    : matrix(1.0f) {
+}
 
-void Transformation::setPosition(const glm::vec3& pos) { position = pos; }
-void Transformation::setRotation(float a, const glm::vec3& ax) { angle = a; axis = ax; }
-void Transformation::setScale(const glm::vec3& s) { scale = s; }
+void Transformation::translate(const glm::vec3& offset) {
+    matrix = glm::translate(matrix, offset);
+}
+
+void Transformation::rotate(float angle, const glm::vec3& axis) {
+    matrix = glm::rotate(matrix, angle, axis);
+}
+
+void Transformation::scale(const glm::vec3& factor) {
+    matrix = glm::scale(matrix, factor);
+}
 
 glm::mat4 Transformation::getMatrix() const {
-    glm::mat4 mat = glm::mat4(1.0f);
-    mat = glm::translate(mat, position);
-    mat = glm::rotate(mat, angle, axis);
-    mat = glm::scale(mat, scale);
-    return mat;
+    return matrix;
 }

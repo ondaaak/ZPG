@@ -83,8 +83,10 @@ bool Application::init() {
     Model* squareModel = new Model(square, sizeof(square) / sizeof(float) / 3); 
     DrawableObject* squareObject = new DrawableObject(squareModel, shaderProgram); 
 
-	squareObject->getTransformation().setRotation(0.5f, glm::vec3(0, 0, 1));
-
+    squareObject->getTransformation().rotate(0.5f, glm::vec3(0, 0, 1));
+    squareObject->getTransformation().translate(glm::vec3(0.0f, -0.5f, 0.0f));
+    squareObject->getTransformation().rotate(-1.0f, glm::vec3(0, 0, 1));
+	squareObject->getTransformation().scale(glm::vec3(0.5f, 0.5f, 0.5f));
 
     scene = new Scene();
     scene->addObject(squareObject);
