@@ -26,17 +26,48 @@ float triangle[] = {
    -0.5f, -0.5f, 0.0f
 };
 
-
+// X'= P * V * M * X;
+/*
 const char* vertex_shader =
 "#version 330\n"
 "layout(location=0) in vec3 vp;"
 "out vec4 position;"
 "uniform mat4 modelMatrix;"
+"uniform mat4 viewMatrix;"
+"uniform mat4 projectionMatrix;"
 "void main () {"
 "     position = vec4 (vp, 1.0);"
-"     gl_Position =  modelMatrix * vec4 (vp, 1.0);"
+"     gl_Position =  projectionMatrix * viewMatrix * modelMatrix * vec4 (vp, 1.0);"
+"}";
+*/
+
+const char* vertex_shader =
+"#version 330\n"
+"uniform mat4 modelMatrix;"
+"uniform mat4 projectMatrix;"
+"uniform mat4 viewMatrix;"
+"out vec3 vertexColor;"
+"out vec4 position;"
+"layout(location=0) in vec3 vp;"
+"layout(location=1) in vec3 vn;"
+"void main () {"
+"     position = vec4 (vp, 1.0);"
+"     vertexColor=vn;"
+"     gl_Position = projectMatrix * viewMatrix * modelMatrix * vec4(vp, 1.0);"
 "}";
 
+
+const char* fragment_shader =
+"#version 330\n"
+"out vec4 frag_colour;"
+"in vec3 vertexColor;"
+"in vec4 position;"
+"void main () {"
+"     frag_colour = vec4(position.x, position.y, position.z, 1.0);"
+"}";
+
+
+/*
 const char* fragment_shader =
 "#version 330\n"
 "in vec4 position;"
@@ -44,7 +75,7 @@ const char* fragment_shader =
 "void main () {"
 "     frag_colour = vec4 (position.x, position.y, position.z, 1.0);"
 "}";
-
+*/
 const char* fragment_shader2 =
 "#version 330\n"
 "in vec4 position;"
@@ -205,10 +236,10 @@ void Application::run() {
     sphere3->getTransformation().scale(glm::vec3(0.2f, 0.2f, 0.2f));
     sphere4->getTransformation().scale(glm::vec3(0.2f, 0.2f, 0.2f));
 
-	sphere1->getTransformation().setPosition(glm::vec3(-0.5f, 0.5f, 0.0f));
-    sphere2->getTransformation().setPosition(glm::vec3(0.5f, 0.5f, 0.0f));
-    sphere3->getTransformation().setPosition(glm::vec3(-0.5f, -0.5f, 0.0f));
-    sphere4->getTransformation().setPosition(glm::vec3(0.5f, -0.5f, 0.0f));
+	sphere1->getTransformation().setPosition(glm::vec3(0.0f, 0.5f, 0.0f));
+    sphere2->getTransformation().setPosition(glm::vec3(0.5f, 0.0f, 0.0f));
+    sphere3->getTransformation().setPosition(glm::vec3(0.0f, -0.5f, 0.0f));
+    sphere4->getTransformation().setPosition(glm::vec3(-0.5f, 0.0f, 0.0f));
     
 
     
@@ -220,7 +251,11 @@ void Application::run() {
     scene2->addObject(sphere3);
     scene2->addObject(sphere4);
     
-     
+    glm::mat4 M = glm::mat4(1.0f);
+    float alpha = 0;
+    GLint matrixID;
+
+
 
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window)) {
@@ -228,6 +263,25 @@ void Application::run() {
 
         triangleObject->getTransformation().rotate(0.01f, glm::vec3(0.0f, 0.0f, 1.0f));
 		
+
+		if (alpha >=0 && alpha <= 5) alpha += 0.02;
+		else alpha = 0;
+
+        M = glm::rotate(glm::mat4(1.0f), alpha, glm::vec3(0.0f, 0.0f, 1.0f));
+		shaderProgram->SetUniform("modelMatrix", M);
+
+        M = glm::lookAt(glm::vec3(0.0f, 0.0f, alpha), glm::vec3(0.f,0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
+        shaderProgram->SetUniform("viewMatrix", M);
+
+        M = glm::perspective(45.0f, 1024.f / 800.f, 0.1f, 100.0f);
+        shaderProgram->SetUniform("projectMatrix", M);
+
+
+
+
+
+
+
 
 		if (activeScene) activeScene->render();
         glfwPollEvents();
