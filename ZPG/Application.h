@@ -12,6 +12,19 @@
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <glm/gtc/type_ptr.hpp> // glm::value_ptr
 #include "Scene.h"
+#include "Translate.h"
+#include "Scale.h"
+#include "Rotate.h"
+#include "Shader.h"
+#include "ShaderProgram.h"
+#include "DrawableObject.h"
+#include "../Models/sphere.h"
+#include "../Models/gift.h"
+#include "../Models/tree.h"
+#include "../Models/bushes.h"
+#include "../Models/suzi_flat.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 class Application {
 public:
