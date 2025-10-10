@@ -1,6 +1,34 @@
 
 #include "Application.h"
+#include "Camera.h"
 
+Camera camera;
+
+double lastX = 512, lastY = 400;
+bool firstMouse = true;
+bool rightMousePressed = false;
+
+static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+        rightMousePressed = (action == GLFW_PRESS);
+        firstMouse = true;
+    }
+}
+
+static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+    if (rightMousePressed) {
+        if (firstMouse) {
+            lastX = xpos;
+            lastY = ypos;
+            firstMouse = false;
+        }
+        float xoffset = float(xpos - lastX);
+        float yoffset = float(ypos - lastY);
+        lastX = xpos;
+        lastY = ypos;
+        camera.processMouse(xoffset, yoffset);
+    }
+}
 
 float square[] = {
     -0.5f, 0.5f, 0.0f,
@@ -18,19 +46,7 @@ float triangle[] = {
 };
 
 // X'= P * V * M * X;
-/*
-const char* vertex_shader =
-"#version 330\n"
-"layout(location=0) in vec3 vp;"
-"out vec4 position;"
-"uniform mat4 modelMatrix;"
-"uniform mat4 viewMatrix;"
-"uniform mat4 projectionMatrix;"
-"void main () {"
-"     position = vec4 (vp, 1.0);"
-"     gl_Position =  projectionMatrix * viewMatrix * modelMatrix * vec4 (vp, 1.0);"
-"}";
-*/
+
 
 const char* vertex_shader =
 "#version 330\n"
@@ -58,15 +74,7 @@ const char* fragment_shader =
 "}";
 
 
-/*
-const char* fragment_shader =
-"#version 330\n"
-"in vec4 position;"
-"out vec4 frag_colour;"
-"void main () {"
-"     frag_colour = vec4 (position.x, position.y, position.z, 1.0);"
-"}";
-*/
+
 const char* fragment_shader2 =
 "#version 330\n"
 "in vec4 position;"
@@ -167,17 +175,13 @@ void Application::run() {
     
     
     Model* triangleModel = new Model(triangle, sizeof(triangle) / sizeof(float) / 3,false);
-    DrawableObject* triangleObject = new DrawableObject(triangleModel, shaderProgram2);
+    DrawableObject* triangleObject = new DrawableObject(triangleModel, shaderProgram);
 
     
     Model* sphereModel = new Model(sphere, sizeof(sphere) / sizeof(float) / 6, true);
     Model* giftModel = new Model(gift, sizeof(gift) / sizeof(float) / 6, true);
     Model* treeModel = new Model(tree, sizeof(tree) / sizeof(float) / 6, true);
     Model* bushModel = new Model(bushes, sizeof(bushes) / sizeof(float) / 6, true);
-
-
-
-
 
 	
   	
@@ -250,10 +254,33 @@ void Application::run() {
     sphere3->addTransformation(rotation);
     sphere4->addTransformation(rotation);
 
+
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+
+    camera.addObserver(shaderProgram);
+
+    float lastFrame = glfwGetTime();
+
+    
+
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window)) {
+        
+        float currentFrame = glfwGetTime();
+        float deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        // Pohyb WSAD
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) camera.processKeyboard(GLFW_KEY_W, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) camera.processKeyboard(GLFW_KEY_S, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) camera.processKeyboard(GLFW_KEY_A, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) camera.processKeyboard(GLFW_KEY_D, deltaTime);
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        
+        
         triangleObject->addTransformation(new Rotate(0.01f, glm::vec3(0.0f, 0.0f, 1.0f)));
 		
 		
@@ -261,23 +288,15 @@ void Application::run() {
 		alpha += 0.01f;
         rotation->setAngle(alpha);
 
-        M = glm::rotate(glm::mat4(1.0f), alpha, glm::vec3(0.0f, 0.0f, 1.0f));
-		shaderProgram->SetUniform("modelMatrix", M);
 
-        M = glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.f,0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
-        shaderProgram->SetUniform("viewMatrix", M);
 
-        M = glm::perspective(45.0f, 1024.f / 800.f, 0.1f, 100.0f);
-        shaderProgram->SetUniform("projectMatrix", M);
+        
+        shaderProgram->SetUniform("viewMatrix", camera.getViewMatrix());
+        shaderProgram->SetUniform("projectMatrix", glm::perspective(45.0f, 1024.f / 800.f, 0.1f, 100.0f));
 
 
 
-
-
-
-
-
-		if (activeScene) activeScene->render();
+        if (activeScene) activeScene->render();
         glfwPollEvents();
         glfwSwapBuffers(window);
     }
