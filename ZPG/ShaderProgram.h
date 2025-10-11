@@ -7,15 +7,16 @@ class Camera;
 
 class ShaderProgram {
 public:
-    ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader); 
+    ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader);
     bool setShaderProgram();
     void SetUniform(const char* name, int value);
     void SetUniform(const char* name, float value);
     void SetUniform(const char* name, const glm::vec3& value);
     void SetUniform(const char* name, const glm::mat4& value);
+    void onCameraChanged(const Camera* camera);
     ~ShaderProgram();
-    void onCameraChanged(const Camera* camera); // Observer callback
 
 private:
+    Camera* m_camera;
     GLuint id;
 };

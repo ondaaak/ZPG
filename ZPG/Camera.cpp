@@ -1,44 +1,50 @@
 #include "Camera.h"
 #include "ShaderProgram.h"
 #include <GLFW/glfw3.h>
+#include <cmath>
 
-Camera::Camera(glm::vec3 pos)
-    : position(pos), yaw(-90.0f), pitch(0.0f), speed(2.5f) {}
+Camera::Camera(ShaderProgram* shaderProgram, glm::vec3 eyePos)
+    : eye(eyePos), up(0.0f, 1.0f, 0.0f), alpha(glm::radians(90.0f)), fi(glm::radians(-90.0f)), speed(2.5f), m_shaderProgram(shaderProgram)
+{
+    // Výchozí target
+    target.x = sin(alpha) * cos(fi);
+    target.y = cos(alpha);
+    target.z = sin(alpha) * sin(fi);
+}
 
 glm::mat4 Camera::getViewMatrix() const {
-    glm::vec3 front;
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    return glm::lookAt(position, position + glm::normalize(front), glm::vec3(0.0f, 1.0f, 0.0f));
+    return glm::lookAt(eye, eye + target, up);
+}
+
+glm::mat4 Camera::getProjectionMatrix(float aspectRatio) const {
+    return glm::perspective(glm::radians(60.0f), aspectRatio, 0.1f, 100.0f);
 }
 
 void Camera::processKeyboard(int key, float deltaTime) {
-    glm::vec3 front;
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front = glm::normalize(front);
-    glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
-
+    glm::vec3 right = glm::normalize(glm::cross(target, up));
     float velocity = speed * deltaTime;
-    if (key == GLFW_KEY_W) position += front * velocity;
-    if (key == GLFW_KEY_S) position -= front * velocity;
-    if (key == GLFW_KEY_A) position -= right * velocity;
-    if (key == GLFW_KEY_D) position += right * velocity;
+    if (key == GLFW_KEY_W) eye += target * velocity;
+    if (key == GLFW_KEY_S) eye -= target * velocity;
+    if (key == GLFW_KEY_A) eye -= right * velocity;
+    if (key == GLFW_KEY_D) eye += right * velocity;
     notifyObservers();
 }
 
 void Camera::processMouse(float xoffset, float yoffset) {
-    float sensitivity = 0.1f;
-    yaw += xoffset * sensitivity;
-    pitch -= yoffset * sensitivity;
-    if (pitch > 89.0f) pitch = 89.0f;
-    if (pitch < -89.0f) pitch = -89.0f;
+    float sensitivity = 0.01f;
+    fi += xoffset * sensitivity;
+    alpha += yoffset * sensitivity;
+    // Omezit úhly
+    if (alpha < 0.1f) alpha = 0.1f;
+    if (alpha > 3.13f) alpha = 3.13f;
+    // Výpoèet targetu
+    target.x = sin(alpha) * cos(fi);
+    target.y = cos(alpha);
+    target.z = sin(alpha) * sin(fi);
+    target = glm::normalize(target);
     notifyObservers();
 }
 
-// Observer pattern
 void Camera::addObserver(ShaderProgram* observer) {
     observers.push_back(observer);
 }

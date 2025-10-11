@@ -67,6 +67,6 @@ void ShaderProgram::SetUniform(const char* name, const glm::vec3& value) {
 }
 
 void ShaderProgram::onCameraChanged(const Camera* camera) {
-    glm::mat4 view = camera->getViewMatrix();
-    SetUniform("viewMatrix", view);
+    SetUniform("viewMatrix", camera->getViewMatrix());
+    
 }

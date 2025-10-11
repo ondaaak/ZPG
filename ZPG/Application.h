@@ -26,6 +26,9 @@
 #include "../Models/plain.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "Camera.h"
+#include <Time.h>
+#include "Controller.h"
 
 class Application {
 public:
@@ -33,6 +36,7 @@ public:
     ~Application();
     void run();
     void switchScene(int sceneNumber);
+
 
 private:
     GLFWwindow* window;
