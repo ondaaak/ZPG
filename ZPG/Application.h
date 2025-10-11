@@ -23,6 +23,7 @@
 #include "../Models/tree.h"
 #include "../Models/bushes.h"
 #include "../Models/suzi_flat.h"
+#include "../Models/plain.h"
 #include <stdio.h>
 #include <stdlib.h>
 

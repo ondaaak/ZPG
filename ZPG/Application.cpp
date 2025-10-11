@@ -81,7 +81,7 @@ const char* fragment_shader2 =
 "in vec4 position;"
 "out vec4 frag_colour;"
 "void main () {"
-"     frag_colour = vec4 (0.2, 0.5, 0.5, 1.0);"
+"     frag_colour = vec4 (0.0, 0.2, 0.0, 1.0);"
 "}";
 
 static Application* app = nullptr;
@@ -210,7 +210,11 @@ void Application::run() {
         scene3->addObject(obj);
     }
     
-    
+	Model* plainModel = new Model(plain, sizeof(plain) / sizeof(float) / 6, true);
+	DrawableObject* plainObject = new DrawableObject(plainModel, shaderProgram2);
+	plainObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
+	plainObject->addTransformation(new Translate(glm::vec3(0.0f, -0.01f, 0.0f)));
+	scene3->addObject(plainObject);
 
 	DrawableObject* sphere1 = new DrawableObject(sphereModel, shaderProgram);
     DrawableObject* sphere2 = new DrawableObject(sphereModel, shaderProgram);
@@ -285,7 +289,8 @@ void Application::run() {
         
         shaderProgram->SetUniform("viewMatrix", camera.getViewMatrix());
         shaderProgram->SetUniform("projectMatrix", glm::perspective(45.0f, 1024.f / 800.f, 0.1f, 100.0f));
-
+        shaderProgram2->SetUniform("viewMatrix", camera.getViewMatrix());
+        shaderProgram2->SetUniform("projectMatrix", glm::perspective(45.0f, 1024.f / 800.f, 0.1f, 100.0f));
 
 
         if (activeScene) activeScene->render();
