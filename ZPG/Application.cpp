@@ -1,6 +1,7 @@
 
 #include "Application.h"
 #include "Camera.h"
+#include <Time.h>
 
 Camera camera;
 
@@ -182,39 +183,30 @@ void Application::run() {
     Model* giftModel = new Model(gift, sizeof(gift) / sizeof(float) / 6, true);
     Model* treeModel = new Model(tree, sizeof(tree) / sizeof(float) / 6, true);
     Model* bushModel = new Model(bushes, sizeof(bushes) / sizeof(float) / 6, true);
-
-	
-  	
-    for (int i = 0; i < 5; ++i) {
-        DrawableObject* obj = new DrawableObject(sphereModel, shaderProgram);
-        obj->addTransformation(new Translate(glm::vec3(-0.8f + i * 0.4f, 0.7f, 0.0f)));
-        obj->addTransformation(new Scale(glm::vec3(0.1f)));
-        scene3->addObject(obj);
-    }
-
-    for (int i = 0; i < 5; ++i) {
-        DrawableObject* obj = new DrawableObject(giftModel, shaderProgram);
-        obj->addTransformation(new Translate(glm::vec3(-0.8f + i * 0.4f, 0.2f, 0.0f)));
-        obj->addTransformation(new Scale(glm::vec3(0.8f)));
-        obj->addTransformation(new Rotate(i * 0.3f, glm::vec3(0, 1, 1)));
-        scene3->addObject(obj);
-    }
     
+    float randomX, randomZ;
+	srand((unsigned int)time(NULL));
+   
+
     
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 50; ++i) {
+        randomX = rand() % (5 + 5 + 1) - 5;
+		randomZ = rand() % (5 + 5 + 1) - 5;
         DrawableObject* obj = new DrawableObject(treeModel, shaderProgram);
-        obj->addTransformation(new Translate(glm::vec3(-0.8f + i * 0.4f, -0.1f, 0.0f)));
+        obj->addTransformation(new Translate(glm::vec3(randomX, 0.0f, randomZ)));
         obj->addTransformation(new Scale(glm::vec3(0.1f)));
-        obj->addTransformation(new Rotate(i * 0.2f, glm::vec3(1, 0, 0)));
+        obj->addTransformation(new Rotate(i * 0.2f, glm::vec3(0, 1, 0)));
         scene3->addObject(obj);
     }
 
     
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 50; ++i) {
+        randomX = rand() % (5 + 5 + 1) - 5;
+        randomZ = rand() % (5 + 5 + 1) - 5;
         DrawableObject* obj = new DrawableObject(bushModel, shaderProgram);
-        obj->addTransformation(new Translate(glm::vec3(-0.8f + i * 0.4f, -0.5f, 0.0f)));
+        obj->addTransformation(new Translate(glm::vec3(randomX, 0.0f, randomZ)));
         obj->addTransformation(new Scale(glm::vec3(0.5f)));
-        obj->addTransformation(new Rotate(i * 0.7f, glm::vec3(1, 1, 0)));
+        obj->addTransformation(new Rotate(i * 0.7f, glm::vec3(0, 1, 0)));
         scene3->addObject(obj);
     }
     
