@@ -82,7 +82,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_KP_1 && action == GLFW_PRESS) app->switchScene(1);
     if (key == GLFW_KEY_KP_2 && action == GLFW_PRESS) app->switchScene(2);
     if (key == GLFW_KEY_KP_3 && action == GLFW_PRESS) app->switchScene(3);
-
 }
 
 Application::Application()
@@ -110,11 +109,6 @@ bool Application::init() {
 
     glewExperimental = GL_TRUE;
     glewInit();
-
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    float ratio = width / (float)height;
-    glViewport(0, 0, width, height);
 
     printf("OpenGL Version: %s\n", glGetString(GL_VERSION));
     printf("Using GLEW %s\n", glewGetString(GLEW_VERSION));
