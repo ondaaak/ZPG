@@ -3,7 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
-class ShaderProgram; 
+class ShaderProgram; // dopøedná deklarace
 
 class Camera {
 public:
@@ -17,8 +17,6 @@ public:
     void addObserver(ShaderProgram* observer);
     void notifyObservers();
 
-    void setAspectRatio(float ratio) { aspectRatio = ratio; }
-
     // Gettery pro promìnné
     glm::vec3 getEye() const { return eye; }
     glm::vec3 getTarget() const { return target; }
@@ -28,9 +26,8 @@ private:
     glm::vec3 eye;
     glm::vec3 target;
     glm::vec3 up;
-    float alpha, fi; 
+    float alpha, fi; // úhly pro výpoèet targetu
     float speed;
     ShaderProgram* m_shaderProgram;
     std::vector<ShaderProgram*> observers;
-    float aspectRatio;
 };

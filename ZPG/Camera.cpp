@@ -6,6 +6,7 @@
 Camera::Camera(ShaderProgram* shaderProgram, glm::vec3 eyePos)
     : eye(eyePos), up(0.0f, 1.0f, 0.0f), alpha(glm::radians(90.0f)), fi(glm::radians(-90.0f)), speed(2.5f), m_shaderProgram(shaderProgram)
 {
+    // Výchozí target
     target.x = sin(alpha) * cos(fi);
     target.y = cos(alpha);
     target.z = sin(alpha) * sin(fi);
@@ -50,6 +51,6 @@ void Camera::addObserver(ShaderProgram* observer) {
 
 void Camera::notifyObservers() {
     for (auto* obs : observers) {
-        obs->onCameraChanged(this, aspectRatio);
+        obs->onCameraChanged(this);
     }
 }
