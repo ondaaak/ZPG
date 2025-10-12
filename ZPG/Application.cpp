@@ -132,33 +132,59 @@ void Application::run() {
     scene3 = new Scene();
     activeScene = scene1;
 
-
-
     Shader* vertexShader = new Shader(GL_VERTEX_SHADER, vertex_shader);
     Shader* fragmentShader = new Shader(GL_FRAGMENT_SHADER, fragment_shader);
     Shader* fragmentShader2 = new Shader(GL_FRAGMENT_SHADER, fragment_shader2);
     ShaderProgram* shaderProgram = new ShaderProgram(*vertexShader, *fragmentShader);
     ShaderProgram* shaderProgram2 = new ShaderProgram(*vertexShader, *fragmentShader2);
-    
+
     Camera camera(shaderProgram);
-    camera.addObserver(shaderProgram);
-    camera.addObserver(shaderProgram2);
-
-
-    Model* triangleModel = new Model(triangle, sizeof(triangle) / sizeof(float) / 3,false);
-    DrawableObject* triangleObject = new DrawableObject(triangleModel, shaderProgram);
-
+    Controller controller(&camera, window);
+    glfwSetWindowUserPointer(window, &controller);
     
+    Model* triangleModel = new Model(triangle, sizeof(triangle) / sizeof(float) / 3, false);
     Model* sphereModel = new Model(sphere, sizeof(sphere) / sizeof(float) / 6, true);
     Model* giftModel = new Model(gift, sizeof(gift) / sizeof(float) / 6, true);
     Model* treeModel = new Model(tree, sizeof(tree) / sizeof(float) / 6, true);
     Model* bushModel = new Model(bushes, sizeof(bushes) / sizeof(float) / 6, true);
-    
-    float randomX, randomZ;
-	srand((unsigned int)time(NULL));
-   
+    Model* plainModel = new Model(plain, sizeof(plain) / sizeof(float) / 6, true);
+
+    DrawableObject* triangleObject = new DrawableObject(triangleModel, shaderProgram);
+    DrawableObject* plainObject = new DrawableObject(plainModel, shaderProgram2);
+    DrawableObject* sphere1 = new DrawableObject(sphereModel, shaderProgram);
+    DrawableObject* sphere2 = new DrawableObject(sphereModel, shaderProgram);
+    DrawableObject* sphere3 = new DrawableObject(sphereModel, shaderProgram);
+    DrawableObject* sphere4 = new DrawableObject(sphereModel, shaderProgram);
+
+    Rotate* rotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 1.0f));
+    Rotate* rotation2 = new Rotate(0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+
+    plainObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
+    plainObject->addTransformation(new Translate(glm::vec3(0.0f, -0.01f, 0.0f)));
+    sphere1->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
+    sphere2->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
+    sphere3->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
+    sphere4->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
+    sphere1->addTransformation(new Translate(glm::vec3(0.0f, 2.5f, 0.0f)));
+    sphere2->addTransformation(new Translate(glm::vec3(2.5f, 0.0f, 0.0f)));
+    sphere3->addTransformation(new Translate(glm::vec3(0.0f, -2.5f, 0.0f)));
+    sphere4->addTransformation(new Translate(glm::vec3(-2.5f, 0.0f, 0.0f)));
+    sphere1->addTransformation(rotation);
+    sphere2->addTransformation(rotation);
+    sphere3->addTransformation(rotation);
+    sphere4->addTransformation(rotation);
+    triangleObject->addTransformation(rotation2);
 
     
+    camera.addObserver(shaderProgram);
+    camera.addObserver(shaderProgram2);
+
+    
+    float randomX, randomZ;
+    float alpha = 0.0f;
+	srand((unsigned int)time(NULL));
+   
+    // trees
     for (int i = 0; i < 50; ++i) {
         randomX = rand() % (5 + 5 + 1) - 5;
 		randomZ = rand() % (5 + 5 + 1) - 5;
@@ -169,7 +195,7 @@ void Application::run() {
         scene3->addObject(obj);
     }
 
-    
+    //bushes
     for (int i = 0; i < 50; ++i) {
         randomX = rand() % (5 + 5 + 1) - 5;
         randomZ = rand() % (5 + 5 + 1) - 5;
@@ -179,79 +205,37 @@ void Application::run() {
         obj->addTransformation(new Rotate(i * 0.7f, glm::vec3(0, 1, 0)));
         scene3->addObject(obj);
     }
-    
-	Model* plainModel = new Model(plain, sizeof(plain) / sizeof(float) / 6, true);
-	DrawableObject* plainObject = new DrawableObject(plainModel, shaderProgram2);
-	plainObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
-	plainObject->addTransformation(new Translate(glm::vec3(0.0f, -0.01f, 0.0f)));
-	scene3->addObject(plainObject);
-
-	DrawableObject* sphere1 = new DrawableObject(sphereModel, shaderProgram);
-    DrawableObject* sphere2 = new DrawableObject(sphereModel, shaderProgram);
-    DrawableObject* sphere3 = new DrawableObject(sphereModel, shaderProgram);
-    DrawableObject* sphere4 = new DrawableObject(sphereModel, shaderProgram);
-
-	sphere1->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
-    sphere2->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
-    sphere3->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
-    sphere4->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
-
-	sphere1->addTransformation(new Translate(glm::vec3(0.0f, 2.5f, 0.0f)));
-    sphere2->addTransformation(new Translate(glm::vec3(2.5f, 0.0f, 0.0f)));
-    sphere3->addTransformation(new Translate(glm::vec3(0.0f, -2.5f, 0.0f)));
-    sphere4->addTransformation(new Translate(glm::vec3(-2.5f, 0.0f, 0.0f)));
-    
-
-    
-    
+	
     scene1->addObject(triangleObject);
 	scene2->addObject(sphere1);
     scene2->addObject(sphere2);
     scene2->addObject(sphere3);
     scene2->addObject(sphere4);
-    
-    glm::mat4 M = glm::mat4(1.0f);
-    float alpha = 0.0f;
-
-    Rotate* rotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 1.0f));
-    sphere1->addTransformation(rotation);
-    sphere2->addTransformation(rotation);
-    sphere3->addTransformation(rotation);
-    sphere4->addTransformation(rotation);
+    scene3->addObject(plainObject);
 
 
-    Controller controller(&camera, window);
-    glfwSetWindowUserPointer(window, &controller);
 
     float lastFrame = glfwGetTime();
 	
 
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window)) {
-        
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         float currentFrame = glfwGetTime();
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-
         controller.processInput(deltaTime);
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-        
-        triangleObject->addTransformation(new Rotate(0.01f, glm::vec3(0.0f, 0.0f, 1.0f)));
-		
-		
 
 		alpha += 0.01f;
         rotation->setAngle(alpha);
+        rotation2->setAngle(alpha);
 
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
-        float aspect = static_cast<float>(width) / static_cast<float>(height);
-        
-		camera.setAspectRatio(aspect);
+        float ratio = width / (float)height;
+		camera.setAspectRatio(ratio);
         
         if (activeScene) activeScene->render();
         glfwPollEvents();
