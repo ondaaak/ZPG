@@ -38,7 +38,6 @@ void Controller::cursorPosCallback(GLFWwindow* window, double xpos, double ypos)
         lastX = xpos;
         lastY = ypos;
 
-        // Získání instance Controlleru pøes user pointer
         Controller* ctrl = static_cast<Controller*>(glfwGetWindowUserPointer(window));
         if (ctrl && ctrl->camera) {
             ctrl->camera->processMouse(xoffset, yoffset);

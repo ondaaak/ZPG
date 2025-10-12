@@ -13,13 +13,11 @@ public:
     void processKeyboard(int key, float deltaTime);
     void processMouse(float xoffset, float yoffset);
 
-    // Observer pattern
     void addObserver(ShaderProgram* observer);
     void notifyObservers();
 
     void setAspectRatio(float ratio) { aspectRatio = ratio; }
 
-    // Gettery pro promìnné
     glm::vec3 getEye() const { return eye; }
     glm::vec3 getTarget() const { return target; }
     glm::vec3 getUp() const { return up; }
@@ -30,7 +28,6 @@ private:
     glm::vec3 up;
     float alpha, fi; 
     float speed;
-    ShaderProgram* m_shaderProgram;
     std::vector<ShaderProgram*> observers;
     float aspectRatio;
 };

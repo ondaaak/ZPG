@@ -4,11 +4,11 @@
 #include <cmath>
 
 Camera::Camera(ShaderProgram* shaderProgram, glm::vec3 eyePos)
-    : eye(eyePos), up(0.0f, 1.0f, 0.0f), alpha(glm::radians(90.0f)), fi(glm::radians(-90.0f)), speed(2.5f), m_shaderProgram(shaderProgram)
+    : eye(eyePos), up(0.0f, 1.0f, 0.0f), alpha(glm::radians(90.0f)), fi(glm::radians(-90.0f)), speed(2.0f)
 {
     target.x = sin(alpha) * cos(fi);
-    target.y = cos(alpha);
     target.z = sin(alpha) * sin(fi);
+    target.y = cos(alpha);
 }
 
 glm::mat4 Camera::getViewMatrix() const {
@@ -33,13 +33,14 @@ void Camera::processMouse(float xoffset, float yoffset) {
     float sensitivity = 0.01f;
     fi += xoffset * sensitivity;
     alpha += yoffset * sensitivity;
-    // Omezit úhly
+    
     if (alpha < 0.1f) alpha = 0.1f;
     if (alpha > 3.13f) alpha = 3.13f;
-    // Výpoèet targetu
+    
     target.x = sin(alpha) * cos(fi);
-    target.y = cos(alpha);
     target.z = sin(alpha) * sin(fi);
+    target.y = cos(alpha);
+    
     target = glm::normalize(target);
     notifyObservers();
 }

@@ -18,6 +18,5 @@ public:
     ~ShaderProgram();
 
 private:
-    Camera* m_camera;
     GLuint id;
 };
