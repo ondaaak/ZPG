@@ -211,7 +211,6 @@ void Application::run() {
     
     
     scene1->addObject(triangleObject);
-
 	scene2->addObject(sphere1);
     scene2->addObject(sphere2);
     scene2->addObject(sphere3);
@@ -231,7 +230,7 @@ void Application::run() {
     glfwSetWindowUserPointer(window, &controller);
 
     float lastFrame = glfwGetTime();
-	int width, height;
+	
 
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window)) {
@@ -253,16 +252,13 @@ void Application::run() {
 		alpha += 0.01f;
         rotation->setAngle(alpha);
 
+        int width, height;
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
         float aspect = static_cast<float>(width) / static_cast<float>(height);
         
-        shaderProgram->SetUniform("viewMatrix", camera.getViewMatrix());
-        shaderProgram->SetUniform("projectMatrix", camera.getProjectionMatrix(aspect));
-        shaderProgram2->SetUniform("viewMatrix", camera.getViewMatrix());
-        shaderProgram2->SetUniform("projectMatrix", camera.getProjectionMatrix(aspect));
-
-
+		camera.setAspectRatio(aspect);
+        
         if (activeScene) activeScene->render();
         glfwPollEvents();
         glfwSwapBuffers(window);
