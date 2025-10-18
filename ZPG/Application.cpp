@@ -20,33 +20,6 @@ float triangle[] = {
 // X'= P * V * M * X;
 
 
-const char* vertex_shader =
-"#version 330\n"
-"uniform mat4 modelMatrix;"
-"uniform mat4 projectMatrix;"
-"uniform mat4 viewMatrix;"
-"out vec3 vertexColor;"
-"out vec4 position;"
-"layout(location=0) in vec3 vp;"
-"layout(location=1) in vec3 vn;"
-"void main () {"
-"     position = vec4 (vp, 1.0);"
-"     vertexColor=vn;"
-"     gl_Position = projectMatrix * viewMatrix * modelMatrix * vec4(vp, 1.0);"
-"}";
-
-
-const char* fragment_shader =
-"#version 330\n"
-"out vec4 frag_colour;"
-"in vec3 vertexColor;"
-"in vec4 position;"
-"void main () {"
-"     frag_colour = vec4(position.x, position.y, position.z, 1.0);"
-"}";
-
-
-
 const char* fragment_shader2 =
 "#version 330\n"
 "in vec4 position;"
@@ -132,11 +105,15 @@ void Application::run() {
     scene3 = new Scene();
     activeScene = scene1;
 
-    Shader* vertexShader = new Shader(GL_VERTEX_SHADER, vertex_shader);
-    Shader* fragmentShader = new Shader(GL_FRAGMENT_SHADER, fragment_shader);
+    Shader* vertexShader = new Shader(GL_VERTEX_SHADER, std::string("vertex_shader.glsl"));
+    Shader* fragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("fragment_shader.glsl"));
+
     Shader* fragmentShader2 = new Shader(GL_FRAGMENT_SHADER, fragment_shader2);
     ShaderProgram* shaderProgram = new ShaderProgram(*vertexShader, *fragmentShader);
     ShaderProgram* shaderProgram2 = new ShaderProgram(*vertexShader, *fragmentShader2);
+
+
+
 
     Camera camera;
     Controller controller(&camera, window);
