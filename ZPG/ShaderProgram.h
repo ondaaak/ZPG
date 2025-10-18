@@ -6,7 +6,7 @@
 #include "Camera.h"
 class Camera;
 
-class ShaderProgram {
+class ShaderProgram : public Observer {
 public:
     ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader);
     bool setShaderProgram();
@@ -14,7 +14,7 @@ public:
     void SetUniform(const char* name, float value);
     void SetUniform(const char* name, const glm::vec3& value);
     void SetUniform(const char* name, const glm::mat4& value);
-    void onCameraChanged(const Camera* camera, float aspectRatio);
+	void onCameraChanged(const Camera* camera, float aspectRatio) override;
     ~ShaderProgram();
 
 private:

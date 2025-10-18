@@ -146,11 +146,13 @@
     <ClInclude Include="Controller.h" />
     <ClInclude Include="DrawableObject.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="Observer.h" />
     <ClInclude Include="Rotate.h" />
     <ClInclude Include="Scale.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="Subject.h" />
     <ClInclude Include="Transformation.h" />
     <ClInclude Include="Translate.h" />
   </ItemGroup>

@@ -138,7 +138,7 @@ void Application::run() {
     ShaderProgram* shaderProgram = new ShaderProgram(*vertexShader, *fragmentShader);
     ShaderProgram* shaderProgram2 = new ShaderProgram(*vertexShader, *fragmentShader2);
 
-    Camera camera(shaderProgram);
+    Camera camera;
     Controller controller(&camera, window);
     glfwSetWindowUserPointer(window, &controller);
     
