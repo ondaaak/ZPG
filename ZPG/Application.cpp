@@ -105,14 +105,21 @@ void Application::run() {
     scene3 = new Scene();
     activeScene = scene1;
 
-    Shader* vertexShader = new Shader(GL_VERTEX_SHADER, std::string("vertex_shader.glsl"));
+    Shader* vertexShader = new Shader(GL_VERTEX_SHADER, std::string("main_vertex_shader.glsl"));
     Shader* fragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("fragment_shader.glsl"));
-
+    Shader* constFragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("constant_fragment_shader.glsl"));
+    Shader* lambertFragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("lambert_fragment_shader.glsl"));
+    Shader* phongFragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("phong_fragment_shader.glsl"));
+    Shader* blinnPhongFragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("blinn-phong_fragment_shader.glsl"));
     Shader* fragmentShader2 = new Shader(GL_FRAGMENT_SHADER, fragment_shader2);
+
     ShaderProgram* shaderProgram = new ShaderProgram(*vertexShader, *fragmentShader);
     ShaderProgram* shaderProgram2 = new ShaderProgram(*vertexShader, *fragmentShader2);
 
-
+    ShaderProgram* sphereProgram1 = new ShaderProgram(*vertexShader,*constFragmentShader);
+    ShaderProgram* sphereProgram2 = new ShaderProgram(*vertexShader, *lambertFragmentShader);
+    ShaderProgram* sphereProgram3 = new ShaderProgram(*vertexShader, *phongFragmentShader);
+    ShaderProgram* sphereProgram4 = new ShaderProgram(*vertexShader, *blinnPhongFragmentShader);
 
 
     Camera camera;
@@ -128,10 +135,10 @@ void Application::run() {
 
     DrawableObject* triangleObject = new DrawableObject(triangleModel, shaderProgram);
     DrawableObject* plainObject = new DrawableObject(plainModel, shaderProgram2);
-    DrawableObject* sphere1 = new DrawableObject(sphereModel, shaderProgram);
-    DrawableObject* sphere2 = new DrawableObject(sphereModel, shaderProgram);
-    DrawableObject* sphere3 = new DrawableObject(sphereModel, shaderProgram);
-    DrawableObject* sphere4 = new DrawableObject(sphereModel, shaderProgram);
+    DrawableObject* sphere1 = new DrawableObject(sphereModel, sphereProgram1);
+    DrawableObject* sphere2 = new DrawableObject(sphereModel, sphereProgram2);
+    DrawableObject* sphere3 = new DrawableObject(sphereModel, sphereProgram3);
+    DrawableObject* sphere4 = new DrawableObject(sphereModel, sphereProgram4);
 
     Rotate* rotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 1.0f));
     Rotate* rotation2 = new Rotate(0.0f, glm::vec3(0.0f, 0.0f, 1.0f));

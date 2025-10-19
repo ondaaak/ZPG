@@ -94,5 +94,20 @@
     <None Include="fragment_shader.glsl">
       <Filter>Zdrojové soubory</Filter>
     </None>
+    <None Include="main_vertex_shader.glsl">
+      <Filter>Zdrojové soubory</Filter>
+    </None>
+    <None Include="lambert_fragment_shader.glsl">
+      <Filter>Zdrojové soubory</Filter>
+    </None>
+    <None Include="phong_fragment_shader.glsl">
+      <Filter>Zdrojové soubory</Filter>
+    </None>
+    <None Include="constant_fragment_shader.glsl">
+      <Filter>Zdrojové soubory</Filter>
+    </None>
+    <None Include="blinn-phong_fragment_shader.glsl">
+      <Filter>Zdrojové soubory</Filter>
+    </None>
   </ItemGroup>
 </Project>
