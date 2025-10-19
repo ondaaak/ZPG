@@ -1,14 +1,14 @@
 #version 400
 in vec4 worldPos;
-in vec3 worldNor;
+in vec3 worldNorm;
 out vec4 fragColor;
+uniform vec3 lightPos;
+uniform vec3 viewPos;
 
 void main(void)
 {
-    vec3 lightPos = vec3(10.0, 10.0, 10.0);
-    vec3 viewPos = vec3(0.0, 0.0, 0.0);
 
-    vec3 norm = normalize(worldNor);
+    vec3 norm = normalize(worldNorm);
     vec3 lightDir = normalize(lightPos - worldPos.xyz);
     vec3 viewDir = normalize(viewPos - worldPos.xyz);
 

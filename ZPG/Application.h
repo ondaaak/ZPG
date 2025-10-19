@@ -29,6 +29,7 @@
 #include "Camera.h"
 #include <Time.h>
 #include "Controller.h"
+#include "Light.h"
 
 class Application {
 public:

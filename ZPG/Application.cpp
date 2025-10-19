@@ -153,15 +153,26 @@ void Application::run() {
     sphere2->addTransformation(new Translate(glm::vec3(2.5f, 0.0f, 0.0f)));
     sphere3->addTransformation(new Translate(glm::vec3(0.0f, -2.5f, 0.0f)));
     sphere4->addTransformation(new Translate(glm::vec3(-2.5f, 0.0f, 0.0f)));
+/*
     sphere1->addTransformation(rotation);
     sphere2->addTransformation(rotation);
     sphere3->addTransformation(rotation);
-    sphere4->addTransformation(rotation);
+    sphere4->addTransformation(rotation);*/
     triangleObject->addTransformation(rotation2);
 
+    Light* light = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+    
+    sphereProgram1->SetUniform("lightPos", light->getPosition());
+    sphereProgram2->SetUniform("lightPos", light->getPosition());
+    sphereProgram3->SetUniform("lightPos", light->getPosition());
+    sphereProgram4->SetUniform("lightPos", light->getPosition());
     
     camera.addObserver(shaderProgram);
     camera.addObserver(shaderProgram2);
+	camera.addObserver(sphereProgram1);
+	camera.addObserver(sphereProgram2);
+	camera.addObserver(sphereProgram3);
+	camera.addObserver(sphereProgram4);
 
     
     float randomX, randomZ;
@@ -214,6 +225,8 @@ void Application::run() {
 		alpha += 0.01f;
         rotation->setAngle(alpha);
         rotation2->setAngle(alpha);
+
+
 
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
