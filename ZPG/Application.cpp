@@ -35,6 +35,10 @@ void Application::switchScene(int sceneNumber) {
 		activeScene = scene3;
 		printf("Switched to Scene 3\n");
 		break;
+    case 4:
+        activeScene = scene4;
+        printf("Switched to Scene 4\n");
+        break;
 	default:
 		printf("Invalid scene number: %d\n", sceneNumber);
 		break;
@@ -46,10 +50,11 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_KP_1 && action == GLFW_PRESS) app->switchScene(1);
     if (key == GLFW_KEY_KP_2 && action == GLFW_PRESS) app->switchScene(2);
     if (key == GLFW_KEY_KP_3 && action == GLFW_PRESS) app->switchScene(3);
+    if (key == GLFW_KEY_KP_4 && action == GLFW_PRESS) app->switchScene(4);
 }
 
 Application::Application()
-	: window(nullptr), scene1(nullptr), scene2(nullptr), scene3(nullptr), activeScene(nullptr)
+	: window(nullptr), scene1(nullptr), scene2(nullptr), scene3(nullptr), scene4(nullptr), activeScene(nullptr)
 {}
 
 Application::~Application() {
@@ -94,6 +99,7 @@ void Application::run() {
     scene1 = new Scene();
     scene2 = new Scene();
     scene3 = new Scene();
+    scene4 = new Scene();
     activeScene = scene1;
 
     Shader* vertexShader = new Shader(GL_VERTEX_SHADER, std::string("main_vertex_shader.glsl"));
@@ -199,17 +205,35 @@ void Application::run() {
         scene3->addObject(obj);
     }
 	
+
+
+    DrawableObject* slunce = new DrawableObject(sphereModel, sphereProgram1);
+    DrawableObject* zeme = new DrawableObject(sphereModel, sphereProgram3);
+    DrawableObject* mesic = new DrawableObject(sphereModel, sphereProgram3);
+
+    Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+    ShaderProgram* solarProgram = new ShaderProgram(*vertexShader, *phongFragmentShader);
+    solarProgram->SetUniform("lightPos", sunLight->getPosition());
+
+    slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
+    zeme->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
+    mesic->addTransformation(new Scale(glm::vec3(0.1f, 0.1f, 0.1f)));
+
+
     scene1->addObject(triangleObject);
 	scene2->addObject(sphere1);
     scene2->addObject(sphere2);
     scene2->addObject(sphere3);
     scene2->addObject(sphere4);
     scene3->addObject(plainObject);
-
+	scene4->addObject(slunce);
+	scene4->addObject(zeme);
+	scene4->addObject(mesic);
 
 
     float lastFrame = glfwGetTime();
-	
+    float earthAngle = 0.0f;
+    float moonAngle = 0.0f;
 
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window)) {
@@ -225,6 +249,10 @@ void Application::run() {
         rotation2->setAngle(alpha);
 
 
+        // v hlavní smyèce:
+        earthAngle += 0.01f;          // rychlost rotace Zemì kolem Slunce
+        moonAngle += 0.02f;           // rychlost rotace Mìsíce kolem Zemì (rychlejší)
+        //moonRotation->setAngle(moonAngle);
 
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
@@ -242,6 +270,7 @@ void Application::cleanup() {
     delete scene1;
 	delete scene2;
 	delete scene3;
+    delete scene4;
     if (window) {
         glfwDestroyWindow(window);
         glfwTerminate();

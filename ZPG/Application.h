@@ -45,6 +45,7 @@ private:
     Scene* scene1; 
     Scene* scene2;
     Scene* scene3;
+    Scene* scene4;
 
     bool init();
     void cleanup();
