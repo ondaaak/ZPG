@@ -2,15 +2,6 @@
 #include "Application.h"
 
 
-float square[] = {
-    -0.5f, 0.5f, 0.0f,
-     0.5f, 0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f,
-    -0.5f, 0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-};
-
 float triangle[] = {
     0.0f, 0.5f, 0.0f,
     0.5f, -0.5f, 0.0f,
@@ -204,8 +195,6 @@ void Application::run() {
         obj->addTransformation(new Rotate(i * 0.7f, glm::vec3(0, 1, 0)));
         scene3->addObject(obj);
     }
-	
-
 
     DrawableObject* slunce = new DrawableObject(sphereModel, sphereProgram1);
     DrawableObject* zeme = new DrawableObject(sphereModel, sphereProgram3);
@@ -216,55 +205,24 @@ void Application::run() {
     Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f));
     ShaderProgram* solarProgram = new ShaderProgram(*vertexShader, *phongFragmentShader);
     solarProgram->SetUniform("lightPos", sunLight->getPosition());
-    /*
-    slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
-    zeme->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
-    mesic->addTransformation(new Scale(glm::vec3(0.1f, 0.1f, 0.1f)));
-    */
-    //
-    // **NOVÉ TRANSFORMACE PRO ZEMI**
-    // 1. Revoluce Zemì kolem Slunce (Osa Y)
-    Rotate* earthOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-    // 2. Pøeklad Zemì na obìžnou dráhu (napø. vzdálenost 3.0 jednotek od Slunce)
-    Translate* earthOrbitTranslation = new Translate(glm::vec3(3.0f, 0.0f, 0.0f));
-    // 3. Rotace Zemì kolem vlastní osy (Autorské - pro ukázku)
-    Rotate* earthSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+   
 
-    // Pøidání transformací pro Zemi
+    Rotate* earthOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    Translate* earthOrbitTranslation = new Translate(glm::vec3(3.0f, 0.0f, 0.0f));
+
     zeme->addTransformation(earthOrbitRotation);
     zeme->addTransformation(earthOrbitTranslation);
-    zeme->addTransformation(earthSelfRotation);
     zeme->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
-    //
-    //
-    // **NOVÉ TRANSFORMACE PRO MÌSÍC**
 
-    // 1. Zdìdìní Revoluce Zemì kolem Slunce (pro Mìsíc)
-    // Mìsíc musí být nejdøíve umístìn tam, kde je Zemì, aby se toèil kolem Slunce.
-    // Zkopírujeme rotaci a pøeklad z Zemì.
+    Rotate* moonOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f)); 
+    Translate* moonOrbitTranslation = new Translate(glm::vec3(0.8f, 0.0f, 0.0f)); 
 
-    // POZOR: Tato implementace vyžaduje, aby DrawableObject umìl duplikovat transformaci
-    // nebo abychom vytvoøili nové instance tøíd. Použijeme nové instance:
-
-    Rotate* moonInheritedOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f)); // Stejný úhel jako earthOrbitRotation
-    Translate* moonInheritedTranslation = new Translate(glm::vec3(3.0f, 0.0f, 0.0f)); // Stejná vzdálenost jako Earth
-
-    // 2. Vlastní obìžná dráha Mìsíce kolem Zemì
-    Rotate* moonOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f)); // Rotace kolem Zemì (Osa Y)
-    Translate* moonOrbitTranslation = new Translate(glm::vec3(0.8f, 0.0f, 0.0f)); // Vzdálenost Mìsíce od Zemì (napø. 0.8 jednotek)
-
-    // Pøidání transformací pro Mìsíc (v poøadí: ZDÌDIT REVOLUCI -> VLASTNÍ ROTACE KOLEM ZEMÌ -> VLASTNÍ PØEKLAD)
-    mesic->addTransformation(moonInheritedOrbitRotation);
-    mesic->addTransformation(moonInheritedTranslation);
-
+    mesic->addTransformation(earthOrbitRotation);
+    mesic->addTransformation(earthOrbitTranslation);
     mesic->addTransformation(moonOrbitRotation);
     mesic->addTransformation(moonOrbitTranslation);
     mesic->addTransformation(new Scale(glm::vec3(0.1f, 0.1f, 0.1f)));
 
-    // Nyní pøidáme škálování Mìsíce (již definováno na øádku 144)
-    // mesic->addTransformation(new Scale(glm::vec3(0.1f, 0.1f, 0.1f)));
-    // Mìsíc už má aplikované škálování v kódu (na øádku 144). Poøadí: Revolution -> Translation -> Orbit Rotation -> Orbit Translation -> Scale.
-    //
     scene1->addObject(triangleObject);
 	scene2->addObject(sphere1);
     scene2->addObject(sphere2);
@@ -274,7 +232,6 @@ void Application::run() {
 	scene4->addObject(slunce);
 	scene4->addObject(zeme);
 	scene4->addObject(mesic);
-
 
     float lastFrame = glfwGetTime();
     float earthAngle = 0.0f;
@@ -288,20 +245,15 @@ void Application::run() {
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         controller.processInput(deltaTime);
-
+        
 		alpha += 0.01f;
         rotation->setAngle(alpha);
         rotation2->setAngle(alpha);
+        
+		earthAngle += 0.005f;
+		moonAngle += 0.01f;  
 
-		earthAngle += 0.005f; // Rychlost obìhu Zemì kolem Slunce
-		moonAngle += 0.01f;  // Rychlost obìhu Mìsíce kolem Zemì
-
-        // AKTUALIZACE ÚHLÙ PRO ZEMI
         earthOrbitRotation->setAngle(earthAngle);
-        //earthSelfRotation->setAngle(alpha * 5.0f); // Pøidej vlastní rotaci Zemì pro efekt
-
-        // AKTUALIZACE ÚHLÙ PRO MÌSÍC
-        moonInheritedOrbitRotation->setAngle(earthAngle); // Mìsíc se pohybuje se Zemí
         moonOrbitRotation->setAngle(moonAngle);
 
         int width, height;
