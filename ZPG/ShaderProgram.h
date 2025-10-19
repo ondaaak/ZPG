@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include <glm/glm.hpp>
 #include "Camera.h"
+#include "Light.h"
 class Camera;
 
 class ShaderProgram : public Observer {
@@ -15,8 +16,10 @@ public:
     void SetUniform(const char* name, const glm::vec3& value);
     void SetUniform(const char* name, const glm::mat4& value);
 	void onCameraChanged(const Camera* camera, float aspectRatio) override;
+    void setLight(bool option) { hasLight = option; }
     ~ShaderProgram();
 
 private:
     GLuint id;
+    bool hasLight = false;
 };

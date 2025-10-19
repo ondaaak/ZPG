@@ -11,7 +11,7 @@ public:
     void processKeyboard(int key, float deltaTime);
     void processMouse(float xoffset, float yoffset);
     void setAspectRatio(float ratio);
-
+	glm::vec3 getCameraPosition() const { return eye; }
 private:
     glm::vec3 eye, target, up;
     float alpha, fi, speed, aspectRatio;

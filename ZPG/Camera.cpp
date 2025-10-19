@@ -26,6 +26,7 @@ void Camera::processKeyboard(int key, float deltaTime) {
     if (key == GLFW_KEY_A) eye -= right * velocity;
     if (key == GLFW_KEY_D) eye += right * velocity;
     notifyObservers(this, aspectRatio);
+
 }
 
 void Camera::processMouse(float xoffset, float yoffset) {

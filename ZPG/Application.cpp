@@ -19,15 +19,6 @@ float triangle[] = {
 
 // X'= P * V * M * X;
 
-
-const char* fragment_shader2 =
-"#version 330\n"
-"in vec4 position;"
-"out vec4 frag_colour;"
-"void main () {"
-"     frag_colour = vec4 (0.0, 0.2, 0.0, 1.0);"
-"}";
-
 static Application* app = nullptr;
 
 void Application::switchScene(int sceneNumber) {
@@ -111,7 +102,7 @@ void Application::run() {
     Shader* lambertFragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("lambert_fragment_shader.glsl"));
     Shader* phongFragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("phong_fragment_shader.glsl"));
     Shader* blinnPhongFragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("blinn-phong_fragment_shader.glsl"));
-    Shader* fragmentShader2 = new Shader(GL_FRAGMENT_SHADER, fragment_shader2);
+    Shader* fragmentShader2 = new Shader(GL_FRAGMENT_SHADER, std::string("plane_fragment_shader.glsl"));
 
     ShaderProgram* shaderProgram = new ShaderProgram(*vertexShader, *fragmentShader);
     ShaderProgram* shaderProgram2 = new ShaderProgram(*vertexShader, *fragmentShader2);
@@ -162,13 +153,20 @@ void Application::run() {
 
     Light* light = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
     
-    sphereProgram1->SetUniform("lightPos", light->getPosition());
+
     sphereProgram2->SetUniform("lightPos", light->getPosition());
     sphereProgram3->SetUniform("lightPos", light->getPosition());
     sphereProgram4->SetUniform("lightPos", light->getPosition());
     
+
+	sphereProgram3->setLight(true);
+	sphereProgram4->setLight(true);
+
+
+
     camera.addObserver(shaderProgram);
     camera.addObserver(shaderProgram2);
+
 	camera.addObserver(sphereProgram1);
 	camera.addObserver(sphereProgram2);
 	camera.addObserver(sphereProgram3);

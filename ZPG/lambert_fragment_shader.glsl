@@ -3,6 +3,7 @@ in vec3 worldPos;
 in vec3 worldNorm;
 out vec4 fragColor;
 uniform vec3 lightPos;
+
 void main (void)
 {
 	vec3 lightDir = lightPos - worldPos;

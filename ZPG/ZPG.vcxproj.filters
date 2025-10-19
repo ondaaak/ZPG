@@ -91,9 +91,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vertex_shader.glsl">
-      <Filter>Zdrojové soubory</Filter>
-    </None>
     <None Include="fragment_shader.glsl">
       <Filter>Zdrojové soubory</Filter>
     </None>
@@ -110,6 +107,9 @@
       <Filter>Zdrojové soubory</Filter>
     </None>
     <None Include="blinn-phong_fragment_shader.glsl">
+      <Filter>Zdrojové soubory</Filter>
+    </None>
+    <None Include="plane_fragment_shader.glsl">
       <Filter>Zdrojové soubory</Filter>
     </None>
   </ItemGroup>
