@@ -73,5 +73,18 @@ void ShaderProgram::onCameraChanged(const Camera* camera, float aspectRatio) {
         SetUniform("viewPos", camera->getCameraPosition()); 
     }
         
-
 }
+
+void ShaderProgram::setLightUniforms(int index, const Light& light) {
+    char namebuf[64];
+
+    snprintf(namebuf, sizeof(namebuf), "lights[%d].position", index);
+    SetUniform(namebuf, light.getPosition());
+
+    snprintf(namebuf, sizeof(namebuf), "lights[%d].diffuse", index);
+    SetUniform(namebuf, light.getDiffuse());
+
+    snprintf(namebuf, sizeof(namebuf), "lights[%d].specular", index);
+    SetUniform(namebuf, light.getSpecular());
+}
+

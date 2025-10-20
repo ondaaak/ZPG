@@ -17,6 +17,7 @@ public:
     void SetUniform(const char* name, const glm::mat4& value);
 	void onCameraChanged(const Camera* camera, float aspectRatio) override;
     void setLight(bool option) { hasLight = option; }
+	void setLightUniforms(int index, const Light& light);
     ~ShaderProgram();
 
 private:
