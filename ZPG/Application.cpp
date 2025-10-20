@@ -104,10 +104,10 @@ void Application::run() {
     ShaderProgram* shaderProgram = new ShaderProgram(*vertexShader, *fragmentShader);
     ShaderProgram* shaderProgram2 = new ShaderProgram(*vertexShader, *fragmentShader2);
 
-    ShaderProgram* sphereProgram1 = new ShaderProgram(*vertexShader,*constFragmentShader);
-    ShaderProgram* sphereProgram2 = new ShaderProgram(*vertexShader, *lambertFragmentShader);
+    ShaderProgram* sphereProgram1 = new ShaderProgram(*vertexShader,*phongFragmentShader);
+    ShaderProgram* sphereProgram2 = new ShaderProgram(*vertexShader, *phongFragmentShader);
     ShaderProgram* sphereProgram3 = new ShaderProgram(*vertexShader, *phongFragmentShader);
-    ShaderProgram* sphereProgram4 = new ShaderProgram(*vertexShader, *blinnPhongFragmentShader);
+    ShaderProgram* sphereProgram4 = new ShaderProgram(*vertexShader, *phongFragmentShader);
 
 
     Camera camera;
@@ -148,14 +148,48 @@ void Application::run() {
     sphere4->addTransformation(rotation);*/
     triangleObject->addTransformation(rotation2);
 
-    Light* light = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-    
+    Light* light = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	Light* light2 = new Light(glm::vec3(0.0f, -3.0f, 2.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-    sphereProgram2->SetUniform("lightPos", light->getPosition());
-    sphereProgram3->SetUniform("lightPos", light->getPosition());
-    sphereProgram4->SetUniform("lightPos", light->getPosition());
-    
+	Light* lights[] = { light, light2 };
 
+    
+   // sphereProgram1->SetUniform("lightPos", light->getPosition());
+
+	sphereProgram1->SetUniform("lights[0].position", light->getPosition());
+	sphereProgram1->SetUniform("lights[0].diffuse", light->getDiffuse());
+	sphereProgram1->SetUniform("lights[0].specular", light->getSpecular());
+
+    sphereProgram1->SetUniform("lights[1].position", light2->getPosition());
+	sphereProgram1->SetUniform("lights[1].diffuse", light2->getDiffuse());
+	sphereProgram1->SetUniform("lights[1].specular", light2->getSpecular());
+
+    sphereProgram2->SetUniform("lights[0].position", light->getPosition());
+	sphereProgram2->SetUniform("lights[0].diffuse", light->getDiffuse());
+	sphereProgram2->SetUniform("lights[0].specular", light->getSpecular());
+
+	sphereProgram2->SetUniform("lights[1].position", light2->getPosition());
+	sphereProgram2->SetUniform("lights[1].diffuse", light2->getDiffuse());
+	sphereProgram2->SetUniform("lights[1].specular", light2->getSpecular());
+
+    sphereProgram3->SetUniform("lights[0].position", light->getPosition());
+    sphereProgram3->SetUniform("lights[0].diffuse", light->getDiffuse());
+    sphereProgram3->SetUniform("lights[0].specular", light->getSpecular());
+
+    sphereProgram3->SetUniform("lights[1].position", light2->getPosition());
+    sphereProgram3->SetUniform("lights[1].diffuse", light2->getDiffuse());
+    sphereProgram3->SetUniform("lights[1].specular", light2->getSpecular());
+    
+    sphereProgram4->SetUniform("lights[0].position", light->getPosition());
+    sphereProgram4->SetUniform("lights[0].diffuse", light->getDiffuse());
+    sphereProgram4->SetUniform("lights[0].specular", light->getSpecular());
+
+    sphereProgram4->SetUniform("lights[1].position", light2->getPosition());
+    sphereProgram4->SetUniform("lights[1].diffuse", light2->getDiffuse());
+    sphereProgram4->SetUniform("lights[1].specular", light2->getSpecular());
+
+    sphereProgram1->setLight(true);
+    sphereProgram2->setLight(true);
 	sphereProgram3->setLight(true);
 	sphereProgram4->setLight(true);
 
