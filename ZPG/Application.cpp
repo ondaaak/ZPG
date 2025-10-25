@@ -170,10 +170,10 @@ void Application::run() {
 
     std::vector<Light> forestLights = { forestLight1 , forestLight2 };// forestLight3, forestLight4 };
 
-    Light light1 (glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    Light light1 (glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	Light light2 (glm::vec3(0.0f, -3.0f, 2.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-    std::vector<Light> lights = { light1, light2 };
+    std::vector<Light> lights = { light1 };
 	printf("Number of lights: %zu\n", lights.size());
 
 
