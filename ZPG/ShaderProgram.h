@@ -15,13 +15,19 @@ public:
     void SetUniform(const char* name, float value);
     void SetUniform(const char* name, const glm::vec3& value);
     void SetUniform(const char* name, const glm::mat4& value);
-	void onCameraChanged(const Camera* camera);
+	//void onSubjectChanged(const Camera* camera);
     void setLight(bool option) { hasLight = option; } // remove if not used
 	void setLightUniforms(const std::vector<Light>& lights);
+    void update(Subject* subject);
+    void setLightsPointer(const std::vector<Light>* lights) { allLights = lights; }
+    void onSubjectChanged(const Subject* subject) override;
+
+
 
     ~ShaderProgram();
 
 private:
     GLuint id;
     bool hasLight = false;
+    const std::vector<Light>* allLights = nullptr;
 };

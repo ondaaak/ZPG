@@ -69,15 +69,15 @@ void ShaderProgram::SetUniform(const char* name, const glm::vec3& value) {
     }
     glUniform3fv(loc, 1, glm::value_ptr(value));
 }
-
-void ShaderProgram::onCameraChanged(const Camera* camera) {
+/*
+void ShaderProgram::onSubjectChanged(const Camera* camera) {
     SetUniform("viewMatrix", camera->getViewMatrix());
     SetUniform("projectMatrix", camera->getProjectionMatrix());
 	if (hasLight){ 
         SetUniform("viewPos", camera->getCameraPosition()); 
     }
         
-}
+}*/
 
 void ShaderProgram::setLightUniforms(const std::vector<Light>& lights) {
 
@@ -98,4 +98,32 @@ void ShaderProgram::setLightUniforms(const std::vector<Light>& lights) {
 
 	hasLight = true;
    
+}
+/*
+// ShaderProgram.cpp
+void ShaderProgram::update(Subject* subject) {
+    if (allLights) {
+        setLightUniforms(*allLights);
+    }
+}*/
+
+void ShaderProgram::onSubjectChanged(const Subject* subject) {
+
+    const Camera* camera = dynamic_cast<const Camera*>(subject);
+    if (camera) {
+        SetUniform("viewMatrix", camera->getViewMatrix());
+        SetUniform("projectMatrix", camera->getProjectionMatrix());
+        if (hasLight) {
+            SetUniform("viewPos", camera->getCameraPosition());
+        }
+        return;
+    }
+
+   
+    /* nefunguje
+    const Light* light = dynamic_cast<const Light*>(subject);
+    if (light && allLights) {
+        setLightUniforms(*allLights);
+        return;
+    }*/
 }

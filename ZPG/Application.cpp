@@ -168,13 +168,15 @@ void Application::run() {
     std::vector<Light> lights = { light1 };
 	printf("Number of lights: %zu\n", lights.size());
 
-
+    // ?
 	sphereProgram1->setLightUniforms(lights);
 	sphereProgram2->setLightUniforms(lights);
 	sphereProgram3->setLightUniforms(lights);
 	sphereProgram4->setLightUniforms(lights);
 	forestShaderProgram->setLightUniforms(forestLights);
 	groundShaderProgram->setLightUniforms(forestLights);
+    //
+
 
     camera.addObserver(forestShaderProgram);
     camera.addObserver(groundShaderProgram);
@@ -186,6 +188,12 @@ void Application::run() {
 	camera.addObserver(sphereProgram4);
 
 
+
+    for (Light& light : forestLights) {
+        light.addObserver(forestShaderProgram);
+        light.addObserver(groundShaderProgram);
+
+    }
     
     float randomX, randomZ;
     float alpha = 0.0f;
@@ -302,18 +310,17 @@ void Application::run() {
         forestLight2.setPosition(pos);
 
 
-
-
-
-
-
 		forestSphere1Translate->setOffset(forestLight1.getPosition());
 		forestSphere2Translate->setOffset(forestLight2.getPosition());
 
+        //std::vector<Light*> forestLights = { &forestLight1, &forestLight2 };
+
+        
         forestLights[0] = forestLight1;
         forestLights[1] = forestLight2;
+
         forestShaderProgram->setLightUniforms(forestLights);
-        groundShaderProgram->setLightUniforms(forestLights);
+        groundShaderProgram->setLightUniforms(forestLights);/**/
 
         earthOrbitRotation->setAngle(earthAngle);
         moonOrbitRotation->setAngle(moonAngle);

@@ -12,9 +12,9 @@ public:
         observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
     }
 protected:
-    void notifyObservers(const class Camera* camera, float aspectRatio) {
+    void notifyObservers(const Subject* subject) {
         for (auto* obs : observers) {
-            obs->onCameraChanged(camera);
+            obs->onSubjectChanged(subject);
         }
     }
     std::vector<Observer*> observers;

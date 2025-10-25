@@ -1,6 +1,8 @@
 #pragma once
+class Subject;
+
 class Observer {
 public:
     virtual ~Observer() {}
-    virtual void onCameraChanged(const class Camera* camera) = 0;
+    virtual void onSubjectChanged(const Subject* subject) = 0;
 };
