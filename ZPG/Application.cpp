@@ -101,14 +101,17 @@ void Application::run() {
     Shader* blinnPhongFragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("blinn-phong_fragment_shader.glsl"));
     Shader* fragmentShader2 = new Shader(GL_FRAGMENT_SHADER, std::string("plane_fragment_shader.glsl"));
 
-    ShaderProgram* shaderProgram = new ShaderProgram(*vertexShader, *fragmentShader);
-    ShaderProgram* shaderProgram2 = new ShaderProgram(*vertexShader, *fragmentShader2);
+    ShaderProgram* forestShaderProgram = new ShaderProgram(*vertexShader, *phongFragmentShader);
+    ShaderProgram* groundShaderProgram = new ShaderProgram(*vertexShader, *phongFragmentShader);
 
     ShaderProgram* sphereProgram1 = new ShaderProgram(*vertexShader,*phongFragmentShader);
     ShaderProgram* sphereProgram2 = new ShaderProgram(*vertexShader, *phongFragmentShader);
     ShaderProgram* sphereProgram3 = new ShaderProgram(*vertexShader, *phongFragmentShader);
     ShaderProgram* sphereProgram4 = new ShaderProgram(*vertexShader, *phongFragmentShader);
 
+    ShaderProgram* forestLightShaderProgram = new ShaderProgram(*vertexShader, *constFragmentShader);
+
+	//forestLightShaderProgram->SetUniform("objectColor", glm::vec3(0.0f, 1.0f, 0.0f));
 
     Camera camera;
     Controller controller(&camera, window);
@@ -121,8 +124,8 @@ void Application::run() {
     Model* bushModel = new Model(bushes, sizeof(bushes) / sizeof(float) / 6, true);
     Model* plainModel = new Model(plain, sizeof(plain) / sizeof(float) / 6, true);
 
-    DrawableObject* triangleObject = new DrawableObject(triangleModel, shaderProgram);
-    DrawableObject* plainObject = new DrawableObject(plainModel, shaderProgram2);
+    DrawableObject* triangleObject = new DrawableObject(triangleModel, forestShaderProgram);
+    DrawableObject* plainObject = new DrawableObject(plainModel, groundShaderProgram);
     DrawableObject* sphere1 = new DrawableObject(sphereModel, sphereProgram1);
     DrawableObject* sphere2 = new DrawableObject(sphereModel, sphereProgram2);
     DrawableObject* sphere3 = new DrawableObject(sphereModel, sphereProgram3);
@@ -147,61 +150,49 @@ void Application::run() {
     sphere3->addTransformation(rotation);
     sphere4->addTransformation(rotation);*/
     triangleObject->addTransformation(rotation2);
-
-    Light* light = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	Light* light2 = new Light(glm::vec3(0.0f, -3.0f, 2.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-	Light* lights[] = { light, light2 };
-
     
-   // sphereProgram1->SetUniform("lightPos", light->getPosition());
+    Light forestLight1(glm::vec3(2.0f, 0.2f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f));
+    Light forestLight2(glm::vec3(-2.0f, 0.2f, 1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
 
-	sphereProgram1->SetUniform("lights[0].position", light->getPosition());
-	sphereProgram1->SetUniform("lights[0].diffuse", light->getDiffuse());
-	sphereProgram1->SetUniform("lights[0].specular", light->getSpecular());
+    DrawableObject* forestSphere1 = new DrawableObject(sphereModel, forestLightShaderProgram);
+    DrawableObject* forestSphere2 = new DrawableObject(sphereModel, forestLightShaderProgram);
 
-    sphereProgram1->SetUniform("lights[1].position", light2->getPosition());
-	sphereProgram1->SetUniform("lights[1].diffuse", light2->getDiffuse());
-	sphereProgram1->SetUniform("lights[1].specular", light2->getSpecular());
+    Translate* forestSphere1Translate = new Translate(forestLight1.getPosition());
+    forestSphere1->addTransformation(forestSphere1Translate);
 
-    sphereProgram2->SetUniform("lights[0].position", light->getPosition());
-	sphereProgram2->SetUniform("lights[0].diffuse", light->getDiffuse());
-	sphereProgram2->SetUniform("lights[0].specular", light->getSpecular());
-
-	sphereProgram2->SetUniform("lights[1].position", light2->getPosition());
-	sphereProgram2->SetUniform("lights[1].diffuse", light2->getDiffuse());
-	sphereProgram2->SetUniform("lights[1].specular", light2->getSpecular());
-
-    sphereProgram3->SetUniform("lights[0].position", light->getPosition());
-    sphereProgram3->SetUniform("lights[0].diffuse", light->getDiffuse());
-    sphereProgram3->SetUniform("lights[0].specular", light->getSpecular());
-
-    sphereProgram3->SetUniform("lights[1].position", light2->getPosition());
-    sphereProgram3->SetUniform("lights[1].diffuse", light2->getDiffuse());
-    sphereProgram3->SetUniform("lights[1].specular", light2->getSpecular());
-    
-    sphereProgram4->SetUniform("lights[0].position", light->getPosition());
-    sphereProgram4->SetUniform("lights[0].diffuse", light->getDiffuse());
-    sphereProgram4->SetUniform("lights[0].specular", light->getSpecular());
-
-    sphereProgram4->SetUniform("lights[1].position", light2->getPosition());
-    sphereProgram4->SetUniform("lights[1].diffuse", light2->getDiffuse());
-    sphereProgram4->SetUniform("lights[1].specular", light2->getSpecular());
-
-    sphereProgram1->setLight(true);
-    sphereProgram2->setLight(true);
-	sphereProgram3->setLight(true);
-	sphereProgram4->setLight(true);
+    Translate* forestSphere2Translate = new Translate(forestLight2.getPosition());
+    forestSphere2->addTransformation(forestSphere2Translate);
 
 
 
-    camera.addObserver(shaderProgram);
-    camera.addObserver(shaderProgram2);
+	forestSphere1->addTransformation(new Scale(glm::vec3(0.01f)));
+    forestSphere2->addTransformation(new Scale(glm::vec3(0.01f)));
+
+    std::vector<Light> forestLights = { forestLight1 , forestLight2 };// forestLight3, forestLight4 };
+
+    Light light1 (glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	Light light2 (glm::vec3(0.0f, -3.0f, 2.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    std::vector<Light> lights = { light1, light2 };
+	printf("Number of lights: %zu\n", lights.size());
+
+
+	sphereProgram1->setLightUniforms(lights);
+	sphereProgram2->setLightUniforms(lights);
+	sphereProgram3->setLightUniforms(lights);
+	sphereProgram4->setLightUniforms(lights);
+	forestShaderProgram->setLightUniforms(forestLights);
+	groundShaderProgram->setLightUniforms(forestLights);
+
+    camera.addObserver(forestShaderProgram);
+    camera.addObserver(groundShaderProgram);
+	camera.addObserver(forestLightShaderProgram);
 
 	camera.addObserver(sphereProgram1);
 	camera.addObserver(sphereProgram2);
 	camera.addObserver(sphereProgram3);
 	camera.addObserver(sphereProgram4);
+
 
     
     float randomX, randomZ;
@@ -212,7 +203,7 @@ void Application::run() {
     for (int i = 0; i < 50; ++i) {
         randomX = rand() % (5 + 5 + 1) - 5;
 		randomZ = rand() % (5 + 5 + 1) - 5;
-        DrawableObject* obj = new DrawableObject(treeModel, shaderProgram);
+        DrawableObject* obj = new DrawableObject(treeModel, forestShaderProgram);
         obj->addTransformation(new Translate(glm::vec3(randomX, 0.0f, randomZ)));
         obj->addTransformation(new Scale(glm::vec3(0.1f)));
         obj->addTransformation(new Rotate(i * 0.2f, glm::vec3(0, 1, 0)));
@@ -223,7 +214,7 @@ void Application::run() {
     for (int i = 0; i < 50; ++i) {
         randomX = rand() % (5 + 5 + 1) - 5;
         randomZ = rand() % (5 + 5 + 1) - 5;
-        DrawableObject* obj = new DrawableObject(bushModel, shaderProgram);
+        DrawableObject* obj = new DrawableObject(bushModel, forestShaderProgram);
         obj->addTransformation(new Translate(glm::vec3(randomX, 0.0f, randomZ)));
         obj->addTransformation(new Scale(glm::vec3(0.5f)));
         obj->addTransformation(new Rotate(i * 0.7f, glm::vec3(0, 1, 0)));
@@ -238,7 +229,6 @@ void Application::run() {
 
     Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f));
     ShaderProgram* solarProgram = new ShaderProgram(*vertexShader, *phongFragmentShader);
-    solarProgram->SetUniform("lightPos", sunLight->getPosition());
    
 
     Rotate* earthOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -263,6 +253,8 @@ void Application::run() {
     scene2->addObject(sphere3);
     scene2->addObject(sphere4);
     scene3->addObject(plainObject);
+	scene3->addObject(forestSphere1);
+	scene3->addObject(forestSphere2);
 	scene4->addObject(slunce);
 	scene4->addObject(zeme);
 	scene4->addObject(mesic);
@@ -270,7 +262,10 @@ void Application::run() {
     float lastFrame = glfwGetTime();
     float earthAngle = 0.0f;
     float moonAngle = 0.0f;
-
+    /*
+    forestSphere1->addTransformation(new Translate(forestLight1.getPosition()));
+    forestSphere2->addTransformation(new Translate(forestLight2.getPosition()));
+    */
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -286,6 +281,50 @@ void Application::run() {
         
 		earthAngle += 0.005f;
 		moonAngle += 0.01f;  
+
+
+   
+        float dx = ((rand() / (float)RAND_MAX) - 0.5f) * 0.05f; // -0.025 až +0.025
+        float dy = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f; // menší zmìna pro Y
+        float dz = ((rand() / (float)RAND_MAX) - 0.5f) * 0.05f;
+
+
+        glm::vec3 pos = forestLight1.getPosition();
+        pos.x += dx;
+        pos.y += dy;
+        pos.z += dz;
+
+        // Omez výšku na 0.1–1.0
+        if (pos.y < 0.1f) pos.y = 0.1f;
+        if (pos.y > 1.0f) pos.y = 1.0f;
+
+        forestLight1.setPosition(pos);
+
+
+        pos = forestLight2.getPosition();
+        pos.x += dx;
+        pos.y += dy;
+        pos.z += dz;
+
+        // Omez výšku na 0.1–1.0
+        if (pos.y < 0.1f) pos.y = 0.1f;
+        if (pos.y > 1.0f) pos.y = 1.0f;
+
+        forestLight2.setPosition(pos);
+
+
+
+
+
+
+
+		forestSphere1Translate->setOffset(forestLight1.getPosition());
+		forestSphere2Translate->setOffset(forestLight2.getPosition());
+
+        forestLights[0] = forestLight1;
+        forestLights[1] = forestLight2;
+        forestShaderProgram->setLightUniforms(forestLights);
+        groundShaderProgram->setLightUniforms(forestLights);
 
         earthOrbitRotation->setAngle(earthAngle);
         moonOrbitRotation->setAngle(moonAngle);

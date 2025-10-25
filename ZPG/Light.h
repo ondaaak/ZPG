@@ -4,7 +4,7 @@
 class Light {
 public:
     Light(const glm::vec3& position, const glm::vec3& color)
-        : position(position), diffuse(color),specular(glm::vec3(1.0f)), color(color) { }
+        : position(position), diffuse(color),specular(glm::vec3(0.1f)), color(color) { }
 
     void setPosition(const glm::vec3& pos) { position = pos; }
     glm::vec3 getPosition() const { return position; }

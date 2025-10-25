@@ -16,8 +16,9 @@ public:
     void SetUniform(const char* name, const glm::vec3& value);
     void SetUniform(const char* name, const glm::mat4& value);
 	void onCameraChanged(const Camera* camera, float aspectRatio) override;
-    void setLight(bool option) { hasLight = option; }
-	void setLightUniforms(int index, const Light& light);
+    void setLight(bool option) { hasLight = option; } // remove if not used
+	void setLightUniforms(const std::vector<Light>& lights);
+
     ~ShaderProgram();
 
 private:

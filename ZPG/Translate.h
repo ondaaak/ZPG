@@ -8,6 +8,10 @@ public:
         return glm::translate(glm::mat4(1.0f), offset);
     }
 
+	void setOffset(const glm::vec3& newOffset) {
+		offset = newOffset;
+	}
+
 private:
     glm::vec3 offset;
 };

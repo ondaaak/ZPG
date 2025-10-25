@@ -75,16 +75,23 @@ void ShaderProgram::onCameraChanged(const Camera* camera, float aspectRatio) {
         
 }
 
-void ShaderProgram::setLightUniforms(int index, const Light& light) {
-    char namebuf[64];
+void ShaderProgram::setLightUniforms(const std::vector<Light>& lights) {
 
-    snprintf(namebuf, sizeof(namebuf), "lights[%d].position", index);
-    SetUniform(namebuf, light.getPosition());
+    SetUniform("numLights", static_cast<int>(lights.size()));
 
-    snprintf(namebuf, sizeof(namebuf), "lights[%d].diffuse", index);
-    SetUniform(namebuf, light.getDiffuse());
+    for (size_t i = 0; i < lights.size(); ++i) {
+        char namebuf[64];
 
-    snprintf(namebuf, sizeof(namebuf), "lights[%d].specular", index);
-    SetUniform(namebuf, light.getSpecular());
+        snprintf(namebuf, sizeof(namebuf), "lights[%zu].position", i);
+        SetUniform(namebuf, lights[i].getPosition());
+
+        snprintf(namebuf, sizeof(namebuf), "lights[%zu].diffuse", i);
+        SetUniform(namebuf, lights[i].getDiffuse());
+
+        snprintf(namebuf, sizeof(namebuf), "lights[%zu].specular", i);
+        SetUniform(namebuf, lights[i].getSpecular());
+    }
+
+	hasLight = true;
+   
 }
-

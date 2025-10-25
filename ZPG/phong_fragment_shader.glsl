@@ -1,7 +1,7 @@
 #version 400
 
 
-#define MAX_LIGHTS 3
+#define MAX_LIGHTS 5
 struct lightSource {
     vec3 position;
     vec3 diffuse;
@@ -11,6 +11,7 @@ struct lightSource {
 
 uniform lightSource lights[MAX_LIGHTS];
 
+uniform int numLights;
 
 in vec4 worldPos;
 in vec3 worldNorm;
@@ -31,7 +32,7 @@ void main(void)
     vec3 diffuseTotal = vec3(0.0);
     vec3 specularTotal = vec3(0.0);
     
-    for (int i = 0; i < 3; i++) 
+    for (int i = 0; i < numLights; i++) 
     {
         vec3 lightDir = normalize(lights[i].position - worldPos.xyz);
         float diff = max(dot(norm, lightDir), 0.0);
@@ -48,5 +49,5 @@ void main(void)
 
     
 
-    fragColor = vec4(ambientTotal + diffuseTotal * objectColor + specularTotal * vec3(1.0), 1.0);
+    fragColor = vec4(ambientTotal * objectColor + diffuseTotal * objectColor + specularTotal * vec3(1.0), 1.0);
 }
