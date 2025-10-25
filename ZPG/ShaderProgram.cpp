@@ -70,9 +70,9 @@ void ShaderProgram::SetUniform(const char* name, const glm::vec3& value) {
     glUniform3fv(loc, 1, glm::value_ptr(value));
 }
 
-void ShaderProgram::onCameraChanged(const Camera* camera, float aspectRatio) {
+void ShaderProgram::onCameraChanged(const Camera* camera) {
     SetUniform("viewMatrix", camera->getViewMatrix());
-    SetUniform("projectMatrix", camera->getProjectionMatrix(aspectRatio));
+    SetUniform("projectMatrix", camera->getProjectionMatrix());
 	if (hasLight){ 
         SetUniform("viewPos", camera->getCameraPosition()); 
     }

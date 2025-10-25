@@ -14,7 +14,7 @@ public:
 protected:
     void notifyObservers(const class Camera* camera, float aspectRatio) {
         for (auto* obs : observers) {
-            obs->onCameraChanged(camera, aspectRatio);
+            obs->onCameraChanged(camera);
         }
     }
     std::vector<Observer*> observers;
