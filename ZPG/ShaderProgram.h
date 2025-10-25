@@ -9,7 +9,7 @@ class Camera;
 
 class ShaderProgram : public Observer {
 public:
-    ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader);
+    ShaderProgram(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
     bool setShaderProgram();
     void SetUniform(const char* name, int value);
     void SetUniform(const char* name, float value);

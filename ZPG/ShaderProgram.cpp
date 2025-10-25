@@ -2,7 +2,10 @@
 #include <stdio.h>
 #include <glm/gtc/type_ptr.hpp>
 
-ShaderProgram::ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader) {
+ShaderProgram::ShaderProgram(const std::string& vertexShaderFile, const std::string& fragmentShaderFile) {
+    Shader vertexShader(GL_VERTEX_SHADER, vertexShaderFile);
+    Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderFile);
+
     id = glCreateProgram();
     glAttachShader(id, vertexShader.getId());
     glAttachShader(id, fragmentShader.getId());
@@ -16,6 +19,7 @@ ShaderProgram::ShaderProgram(const Shader& vertexShader, const Shader& fragmentS
         fprintf(stderr, "ERROR::SHADER_PROGRAM::LINKING_FAILED\n%s\n", infoLog);
     }
 }
+
 
 bool ShaderProgram::setShaderProgram() {
     glUseProgram(id);

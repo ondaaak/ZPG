@@ -93,23 +93,15 @@ void Application::run() {
     scene4 = new Scene();
     activeScene = scene1;
 
-    Shader* vertexShader = new Shader(GL_VERTEX_SHADER, std::string("main_vertex_shader.glsl"));
-    Shader* fragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("fragment_shader.glsl"));
-    Shader* constFragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("constant_fragment_shader.glsl"));
-    Shader* lambertFragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("lambert_fragment_shader.glsl"));
-    Shader* phongFragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("phong_fragment_shader.glsl"));
-    Shader* blinnPhongFragmentShader = new Shader(GL_FRAGMENT_SHADER, std::string("blinn-phong_fragment_shader.glsl"));
-    Shader* fragmentShader2 = new Shader(GL_FRAGMENT_SHADER, std::string("plane_fragment_shader.glsl"));
 
-    ShaderProgram* forestShaderProgram = new ShaderProgram(*vertexShader, *phongFragmentShader);
-    ShaderProgram* groundShaderProgram = new ShaderProgram(*vertexShader, *phongFragmentShader);
-
-    ShaderProgram* sphereProgram1 = new ShaderProgram(*vertexShader,*phongFragmentShader);
-    ShaderProgram* sphereProgram2 = new ShaderProgram(*vertexShader, *phongFragmentShader);
-    ShaderProgram* sphereProgram3 = new ShaderProgram(*vertexShader, *phongFragmentShader);
-    ShaderProgram* sphereProgram4 = new ShaderProgram(*vertexShader, *phongFragmentShader);
-
-    ShaderProgram* forestLightShaderProgram = new ShaderProgram(*vertexShader, *constFragmentShader);
+    ShaderProgram* forestShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
+    ShaderProgram* groundShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
+    ShaderProgram* sphereProgram1 = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
+    ShaderProgram* sphereProgram2 = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
+    ShaderProgram* sphereProgram3 = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
+    ShaderProgram* sphereProgram4 = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
+    ShaderProgram* forestLightShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("constant_fragment_shader.glsl"));
+    ShaderProgram* solarProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
 
 	//forestLightShaderProgram->SetUniform("objectColor", glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -228,7 +220,7 @@ void Application::run() {
     slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
 
     Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f));
-    ShaderProgram* solarProgram = new ShaderProgram(*vertexShader, *phongFragmentShader);
+
    
 
     Rotate* earthOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -262,10 +254,7 @@ void Application::run() {
     float lastFrame = glfwGetTime();
     float earthAngle = 0.0f;
     float moonAngle = 0.0f;
-    /*
-    forestSphere1->addTransformation(new Translate(forestLight1.getPosition()));
-    forestSphere2->addTransformation(new Translate(forestLight2.getPosition()));
-    */
+
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
