@@ -103,7 +103,6 @@ void Application::run() {
     ShaderProgram* forestLightShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("constant_fragment_shader.glsl"));
     ShaderProgram* solarProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
 
-	//forestLightShaderProgram->SetUniform("objectColor", glm::vec3(0.0f, 1.0f, 0.0f));
 
     Camera camera;
     Controller controller(&camera, window);
@@ -160,7 +159,7 @@ void Application::run() {
 	forestSphere1->addTransformation(new Scale(glm::vec3(0.01f)));
     forestSphere2->addTransformation(new Scale(glm::vec3(0.01f)));
 
-    std::vector<Light> forestLights = { forestLight1 , forestLight2 };// forestLight3, forestLight4 };
+    std::vector<Light> forestLights = { forestLight1 , forestLight2 };
 
     Light light1 (glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	Light light2 (glm::vec3(0.0f, -3.0f, 2.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -168,28 +167,26 @@ void Application::run() {
     std::vector<Light> lights = { light1 };
 	printf("Number of lights: %zu\n", lights.size());
 
-    // ?
+    
 	sphereProgram1->setLightUniforms(lights);
 	sphereProgram2->setLightUniforms(lights);
 	sphereProgram3->setLightUniforms(lights);
 	sphereProgram4->setLightUniforms(lights);
     
-	forestShaderProgram->setLightUniforms(forestLights);
-	groundShaderProgram->setLightUniforms(forestLights);
+
     
 
-
+   
     camera.addObserver(forestShaderProgram);
     camera.addObserver(groundShaderProgram);
 	camera.addObserver(forestLightShaderProgram);
-
 	camera.addObserver(sphereProgram1);
 	camera.addObserver(sphereProgram2);
 	camera.addObserver(sphereProgram3);
 	camera.addObserver(sphereProgram4);
 
 
-    /*
+    /* fix
     for (Light& light : forestLights) {
         light.addObserver(forestShaderProgram);
         light.addObserver(groundShaderProgram);
@@ -282,8 +279,8 @@ void Application::run() {
 
 
    
-        float dx = ((rand() / (float)RAND_MAX) - 0.5f) * 0.05f; // -0.025 až +0.025
-        float dy = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f; // menší zmìna pro Y
+        float dx = ((rand() / (float)RAND_MAX) - 0.5f) * 0.05f; 
+        float dy = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f; 
         float dz = ((rand() / (float)RAND_MAX) - 0.5f) * 0.05f;
 
 
@@ -292,7 +289,7 @@ void Application::run() {
         pos.y += dy;
         pos.z += dz;
 
-        // Omez výšku na 0.1–1.0
+        
         if (pos.y < 0.1f) pos.y = 0.1f;
         if (pos.y > 1.0f) pos.y = 1.0f;
 
@@ -304,7 +301,6 @@ void Application::run() {
         pos.y += dy;
         pos.z += dz;
 
-        // Omez výšku na 0.1–1.0
         if (pos.y < 0.1f) pos.y = 0.1f;
         if (pos.y > 1.0f) pos.y = 1.0f;
 
@@ -314,7 +310,6 @@ void Application::run() {
 		forestSphere1Translate->setOffset(forestLight1.getPosition());
 		forestSphere2Translate->setOffset(forestLight2.getPosition());
 
-        //std::vector<Light*> forestLights = { &forestLight1, &forestLight2 };
 
         
         forestLights[0] = forestLight1;

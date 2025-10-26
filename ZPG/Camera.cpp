@@ -45,7 +45,7 @@ void Camera::processMouse(float xoffset, float yoffset) {
     notifyObservers(this);
 }
 
-void Camera::setAspectRatio(float ratio) { // ?
+void Camera::setAspectRatio(float ratio) {
     aspectRatio = ratio;
     notifyObservers(this);
 }

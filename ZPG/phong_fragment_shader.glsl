@@ -21,7 +21,7 @@ void main(void)
     vec3 viewDir = normalize(viewPos - worldPos.xyz);
     vec3 objectColor = vec3(1.0, 1.0, 1.0);
 
-    vec3 ambientTotal = vec3(0.05); // slabé globální ambientní svìtlo
+    vec3 ambientTotal = vec3(0.05);
     vec3 diffuseTotal = vec3(0.0);
     vec3 specularTotal = vec3(0.0);
 
@@ -29,7 +29,7 @@ void main(void)
     {
         vec3 lightDir = normalize(lights[i].position - worldPos.xyz);
 
-        // Odvrácená strana
+        
         if (dot(norm, lightDir) < 0.0 && dot(norm, viewDir) < 0.0) {
             continue;
         }
