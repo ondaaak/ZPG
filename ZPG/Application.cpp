@@ -173,9 +173,10 @@ void Application::run() {
 	sphereProgram2->setLightUniforms(lights);
 	sphereProgram3->setLightUniforms(lights);
 	sphereProgram4->setLightUniforms(lights);
+    
 	forestShaderProgram->setLightUniforms(forestLights);
 	groundShaderProgram->setLightUniforms(forestLights);
-    //
+    
 
 
     camera.addObserver(forestShaderProgram);
@@ -188,12 +189,12 @@ void Application::run() {
 	camera.addObserver(sphereProgram4);
 
 
-
+    /*
     for (Light& light : forestLights) {
         light.addObserver(forestShaderProgram);
         light.addObserver(groundShaderProgram);
 
-    }
+    }*/
     
     float randomX, randomZ;
     float alpha = 0.0f;
@@ -320,7 +321,7 @@ void Application::run() {
         forestLights[1] = forestLight2;
 
         forestShaderProgram->setLightUniforms(forestLights);
-        groundShaderProgram->setLightUniforms(forestLights);/**/
+        groundShaderProgram->setLightUniforms(forestLights);
 
         earthOrbitRotation->setAngle(earthAngle);
         moonOrbitRotation->setAngle(moonAngle);

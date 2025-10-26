@@ -113,6 +113,7 @@ void ShaderProgram::onSubjectChanged(const Subject* subject) {
     if (camera) {
         SetUniform("viewMatrix", camera->getViewMatrix());
         SetUniform("projectMatrix", camera->getProjectionMatrix());
+        
         if (hasLight) {
             SetUniform("viewPos", camera->getCameraPosition());
         }
