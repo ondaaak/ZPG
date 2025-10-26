@@ -144,6 +144,7 @@ void Application::run() {
     
     Light forestLight1(glm::vec3(2.0f, 0.2f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f));
     Light forestLight2(glm::vec3(-2.0f, 0.2f, 1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
+    std::vector<Light> forestLights = { forestLight1 , forestLight2 };
 
     DrawableObject* forestSphere1 = new DrawableObject(sphereModel, forestLightShaderProgram);
     DrawableObject* forestSphere2 = new DrawableObject(sphereModel, forestLightShaderProgram);
@@ -159,7 +160,7 @@ void Application::run() {
 	forestSphere1->addTransformation(new Scale(glm::vec3(0.01f)));
     forestSphere2->addTransformation(new Scale(glm::vec3(0.01f)));
 
-    std::vector<Light> forestLights = { forestLight1 , forestLight2 };
+
 
     Light light1 (glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	Light light2 (glm::vec3(0.0f, -3.0f, 2.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -311,10 +312,10 @@ void Application::run() {
 		forestSphere2Translate->setOffset(forestLight2.getPosition());
 
 
+
         
         forestLights[0] = forestLight1;
         forestLights[1] = forestLight2;
-
         forestShaderProgram->setLightUniforms(forestLights);
         groundShaderProgram->setLightUniforms(forestLights);
 

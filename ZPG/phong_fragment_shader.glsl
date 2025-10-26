@@ -39,7 +39,7 @@ void main(void)
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
 
         float distance = length(lights[i].position - worldPos.xyz);
-        float attenuation = 1.0 / (1.0 + 0.35 * distance + 0.44 * distance * distance);
+        float attenuation = 1.0 / (1.0 + 0.3 * distance + 0.4 * distance * distance);
 
         diffuseTotal += attenuation * diff * lights[i].diffuse;        
         specularTotal += attenuation * spec * lights[i].specular;
