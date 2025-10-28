@@ -35,7 +35,7 @@ Model::Model(const float* vertices, size_t vertexCount, bool mode)
 
 Model::Model(const char* name)
 {
-    std::string inputfile = std::string("../assets/") + name;
+    std::string inputfile = std::string("assets/") + name;
 
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -43,8 +43,7 @@ Model::Model(const char* name)
     std::string warn, err;
 
     bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, inputfile.c_str(), "assets/");
-
-    if (!warn.empty()) std::cout << "Warn: " << warn << std::endl;
+    //if (!warn.empty()) std::cout << "Warn: " << warn << std::endl;  // ?
     if (!err.empty()) std::cerr << "Err: " << err << std::endl;
     if (!ret) throw std::runtime_error("Failed to load OBJ file!");
 

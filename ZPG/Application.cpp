@@ -117,6 +117,8 @@ void Application::run() {
 	Model* catModel = new Model("12221_Cat_v1_l3.obj");
 
 	DrawableObject* catObject = new DrawableObject(catModel, forestShaderProgram);
+
+    catObject->addTransformation(new Translate(glm::vec3(0.0f, -0.2f, 0.0f)));
 	catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
 	catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
@@ -140,6 +142,7 @@ void Application::run() {
     sphere2->addTransformation(new Translate(glm::vec3(2.5f, 0.0f, 0.0f)));
     sphere3->addTransformation(new Translate(glm::vec3(0.0f, -2.5f, 0.0f)));
     sphere4->addTransformation(new Translate(glm::vec3(-2.5f, 0.0f, 0.0f)));
+	
 /*
     sphere1->addTransformation(rotation);
     sphere2->addTransformation(rotation);
