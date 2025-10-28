@@ -15,7 +15,7 @@ glm::mat4 Camera::getViewMatrix() const {
 }
 
 glm::mat4 Camera::getProjectionMatrix() const {
-    return glm::perspective(glm::radians(60.0f), aspectRatio, 0.1f, 100.0f);
+    return glm::perspective(glm::radians(90.0f), aspectRatio, 0.1f, 100.0f);
 }
 
 void Camera::processKeyboard(int key, float deltaTime) {

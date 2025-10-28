@@ -30,7 +30,7 @@ void main(void)
         vec3 lightDir = normalize(lights[i].position - worldPos.xyz);
 
         
-        if (dot(norm, lightDir) < 0.0 && dot(norm, viewDir) < 0.0) {
+        if (dot(norm, lightDir) < 0.0 || dot(norm, viewDir) < 0.0) {
             continue;
         }
 

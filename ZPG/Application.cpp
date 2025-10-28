@@ -114,6 +114,11 @@ void Application::run() {
     Model* treeModel = new Model(tree, sizeof(tree) / sizeof(float) / 6, true);
     Model* bushModel = new Model(bushes, sizeof(bushes) / sizeof(float) / 6, true);
     Model* plainModel = new Model(plain, sizeof(plain) / sizeof(float) / 6, true);
+	Model* catModel = new Model("12221_Cat_v1_l3.obj");
+
+	DrawableObject* catObject = new DrawableObject(catModel, forestShaderProgram);
+	catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
+	catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
     DrawableObject* triangleObject = new DrawableObject(triangleModel, forestShaderProgram);
     DrawableObject* plainObject = new DrawableObject(plainModel, groundShaderProgram);
@@ -254,6 +259,7 @@ void Application::run() {
     scene3->addObject(plainObject);
 	scene3->addObject(forestSphere1);
 	scene3->addObject(forestSphere2);
+	scene3->addObject(catObject);
 	scene4->addObject(slunce);
 	scene4->addObject(zeme);
 	scene4->addObject(mesic);
