@@ -45,9 +45,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 }
 
 Application::Application()
-	: window(nullptr), scene1(nullptr), scene2(nullptr), scene3(nullptr), scene4(nullptr), activeScene(nullptr)
-{}
-
+    : window(nullptr), scene1(nullptr), scene2(nullptr), scene3(nullptr), scene4(nullptr), activeScene(nullptr),
+    sunLight(nullptr), flashlight(nullptr), isFlashlightOn(true), fKeyPressedLastFrame(false)
+{
+}
 Application::~Application() {
     cleanup();
 }
@@ -152,15 +153,23 @@ void Application::run() {
     sphere4->addTransformation(new Translate(glm::vec3(-2.5f, 0.0f, 0.0f)));
     triangleObject->addTransformation(rotation2);
 
-    // ZMÌNA: Vytváøení svìtel na haldì (new) a ukládání ukazatelù
+    // ZMÌNA: Vytváøení svìtel pro scénu 3
     Light* forestLight1_ptr = new Light(glm::vec3(2.0f, 0.2f, 0.0f), glm::vec3(0.1f, 0.5f, 0.1f));
     Light* forestLight2_ptr = new Light(glm::vec3(-2.0f, 0.2f, 1.0f), glm::vec3(0.1f, 0.5f, 0.1f));
-    SpotLight* spotLight_ptr = new SpotLight(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::radians(50.0f));
 
-    // ZMÌNA: Plníme èlenský vektor scene3Lights
+    // ZMÌNA: Vytvoøíme baterku a uložíme ji do èlenské promìnné 'flashlight'
+    // Používáme opravený konstruktor - posíláme úhel 50 stupòù
+    flashlight = new SpotLight(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::radians(25.0f));
+
+    // PØIDÁNO: Uložíme si pùvodní barvy baterky
+    flashlightDiffuseColor = flashlight->getDiffuse();
+    flashlightSpecularColor = flashlight->getSpecular();
+
+    // Pøidáme všechna svìtla do seznamu scény 3
     scene3Lights.push_back(forestLight1_ptr);
     scene3Lights.push_back(forestLight2_ptr);
-    scene3Lights.push_back(spotLight_ptr);
+    scene3Lights.push_back(flashlight); // Pøidáme baterku do seznamu
+	
 
 
     DrawableObject* forestSphere1 = new DrawableObject(sphereModel, forestLightShaderProgram);
@@ -308,7 +317,35 @@ void Application::run() {
         float currentFrame = glfwGetTime();
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+
+        // Zpracování pohybu kamery
         controller.processInput(deltaTime);
+
+        // --- PØIDÁNO: Logika pro pøepínání baterky ---
+        // Zjistíme, jestli je F stisknuto teï
+        bool fKeyPressed = (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS);
+
+        // Zareagujeme jen na "hranu" - když je klávesa stisknutá teï, ale nebyla minule
+        if (fKeyPressed && !fKeyPressedLastFrame) {
+            isFlashlightOn = !isFlashlightOn; // Pøepneme stav
+
+            if (isFlashlightOn) {
+                // Zapnout: vrátíme pùvodní barvy
+                // (notifyObservers se zavolá uvnitø setDiffuse/setSpecular)
+                flashlight->setDiffuse(flashlightDiffuseColor);
+                flashlight->setSpecular(flashlightSpecularColor);
+                printf("Baterka ZAPNUTA\n");
+            }
+            else {
+                // Vypnout: nastavíme barvy na èernou
+                flashlight->setDiffuse(glm::vec3(0.0f));
+                flashlight->setSpecular(glm::vec3(0.0f));
+                printf("Baterka VYPNUTA\n");
+            }
+        }
+        fKeyPressedLastFrame = fKeyPressed; // Uložíme stav pro pøíští snímek
+        // --- Konec logiky baterky ---
+
 
         alpha += 0.01f;
         rotation->setAngle(alpha);
@@ -321,15 +358,14 @@ void Application::run() {
         float dy = ((rand() / (float)RAND_MAX) - 0.5f) * 0.01f;
         float dz = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f;
 
-        // ZMÌNA: Upravujeme objekty svìtel pomocí ukazatelù
-        // Toto automaticky spustí onSubjectChanged v pøihlášených shaderech
+
         glm::vec3 pos = forestLight1_ptr->getPosition();
         pos.x += dx;
         pos.y += dy;
         pos.z += dz;
         if (pos.y < 0.1f) pos.y = 0.1f;
         if (pos.y > 1.0f) pos.y = 1.0f;
-        forestLight1_ptr->setPosition(pos); // <-- Tady se volá notifyObservers()
+        forestLight1_ptr->setPosition(pos);
 
 
         pos = forestLight2_ptr->getPosition();
@@ -338,25 +374,16 @@ void Application::run() {
         pos.z += dz;
         if (pos.y < 0.1f) pos.y = 0.1f;
         if (pos.y > 1.0f) pos.y = 1.0f;
-        forestLight2_ptr->setPosition(pos); // <-- Tady se volá notifyObservers()
+        forestLight2_ptr->setPosition(pos); 
 
 
         forestSphere1Translate->setOffset(forestLight1_ptr->getPosition());
         forestSphere2Translate->setOffset(forestLight2_ptr->getPosition());
 
-        spotLight_ptr->setPosition(camera.getCameraPosition()); // <-- Tady se volá notifyObservers()
-        spotLight_ptr->setDirection(camera.getCameraFront()); // <-- Tady se volá notifyObservers()
+        flashlight->setPosition(camera.getCameraPosition());
+        flashlight->setDirection(camera.getCameraFront());
 
-
-        // ODSTRANÌNO: Všechna volání setLightUniforms z hlavního cyklu
-        // forestLights[0] = forestLight1;
-        // forestLights[1] = forestLight2;
-        // spotLights[0] = spotLight;
-        // forestShaderProgram->setLightUniforms(forestLights);
-        // groundShaderProgram->setLightUniforms(forestLights);
-        // forestShaderProgram->setLightUniforms(spotLights);
-        // groundShaderProgram->setLightUniforms(spotLights);
-
+        
 
         earthOrbitRotation->setAngle(earthAngle);
         moonOrbitRotation->setAngle(moonAngle);
@@ -379,7 +406,8 @@ void Application::cleanup() {
     delete scene3;
     delete scene4;
 
-    // PØIDÁNO: Musíme smazat všechna svìtla alokovaná pomocí 'new'
+    // Pamatuj, že 'flashlight' je také v 'scene3Lights',
+    // takže bude smazán zde. Není potøeba ho mazat dvakrát.
     for (Light* light : scene2Lights) {
         delete light;
     }
@@ -390,9 +418,8 @@ void Application::cleanup() {
     }
     scene3Lights.clear();
 
-    delete sunLight; // Smažeme i slunce
+    delete sunLight;
     sunLight = nullptr;
-    // --------
 
     if (window) {
         glfwDestroyWindow(window);

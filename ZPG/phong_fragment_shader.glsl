@@ -30,7 +30,7 @@ void main(void)
     vec3 norm = normalize(worldNorm);
     vec3 viewDir = normalize(viewPos - worldPos.xyz);
     // Toto bude barva z textury nebo materiálu
-    vec3 objectColor = vec3(1.0, 1.0, 1.0); 
+    vec3 objectColor = vec3(0.0, 1.0, 0.0); 
 
     // Ambientní svìtlo se bude sèítat ze všech ambientních svìtel ve scénì
     vec3 ambientTotal = vec3(0.0); 

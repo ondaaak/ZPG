@@ -31,7 +31,7 @@
 #include "Controller.h"
 #include "Light.h"
 #include "SpotLight.h"
-#include <vector> // Pøidáno
+#include <vector>
 
 class Application {
 public:
@@ -49,11 +49,17 @@ private:
     Scene* scene3;
     Scene* scene4;
 
-    // PØIDÁNO: Èlenské promìnné pro správu životního cyklu svìtel
     std::vector<Light*> scene2Lights;
     std::vector<Light*> scene3Lights;
     Light* sunLight;
-    // --------
+
+    // --- PØIDÁNO PRO BATERKU ---
+    SpotLight* flashlight;
+    glm::vec3 flashlightDiffuseColor;
+    glm::vec3 flashlightSpecularColor;
+    bool isFlashlightOn;
+    bool fKeyPressedLastFrame; // Pro detekci jednoho stisku
+    // ---------------------------
 
     bool init();
     void cleanup();
