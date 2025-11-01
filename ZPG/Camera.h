@@ -12,6 +12,7 @@ public:
     void processMouse(float xoffset, float yoffset);
     void setAspectRatio(float ratio);
 	glm::vec3 getCameraPosition() const { return eye; }
+	glm::vec3 getCameraFront() const { return target; }
 private:
     glm::vec3 eye, target, up;
     float alpha, fi, speed, aspectRatio;

@@ -93,7 +93,8 @@ void Application::run() {
     scene4 = new Scene();
     activeScene = scene1;
 
-
+    // ... (vytváøení shader programù zùstává stejné) ...
+    ShaderProgram* triangleShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("constant_fragment_shader.glsl"));
     ShaderProgram* forestShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
     ShaderProgram* groundShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
     ShaderProgram* sphereProgram1 = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
@@ -107,28 +108,29 @@ void Application::run() {
     Camera camera;
     Controller controller(&camera, window);
     glfwSetWindowUserPointer(window, &controller);
-    
+
+    // ... (vytváøení modelù a objektù zùstává stejné) ...
     Model* triangleModel = new Model(triangle, sizeof(triangle) / sizeof(float) / 3, false);
     Model* sphereModel = new Model(sphere, sizeof(sphere) / sizeof(float) / 6, true);
     Model* giftModel = new Model(gift, sizeof(gift) / sizeof(float) / 6, true);
     Model* treeModel = new Model(tree, sizeof(tree) / sizeof(float) / 6, true);
     Model* bushModel = new Model(bushes, sizeof(bushes) / sizeof(float) / 6, true);
     Model* plainModel = new Model(plain, sizeof(plain) / sizeof(float) / 6, true);
-	Model* bearModel = new Model("13577_Tibetan_Hill_Fox_v1_L3.obj");
+    Model* bearModel = new Model("13577_Tibetan_Hill_Fox_v1_L3.obj");
     Model* catModel = new Model("12221_Cat_v1_l3.obj");
 
-	DrawableObject* catObject = new DrawableObject(catModel, forestShaderProgram);
-	DrawableObject* foxObject = new DrawableObject(bearModel, forestShaderProgram);
+    DrawableObject* catObject = new DrawableObject(catModel, forestShaderProgram);
+    DrawableObject* foxObject = new DrawableObject(bearModel, forestShaderProgram);
 
     //catObject->addTransformation(new Translate(glm::vec3(0.0f, 0.2f, 0.0f)));
     catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
-	catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+    catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
     foxObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 0.5f)));
     foxObject->addTransformation(new Scale(glm::vec3(0.0025f, 0.0025f, 0.0025f)));
     foxObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
-    DrawableObject* triangleObject = new DrawableObject(triangleModel, forestShaderProgram);
+    DrawableObject* triangleObject = new DrawableObject(triangleModel, triangleShaderProgram);
     DrawableObject* plainObject = new DrawableObject(plainModel, groundShaderProgram);
     DrawableObject* sphere1 = new DrawableObject(sphereModel, sphereProgram1);
     DrawableObject* sphere2 = new DrawableObject(sphereModel, sphereProgram2);
@@ -148,74 +150,95 @@ void Application::run() {
     sphere2->addTransformation(new Translate(glm::vec3(2.5f, 0.0f, 0.0f)));
     sphere3->addTransformation(new Translate(glm::vec3(0.0f, -2.5f, 0.0f)));
     sphere4->addTransformation(new Translate(glm::vec3(-2.5f, 0.0f, 0.0f)));
-	
-/*
-    sphere1->addTransformation(rotation);
-    sphere2->addTransformation(rotation);
-    sphere3->addTransformation(rotation);
-    sphere4->addTransformation(rotation);*/
     triangleObject->addTransformation(rotation2);
-    
-    Light forestLight1(glm::vec3(2.0f, 0.2f, 0.0f), glm::vec3(0.1f, 0.5f, 0.1f));
-    Light forestLight2(glm::vec3(-2.0f, 0.2f, 1.0f), glm::vec3(0.1f, 0.5f, 0.1f));
-    std::vector<Light> forestLights = { forestLight1 , forestLight2 };
+
+    // ZMÌNA: Vytváøení svìtel na haldì (new) a ukládání ukazatelù
+    Light* forestLight1_ptr = new Light(glm::vec3(2.0f, 0.2f, 0.0f), glm::vec3(0.1f, 0.5f, 0.1f));
+    Light* forestLight2_ptr = new Light(glm::vec3(-2.0f, 0.2f, 1.0f), glm::vec3(0.1f, 0.5f, 0.1f));
+    SpotLight* spotLight_ptr = new SpotLight(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::radians(50.0f));
+
+    // ZMÌNA: Plníme èlenský vektor scene3Lights
+    scene3Lights.push_back(forestLight1_ptr);
+    scene3Lights.push_back(forestLight2_ptr);
+    scene3Lights.push_back(spotLight_ptr);
+
 
     DrawableObject* forestSphere1 = new DrawableObject(sphereModel, forestLightShaderProgram);
     DrawableObject* forestSphere2 = new DrawableObject(sphereModel, forestLightShaderProgram);
 
-    Translate* forestSphere1Translate = new Translate(forestLight1.getPosition());
+    // Používáme ukazatele
+    Translate* forestSphere1Translate = new Translate(forestLight1_ptr->getPosition());
     forestSphere1->addTransformation(forestSphere1Translate);
 
-    Translate* forestSphere2Translate = new Translate(forestLight2.getPosition());
+    Translate* forestSphere2Translate = new Translate(forestLight2_ptr->getPosition());
     forestSphere2->addTransformation(forestSphere2Translate);
 
-
-
-	forestSphere1->addTransformation(new Scale(glm::vec3(0.005f)));
+    forestSphere1->addTransformation(new Scale(glm::vec3(0.005f)));
     forestSphere2->addTransformation(new Scale(glm::vec3(0.005f)));
 
+    // ZMÌNA: Vytváøení svìtel na haldì (new) a ukládání ukazatelù
+    Light* light1_ptr = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+    Light* light2_ptr = new Light(glm::vec3(0.0f, -3.0f, 2.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    // ZMÌNA: Plníme èlenský vektor scene2Lights
+    scene2Lights.push_back(light1_ptr);
+    scene2Lights.push_back(light2_ptr); // Pøidáme i druhé svìtlo, i když nebylo použito
+    printf("Number of lights: %zu\n", scene2Lights.size());
 
 
-    Light light1 (glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-	Light light2 (glm::vec3(0.0f, -3.0f, 2.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    // ZMÌNA: Nastavení svìtel jednou pøi inicializaci
+    sphereProgram1->setLightUniforms(scene2Lights);
+    sphereProgram2->setLightUniforms(scene2Lights);
+    sphereProgram3->setLightUniforms(scene2Lights);
+    sphereProgram4->setLightUniforms(scene2Lights);
 
-    std::vector<Light> lights = { light1 };
-	printf("Number of lights: %zu\n", lights.size());
+    // Toto je pro scénu 3
+    forestShaderProgram->setLightUniforms(scene3Lights);
+    groundShaderProgram->setLightUniforms(scene3Lights);
 
-    
-	sphereProgram1->setLightUniforms(lights);
-	sphereProgram2->setLightUniforms(lights);
-	sphereProgram3->setLightUniforms(lights);
-	sphereProgram4->setLightUniforms(lights);
-    
 
-    
-
-   
+    // Registrace observerù pro kameru
     camera.addObserver(forestShaderProgram);
     camera.addObserver(groundShaderProgram);
-	camera.addObserver(forestLightShaderProgram);
-	camera.addObserver(sphereProgram1);
-	camera.addObserver(sphereProgram2);
-	camera.addObserver(sphereProgram3);
-	camera.addObserver(sphereProgram4);
+    camera.addObserver(forestLightShaderProgram);
+    camera.addObserver(sphereProgram1);
+    camera.addObserver(sphereProgram2);
+    camera.addObserver(sphereProgram3);
+    camera.addObserver(sphereProgram4);
+    camera.addObserver(solarProgram);
+    camera.addObserver(triangleShaderProgram);
+
+    // OPRAVA: Odkomentováno a upraveno pro nové vektory ukazatelù
+    // Registrace observerù pro svìtla
+    for (Light* light : scene2Lights) {
+        light->addObserver(sphereProgram1);
+        light->addObserver(sphereProgram2);
+        light->addObserver(sphereProgram3);
+        light->addObserver(sphereProgram4);
+    }
+    for (Light* light : scene3Lights) {
+        light->addObserver(forestShaderProgram);
+        light->addObserver(groundShaderProgram);
+    }
+
+    // PØIDÁNO: Musíme shaderùm øíct, který seznam mají sledovat
+    sphereProgram1->setLightsPointer(&scene2Lights);
+    sphereProgram2->setLightsPointer(&scene2Lights);
+    sphereProgram3->setLightsPointer(&scene2Lights);
+    sphereProgram4->setLightsPointer(&scene2Lights);
+    forestShaderProgram->setLightsPointer(&scene3Lights);
+    groundShaderProgram->setLightsPointer(&scene3Lights);
 
 
-    /* fix
-    for (Light& light : forestLights) {
-        light.addObserver(forestShaderProgram);
-        light.addObserver(groundShaderProgram);
-
-    }*/
-    
     float randomX, randomZ;
     float alpha = 0.0f;
-	srand((unsigned int)time(NULL));
-   
+    srand((unsigned int)time(NULL));
+
+    // ... (generování scény 3 zùstává stejné) ...
     // trees
     for (int i = 0; i < 50; ++i) {
         randomX = rand() % (5 + 5 + 1) - 5;
-		randomZ = rand() % (5 + 5 + 1) - 5;
+        randomZ = rand() % (5 + 5 + 1) - 5;
         DrawableObject* obj = new DrawableObject(treeModel, forestShaderProgram);
         obj->addTransformation(new Translate(glm::vec3(randomX, 0.0f, randomZ)));
         obj->addTransformation(new Scale(glm::vec3(0.1f)));
@@ -234,15 +257,15 @@ void Application::run() {
         scene3->addObject(obj);
     }
 
+    // ... (scéna 4 - sluneèní soustava) ...
     DrawableObject* slunce = new DrawableObject(sphereModel, sphereProgram1);
     DrawableObject* zeme = new DrawableObject(sphereModel, sphereProgram3);
     DrawableObject* mesic = new DrawableObject(sphereModel, sphereProgram3);
 
     slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
 
-    Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f));
-
-   
+    // ZMÌNA: Uložíme do èlenské promìnné
+    sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f));
 
     Rotate* earthOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* earthOrbitTranslation = new Translate(glm::vec3(3.0f, 0.0f, 0.0f));
@@ -251,8 +274,8 @@ void Application::run() {
     zeme->addTransformation(earthOrbitTranslation);
     zeme->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
 
-    Rotate* moonOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f)); 
-    Translate* moonOrbitTranslation = new Translate(glm::vec3(0.8f, 0.0f, 0.0f)); 
+    Rotate* moonOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    Translate* moonOrbitTranslation = new Translate(glm::vec3(0.8f, 0.0f, 0.0f));
 
     mesic->addTransformation(earthOrbitRotation);
     mesic->addTransformation(earthOrbitTranslation);
@@ -261,18 +284,18 @@ void Application::run() {
     mesic->addTransformation(new Scale(glm::vec3(0.1f, 0.1f, 0.1f)));
 
     scene1->addObject(triangleObject);
-	scene2->addObject(sphere1);
+    scene2->addObject(sphere1);
     scene2->addObject(sphere2);
     scene2->addObject(sphere3);
     scene2->addObject(sphere4);
     scene3->addObject(plainObject);
-	scene3->addObject(forestSphere1);
-	scene3->addObject(forestSphere2);
-	scene3->addObject(catObject);
-	scene3->addObject(foxObject);
-	scene4->addObject(slunce);
-	scene4->addObject(zeme);
-	scene4->addObject(mesic);
+    scene3->addObject(forestSphere1);
+    scene3->addObject(forestSphere2);
+    scene3->addObject(catObject);
+    scene3->addObject(foxObject);
+    scene4->addObject(slunce);
+    scene4->addObject(zeme);
+    scene4->addObject(mesic);
 
     float lastFrame = glfwGetTime();
     float earthAngle = 0.0f;
@@ -286,54 +309,54 @@ void Application::run() {
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         controller.processInput(deltaTime);
-        
-		alpha += 0.01f;
+
+        alpha += 0.01f;
         rotation->setAngle(alpha);
         rotation2->setAngle(alpha);
-        
-		earthAngle += 0.005f;
-		moonAngle += 0.01f;  
 
+        earthAngle += 0.005f;
+        moonAngle += 0.01f;
 
-   
-        float dx = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f; 
-        float dy = ((rand() / (float)RAND_MAX) - 0.5f) * 0.01f; 
+        float dx = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f;
+        float dy = ((rand() / (float)RAND_MAX) - 0.5f) * 0.01f;
         float dz = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f;
 
-
-        glm::vec3 pos = forestLight1.getPosition();
+        // ZMÌNA: Upravujeme objekty svìtel pomocí ukazatelù
+        // Toto automaticky spustí onSubjectChanged v pøihlášených shaderech
+        glm::vec3 pos = forestLight1_ptr->getPosition();
         pos.x += dx;
         pos.y += dy;
         pos.z += dz;
-
-        
         if (pos.y < 0.1f) pos.y = 0.1f;
         if (pos.y > 1.0f) pos.y = 1.0f;
+        forestLight1_ptr->setPosition(pos); // <-- Tady se volá notifyObservers()
 
-        forestLight1.setPosition(pos);
 
-
-        pos = forestLight2.getPosition();
+        pos = forestLight2_ptr->getPosition();
         pos.x += dx;
         pos.y += dy;
         pos.z += dz;
-
         if (pos.y < 0.1f) pos.y = 0.1f;
         if (pos.y > 1.0f) pos.y = 1.0f;
-
-        forestLight2.setPosition(pos);
-
-
-		forestSphere1Translate->setOffset(forestLight1.getPosition());
-		forestSphere2Translate->setOffset(forestLight2.getPosition());
+        forestLight2_ptr->setPosition(pos); // <-- Tady se volá notifyObservers()
 
 
+        forestSphere1Translate->setOffset(forestLight1_ptr->getPosition());
+        forestSphere2Translate->setOffset(forestLight2_ptr->getPosition());
 
-        
-        forestLights[0] = forestLight1;
-        forestLights[1] = forestLight2;
-        forestShaderProgram->setLightUniforms(forestLights);
-        groundShaderProgram->setLightUniforms(forestLights);
+        spotLight_ptr->setPosition(camera.getCameraPosition()); // <-- Tady se volá notifyObservers()
+        spotLight_ptr->setDirection(camera.getCameraFront()); // <-- Tady se volá notifyObservers()
+
+
+        // ODSTRANÌNO: Všechna volání setLightUniforms z hlavního cyklu
+        // forestLights[0] = forestLight1;
+        // forestLights[1] = forestLight2;
+        // spotLights[0] = spotLight;
+        // forestShaderProgram->setLightUniforms(forestLights);
+        // groundShaderProgram->setLightUniforms(forestLights);
+        // forestShaderProgram->setLightUniforms(spotLights);
+        // groundShaderProgram->setLightUniforms(spotLights);
+
 
         earthOrbitRotation->setAngle(earthAngle);
         moonOrbitRotation->setAngle(moonAngle);
@@ -342,8 +365,8 @@ void Application::run() {
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
         float ratio = width / (float)height;
-		camera.setAspectRatio(ratio);
-        
+        camera.setAspectRatio(ratio);
+
         if (activeScene) activeScene->render();
         glfwPollEvents();
         glfwSwapBuffers(window);
@@ -352,9 +375,25 @@ void Application::run() {
 
 void Application::cleanup() {
     delete scene1;
-	delete scene2;
-	delete scene3;
+    delete scene2;
+    delete scene3;
     delete scene4;
+
+    // PØIDÁNO: Musíme smazat všechna svìtla alokovaná pomocí 'new'
+    for (Light* light : scene2Lights) {
+        delete light;
+    }
+    scene2Lights.clear();
+
+    for (Light* light : scene3Lights) {
+        delete light;
+    }
+    scene3Lights.clear();
+
+    delete sunLight; // Smažeme i slunce
+    sunLight = nullptr;
+    // --------
+
     if (window) {
         glfwDestroyWindow(window);
         glfwTerminate();

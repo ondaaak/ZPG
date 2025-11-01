@@ -30,6 +30,8 @@
 #include <Time.h>
 #include "Controller.h"
 #include "Light.h"
+#include "SpotLight.h"
+#include <vector> // Pøidáno
 
 class Application {
 public:
@@ -42,10 +44,16 @@ public:
 private:
     GLFWwindow* window;
     Scene* activeScene;
-    Scene* scene1; 
+    Scene* scene1;
     Scene* scene2;
     Scene* scene3;
     Scene* scene4;
+
+    // PØIDÁNO: Èlenské promìnné pro správu životního cyklu svìtel
+    std::vector<Light*> scene2Lights;
+    std::vector<Light*> scene3Lights;
+    Light* sunLight;
+    // --------
 
     bool init();
     void cleanup();

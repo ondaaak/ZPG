@@ -142,9 +142,11 @@
     <ClCompile Include="tiny_obj_loader.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AmbientLight.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="DrawableObject.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Model.h" />
@@ -154,6 +156,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="SpotLight.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="Transformation.h" />

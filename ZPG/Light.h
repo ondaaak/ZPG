@@ -5,7 +5,10 @@
 class Light : public Subject {
 public:
     Light(const glm::vec3& position, const glm::vec3& color)
-        : position(position), diffuse(color),specular(glm::vec3(0.1f)), color(color) { }
+        : position(position), diffuse(color), specular(glm::vec3(0.1f)), color(color) {
+    }
+
+    virtual ~Light() {}
 
     void setPosition(const glm::vec3& pos) {
         position = pos;
@@ -25,16 +28,13 @@ public:
     }
 
     glm::vec3 getPosition() const { return position; }
-	glm::vec3 getDiffuse() const { return diffuse; }
-	glm::vec3 getSpecular() const { return specular; }
+    glm::vec3 getDiffuse() const { return diffuse; }
+    glm::vec3 getSpecular() const { return specular; }
     glm::vec3 getColor() const { return color; }
 
 private:
     glm::vec3 position;
     glm::vec3 diffuse;
     glm::vec3 specular;
-
-
     glm::vec3 color;
-
 };

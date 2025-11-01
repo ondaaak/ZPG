@@ -2,6 +2,12 @@
 #include <stdio.h>
 #include <glm/gtc/type_ptr.hpp>
 
+// P¯id·no pro dynamic_cast
+#include "DirectionalLight.h"
+#include "AmbientLight.h"
+#include "SpotLight.h"
+
+
 ShaderProgram::ShaderProgram(const std::string& vertexShaderFile, const std::string& fragmentShaderFile) {
     Shader vertexShader(GL_VERTEX_SHADER, vertexShaderFile);
     Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderFile);
@@ -70,26 +76,70 @@ void ShaderProgram::SetUniform(const char* name, const glm::vec3& value) {
     glUniform3fv(loc, 1, glm::value_ptr(value));
 }
 
-void ShaderProgram::setLightUniforms(const std::vector<Light>& lights) {
+// ODSTRANÃNY starÈ setLightUniforms(const std::vector<Light>& lights)
+// a setLightUniforms(const std::vector<SpotLight>& lights)
 
+// PÿID¡NA NOV¡ POLYMORFNÕ VERZE
+void ShaderProgram::setLightUniforms(const std::vector<Light*>& lights) {
+    glUseProgram(id); // UjistÌme se, ûe pouûÌv·me tento program
     SetUniform("numLights", static_cast<int>(lights.size()));
 
     for (size_t i = 0; i < lights.size(); ++i) {
+        if (lights[i] == nullptr) continue; // BezpeËnostnÌ kontrola
+
         char namebuf[64];
+        const Light* light = lights[i];
 
+        // SpoleËnÈ vlastnosti
         snprintf(namebuf, sizeof(namebuf), "lights[%zu].position", i);
-        SetUniform(namebuf, lights[i].getPosition());
-
+        SetUniform(namebuf, light->getPosition());
         snprintf(namebuf, sizeof(namebuf), "lights[%zu].diffuse", i);
-        SetUniform(namebuf, lights[i].getDiffuse());
-
+        SetUniform(namebuf, light->getDiffuse());
         snprintf(namebuf, sizeof(namebuf), "lights[%zu].specular", i);
-        SetUniform(namebuf, lights[i].getSpecular());
-    }
+        SetUniform(namebuf, light->getSpecular());
 
-	hasLight = true;
-   
+        // PolymorfnÌ Ë·st - zjiöùov·nÌ typu
+
+        // Typ 1: SpotLight
+        if (const SpotLight* sl = dynamic_cast<const SpotLight*>(light)) {
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
+            SetUniform(namebuf, sl->getDirection());
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].cutoff", i);
+            SetUniform(namebuf, sl->getCutoff());
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
+            SetUniform(namebuf, 1); // 1 = SpotLight
+        }
+        // Typ 2: DirectionalLight
+        else if (const DirectionalLight* dl = dynamic_cast<const DirectionalLight*>(light)) {
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
+            SetUniform(namebuf, dl->getDirection());
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].cutoff", i);
+            SetUniform(namebuf, -1.0f); // NenÌ relevantnÌ
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
+            SetUniform(namebuf, 2); // 2 = DirectionalLight
+        }
+        // Typ 3: AmbientLight
+        else if (dynamic_cast<const AmbientLight*>(light)) {
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
+            SetUniform(namebuf, glm::vec3(0.0f)); // NenÌ relevantnÌ
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].cutoff", i);
+            SetUniform(namebuf, -1.0f); // NenÌ relevantnÌ
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
+            SetUniform(namebuf, 3); // 3 = AmbientLight
+        }
+        // Typ 0: PointLight (z·kladnÌ t¯Ìda)
+        else {
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
+            SetUniform(namebuf, glm::vec3(0.0f)); // NenÌ relevantnÌ
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].cutoff", i);
+            SetUniform(namebuf, -1.0f); // NenÌ relevantnÌ
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
+            SetUniform(namebuf, 0); // 0 = PointLight
+        }
+    }
+    hasLight = true;
 }
+
 
 void ShaderProgram::onSubjectChanged(const Subject* subject) {
 
@@ -97,18 +147,19 @@ void ShaderProgram::onSubjectChanged(const Subject* subject) {
     if (camera) {
         SetUniform("viewMatrix", camera->getViewMatrix());
         SetUniform("projectMatrix", camera->getProjectionMatrix());
-        
+
         if (hasLight) {
             SetUniform("viewPos", camera->getCameraPosition());
         }
         return;
     }
 
-   
-    /* fix
+
+    // OPRAVA: Odkomentov·no a funkËnÌ
     const Light* light = dynamic_cast<const Light*>(subject);
     if (light && allLights) {
+        // SvÏtlo se zmÏnilo, znovu nastavÌme VäECHNA svÏtla v seznamu
         setLightUniforms(*allLights);
         return;
-    }*/
+    }
 }
