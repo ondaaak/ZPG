@@ -159,11 +159,12 @@ void Application::run() {
 
     // ZMÌNA: Vytvoøíme baterku a uložíme ji do èlenské promìnné 'flashlight'
     // Používáme opravený konstruktor - posíláme úhel 50 stupòù
-    flashlight = new SpotLight(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::radians(25.0f));
-
+    flashlight = new SpotLight(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f),
+        glm::radians(20.0f), glm::radians(30.0f));
     // PØIDÁNO: Uložíme si pùvodní barvy baterky
     flashlightDiffuseColor = flashlight->getDiffuse();
     flashlightSpecularColor = flashlight->getSpecular();
+
 
     // Pøidáme všechna svìtla do seznamu scény 3
     scene3Lights.push_back(forestLight1_ptr);

@@ -104,8 +104,13 @@ void ShaderProgram::setLightUniforms(const std::vector<Light*>& lights) {
         if (const SpotLight* sl = dynamic_cast<const SpotLight*>(light)) {
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
             SetUniform(namebuf, sl->getDirection());
-            snprintf(namebuf, sizeof(namebuf), "lights[%zu].cutoff", i);
-            SetUniform(namebuf, sl->getCutoff());
+
+            // Toto už bylo správnì:
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].innerCutoff", i);
+            SetUniform(namebuf, sl->getInnerCutoff());
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].outerCutoff", i);
+            SetUniform(namebuf, sl->getOuterCutoff());
+
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
             SetUniform(namebuf, 1); // 1 = SpotLight
         }
@@ -113,8 +118,13 @@ void ShaderProgram::setLightUniforms(const std::vector<Light*>& lights) {
         else if (const DirectionalLight* dl = dynamic_cast<const DirectionalLight*>(light)) {
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
             SetUniform(namebuf, dl->getDirection());
-            snprintf(namebuf, sizeof(namebuf), "lights[%zu].cutoff", i);
+
+            // OPRAVA: Nahrazeno 'cutoff' za 'innerCutoff' a 'outerCutoff'
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].innerCutoff", i);
             SetUniform(namebuf, -1.0f); // Není relevantní
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].outerCutoff", i);
+            SetUniform(namebuf, -1.0f); // Není relevantní
+
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
             SetUniform(namebuf, 2); // 2 = DirectionalLight
         }
@@ -122,8 +132,13 @@ void ShaderProgram::setLightUniforms(const std::vector<Light*>& lights) {
         else if (dynamic_cast<const AmbientLight*>(light)) {
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
             SetUniform(namebuf, glm::vec3(0.0f)); // Není relevantní
-            snprintf(namebuf, sizeof(namebuf), "lights[%zu].cutoff", i);
+
+            // OPRAVA: Nahrazeno 'cutoff' za 'innerCutoff' a 'outerCutoff'
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].innerCutoff", i);
             SetUniform(namebuf, -1.0f); // Není relevantní
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].outerCutoff", i);
+            SetUniform(namebuf, -1.0f); // Není relevantní
+
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
             SetUniform(namebuf, 3); // 3 = AmbientLight
         }
@@ -131,8 +146,13 @@ void ShaderProgram::setLightUniforms(const std::vector<Light*>& lights) {
         else {
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
             SetUniform(namebuf, glm::vec3(0.0f)); // Není relevantní
-            snprintf(namebuf, sizeof(namebuf), "lights[%zu].cutoff", i);
+
+            // OPRAVA: Nahrazeno 'cutoff' za 'innerCutoff' a 'outerCutoff'
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].innerCutoff", i);
             SetUniform(namebuf, -1.0f); // Není relevantní
+            snprintf(namebuf, sizeof(namebuf), "lights[%zu].outerCutoff", i);
+            SetUniform(namebuf, -1.0f); // Není relevantní
+
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
             SetUniform(namebuf, 0); // 0 = PointLight
         }

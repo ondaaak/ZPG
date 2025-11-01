@@ -13,7 +13,9 @@ struct lightSource {
     vec3 diffuse;   // Pro všechny
     vec3 specular;  // Pro Point, Spot, Directional
     vec3 direction; // Pro Spot a Directional
-    float cutoff;   // Pro Spot
+    // ZMÌNA: Starý 'cutoff' nahrazen dvìma novými
+    float innerCutoff; // Cosinus vnitøního úhlu
+    float outerCutoff; // Cosinus vnìjšího úhlu
     int type;       // 0=Point, 1=Spot, 2=Directional, 3=Ambient
 };
 
@@ -73,12 +75,22 @@ void main(void)
             float distance = length(lights[i].position - worldPos.xyz);
             attenuation = 1.0 / (1.0 + 0.2 * distance + 0.3 * distance * distance);
 
-            // Vektor od svìtla k fragmentu
             vec3 lightToFragDir = normalize(-lightDir);
-            // Porovnání smìru svítilny a smìru k fragmentu
             float theta = dot(lightToFragDir, normalize(lights[i].direction));
-            // 'step' funkce vrátí 0.0 pokud je theta < cutoff, jinak 1.0
-            intensity = step(lights[i].cutoff, theta);
+
+            // --- ZMÌNA ZDE ---
+            // Místo 'step()', použijeme logiku ze slajdu 13/26
+            
+            // Naèteme cosiny úhlù
+            float alpha = lights[i].outerCutoff; // Vnìjší okraj (napø. cos(50) = 0.642)
+            float beta = lights[i].innerCutoff;  // Vnitøní okraj (napø. cos(40) = 0.766)
+            
+            // Vzorec: (dotLF - alpha) / (beta - alpha)
+            float intens = (theta - alpha) / (beta - alpha);
+            
+            // Omezíme výsledek na rozsah <0, 1>
+            intensity = clamp(intens, 0.0, 1.0); 
+            // --- Konec zmìny ---
         }
 
         // Pokud je svìtlo mimo kužel (intensity == 0.0), pøeskoèíme zbytek výpoètù
