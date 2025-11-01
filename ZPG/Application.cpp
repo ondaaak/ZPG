@@ -114,13 +114,19 @@ void Application::run() {
     Model* treeModel = new Model(tree, sizeof(tree) / sizeof(float) / 6, true);
     Model* bushModel = new Model(bushes, sizeof(bushes) / sizeof(float) / 6, true);
     Model* plainModel = new Model(plain, sizeof(plain) / sizeof(float) / 6, true);
-	Model* catModel = new Model("12221_Cat_v1_l3.obj");
+	Model* bearModel = new Model("13577_Tibetan_Hill_Fox_v1_L3.obj");
+    Model* catModel = new Model("12221_Cat_v1_l3.obj");
 
 	DrawableObject* catObject = new DrawableObject(catModel, forestShaderProgram);
+	DrawableObject* foxObject = new DrawableObject(bearModel, forestShaderProgram);
 
-    catObject->addTransformation(new Translate(glm::vec3(0.0f, -0.2f, 0.0f)));
-	catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
+    //catObject->addTransformation(new Translate(glm::vec3(0.0f, 0.2f, 0.0f)));
+    catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
 	catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+
+    foxObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 0.5f)));
+    foxObject->addTransformation(new Scale(glm::vec3(0.0025f, 0.0025f, 0.0025f)));
+    foxObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
     DrawableObject* triangleObject = new DrawableObject(triangleModel, forestShaderProgram);
     DrawableObject* plainObject = new DrawableObject(plainModel, groundShaderProgram);
@@ -150,8 +156,8 @@ void Application::run() {
     sphere4->addTransformation(rotation);*/
     triangleObject->addTransformation(rotation2);
     
-    Light forestLight1(glm::vec3(2.0f, 0.2f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f));
-    Light forestLight2(glm::vec3(-2.0f, 0.2f, 1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
+    Light forestLight1(glm::vec3(2.0f, 0.2f, 0.0f), glm::vec3(0.1f, 0.5f, 0.1f));
+    Light forestLight2(glm::vec3(-2.0f, 0.2f, 1.0f), glm::vec3(0.1f, 0.5f, 0.1f));
     std::vector<Light> forestLights = { forestLight1 , forestLight2 };
 
     DrawableObject* forestSphere1 = new DrawableObject(sphereModel, forestLightShaderProgram);
@@ -165,8 +171,8 @@ void Application::run() {
 
 
 
-	forestSphere1->addTransformation(new Scale(glm::vec3(0.01f)));
-    forestSphere2->addTransformation(new Scale(glm::vec3(0.01f)));
+	forestSphere1->addTransformation(new Scale(glm::vec3(0.005f)));
+    forestSphere2->addTransformation(new Scale(glm::vec3(0.005f)));
 
 
 
@@ -263,6 +269,7 @@ void Application::run() {
 	scene3->addObject(forestSphere1);
 	scene3->addObject(forestSphere2);
 	scene3->addObject(catObject);
+	scene3->addObject(foxObject);
 	scene4->addObject(slunce);
 	scene4->addObject(zeme);
 	scene4->addObject(mesic);
@@ -289,9 +296,9 @@ void Application::run() {
 
 
    
-        float dx = ((rand() / (float)RAND_MAX) - 0.5f) * 0.05f; 
-        float dy = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f; 
-        float dz = ((rand() / (float)RAND_MAX) - 0.5f) * 0.05f;
+        float dx = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f; 
+        float dy = ((rand() / (float)RAND_MAX) - 0.5f) * 0.01f; 
+        float dz = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f;
 
 
         glm::vec3 pos = forestLight1.getPosition();

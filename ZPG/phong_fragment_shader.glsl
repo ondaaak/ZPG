@@ -21,7 +21,7 @@ void main(void)
     vec3 viewDir = normalize(viewPos - worldPos.xyz);
     vec3 objectColor = vec3(1.0, 1.0, 1.0);
 
-    vec3 ambientTotal = vec3(0.05);
+    vec3 ambientTotal = vec3(0.0,0.05,0.0);
     vec3 diffuseTotal = vec3(0.0);
     vec3 specularTotal = vec3(0.0);
 
@@ -39,7 +39,7 @@ void main(void)
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
 
         float distance = length(lights[i].position - worldPos.xyz);
-        float attenuation = 1.0 / (1.0 + 0.3 * distance + 0.4 * distance * distance);
+        float attenuation = 1.0 / (1.0 + 0.2 * distance + 0.3 * distance * distance);
 
         diffuseTotal += attenuation * diff * lights[i].diffuse;        
         specularTotal += attenuation * spec * lights[i].specular;
