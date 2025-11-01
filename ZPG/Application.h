@@ -58,7 +58,7 @@ private:
     glm::vec3 flashlightDiffuseColor;
     glm::vec3 flashlightSpecularColor;
     bool isFlashlightOn;
-    bool fKeyPressedLastFrame; // Pro detekci jednoho stisku
+    bool fKeyPressedLastFrame;
     // ---------------------------
 
     bool init();
