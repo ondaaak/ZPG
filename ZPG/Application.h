@@ -32,6 +32,8 @@
 #include "Light.h"
 #include "SpotLight.h"
 #include <vector>
+#include "DirectionalLight.h"
+#include "AmbientLight.h"
 
 class Application {
 public:

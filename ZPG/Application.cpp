@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "Material.h"
 
+
 float triangle[] = {
     0.0f, 0.5f, 0.0f,
     0.5f, -0.5f, 0.0f,
@@ -128,6 +129,25 @@ void Application::run() {
     mat_firefly_white.specular = glm::vec3(0.0f, 0.0f, 0.0f);
     mat_firefly_white.shininess = 1.0f;
 
+    Material sun;
+    sun.ambient = glm::vec3(0.6f, 0.4f, 0.0f);
+    sun.diffuse = glm::vec3(0.0f, 0.0f, 0.0f);
+    sun.specular = glm::vec3(0.0f, 0.0f, 0.0f);
+    sun.shininess = 1.0f;
+
+    Material moon;
+    moon.ambient = glm::vec3(0.4f, 0.4f, 0.4f);
+    moon.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+    moon.specular = glm::vec3(1.0f, 1.0f, 1.0f);
+    moon.shininess = 32.0f;
+
+    Material earth;
+    earth.ambient = glm::vec3(0.0f, 0.4f, 0.0f);
+    earth.diffuse = glm::vec3(0.0f, 1.0f, 0.0f);
+    earth.specular = glm::vec3(1.0f, 1.0f, 1.0f);
+    earth.shininess = 32.0f;
+
+
     Camera camera;
     Controller controller(&camera, window);
     glfwSetWindowUserPointer(window, &controller);
@@ -139,11 +159,11 @@ void Application::run() {
     Model* treeModel = new Model(tree, sizeof(tree) / sizeof(float) / 6, true);
     Model* bushModel = new Model(bushes, sizeof(bushes) / sizeof(float) / 6, true);
     Model* plainModel = new Model(plain, sizeof(plain) / sizeof(float) / 6, true);
-    Model* bearModel = new Model("13577_Tibetan_Hill_Fox_v1_L3.obj");
+    Model* foxModel = new Model("13577_Tibetan_Hill_Fox_v1_L3.obj");
     Model* catModel = new Model("12221_Cat_v1_l3.obj");
 
     DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, white);
-    DrawableObject* foxObject = new DrawableObject(bearModel, phongShaderProgram, white);
+    DrawableObject* foxObject = new DrawableObject(foxModel, phongShaderProgram, white);
 
     catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
     catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -178,17 +198,18 @@ void Application::run() {
     Light* forestLight1_ptr = new Light(glm::vec3(2.0f, 0.2f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f));
     Light* forestLight2_ptr = new Light(glm::vec3(-2.0f, 0.2f, 1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
 
+	//DirectionalLight* dirLight = new DirectionalLight(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(4.3f, 0.3f, 0.3f));
+
     flashlight = new SpotLight(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::radians(20.0f), glm::radians(30.0f));
 
     flashlightDiffuseColor = flashlight->getDiffuse();
     flashlightSpecularColor = flashlight->getSpecular();
 
 
-
     scene3Lights.push_back(forestLight1_ptr);
     scene3Lights.push_back(forestLight2_ptr);
     scene3Lights.push_back(flashlight); 
-	
+	//scene3Lights.push_back(dirLight);
 
 
     DrawableObject* firefly1 = new DrawableObject(sphereModel, phongShaderProgram, mat_firefly_white); 
@@ -250,9 +271,9 @@ void Application::run() {
     }
 
 
-    DrawableObject* slunce = new DrawableObject(sphereModel, phongShaderProgram, white);
-    DrawableObject* zeme = new DrawableObject(sphereModel, phongShaderProgram, white);
-    DrawableObject* mesic = new DrawableObject(sphereModel, phongShaderProgram, white);
+    DrawableObject* slunce = new DrawableObject(sphereModel, phongShaderProgram, sun);
+    DrawableObject* zeme = new DrawableObject(sphereModel, phongShaderProgram, earth);
+    DrawableObject* mesic = new DrawableObject(sphereModel, phongShaderProgram, moon);
 
     slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
 
@@ -292,6 +313,12 @@ void Application::run() {
     float earthAngle = 0.0f;
     float moonAngle = 0.0f;
 
+    std::vector<Light*> scene4Lights = { sunLight };
+    phongShaderProgram->setLightUniforms(scene4Lights);
+    phongShaderProgram->setLightsPointer(&scene3Lights);
+    spheresProgram->setLightsPointer(&scene2Lights);
+    spheresProgram->setLightUniforms(scene2Lights);
+
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -303,101 +330,86 @@ void Application::run() {
 
         controller.processInput(deltaTime);
 
-        bool fKeyPressed = (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS);
-
-        // Zareagujeme jen na "hranu" - když je klávesa stisknutá teï, ale nebyla minule
-        if (fKeyPressed && !fKeyPressedLastFrame) {
-            isFlashlightOn = !isFlashlightOn; // Pøepneme stav
-
-            if (isFlashlightOn) {
-                // Zapnout: vrátíme pùvodní barvy
-                // (notifyObservers se zavolá uvnitø setDiffuse/setSpecular)
-                flashlight->setDiffuse(flashlightDiffuseColor);
-                flashlight->setSpecular(flashlightSpecularColor);
-                printf("Baterka ZAPNUTA\n");
-            }
-            else {
-                // Vypnout: nastavíme barvy na èernou
-                flashlight->setDiffuse(glm::vec3(0.0f));
-                flashlight->setSpecular(glm::vec3(0.0f));
-                printf("Baterka VYPNUTA\n");
-            }
-        }
-        fKeyPressedLastFrame = fKeyPressed; // Uložíme stav pro pøíští snímek
-        // --- Konec logiky baterky ---
 
 
         alpha += 0.01f;
         rotation->setAngle(alpha);
         rotation2->setAngle(alpha);
-
-        earthAngle += 0.005f;
-        moonAngle += 0.01f;
-
-        float dx = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f;
-        float dy = ((rand() / (float)RAND_MAX) - 0.5f) * 0.01f;
-        float dz = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f;
-
-
-        glm::vec3 pos = forestLight1_ptr->getPosition();
-        pos.x += dx;
-        pos.y += dy;
-        pos.z += dz;
-        if (pos.y < 0.1f) pos.y = 0.1f;
-        if (pos.y > 1.0f) pos.y = 1.0f;
-        forestLight1_ptr->setPosition(pos);
-
-
-        pos = forestLight2_ptr->getPosition();
-        pos.x += dx;
-        pos.y += dy;
-        pos.z += dz;
-        if (pos.y < 0.1f) pos.y = 0.1f;
-        if (pos.y > 1.0f) pos.y = 1.0f;
-        forestLight2_ptr->setPosition(pos); 
-
-
-        forestSphere1Translate->setOffset(forestLight1_ptr->getPosition());
-        forestSphere2Translate->setOffset(forestLight2_ptr->getPosition());
-
-        flashlight->setPosition(camera.getCameraPosition());
-        flashlight->setDirection(camera.getCameraFront());
-
         
-
-        earthOrbitRotation->setAngle(earthAngle);
-        moonOrbitRotation->setAngle(moonAngle);
 
 
 
         if (activeScene == scene1) {
 
+
+
         }
         else if (activeScene == scene2) {
-            spheresProgram->setLightsPointer(&scene2Lights);
-            spheresProgram->setLightUniforms(scene2Lights);
+
         }
         else if (activeScene == scene3) {
-            phongShaderProgram->setLightsPointer(&scene3Lights);
-            phongShaderProgram->setLightUniforms(scene3Lights);
+         
+
+
+            bool fKeyPressed = (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS);
+
+            if (fKeyPressed && !fKeyPressedLastFrame) {
+                isFlashlightOn = !isFlashlightOn;
+
+                if (isFlashlightOn) {
+                    flashlight->setDiffuse(flashlightDiffuseColor);
+                    flashlight->setSpecular(flashlightSpecularColor);
+                }
+                else {
+                    flashlight->setDiffuse(glm::vec3(0.0f));
+                    flashlight->setSpecular(glm::vec3(0.0f));
+                }
+            }
+            fKeyPressedLastFrame = fKeyPressed;
+
+
+            float dx = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f;
+            float dy = ((rand() / (float)RAND_MAX) - 0.5f) * 0.01f;
+            float dz = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f;
+
+
+            glm::vec3 pos = forestLight1_ptr->getPosition();
+            pos.x += dx;
+            pos.y += dy;
+            pos.z += dz;
+            if (pos.y < 0.1f) pos.y = 0.1f;
+            if (pos.y > 1.0f) pos.y = 1.0f;
+            forestLight1_ptr->setPosition(pos);
+
+
+            pos = forestLight2_ptr->getPosition();
+            pos.x += dx;
+            pos.y += dy;
+            pos.z += dz;
+            if (pos.y < 0.1f) pos.y = 0.1f;
+            if (pos.y > 1.0f) pos.y = 1.0f;
+            forestLight2_ptr->setPosition(pos);
+
+
+            forestSphere1Translate->setOffset(forestLight1_ptr->getPosition());
+            forestSphere2Translate->setOffset(forestLight2_ptr->getPosition());
+
+            flashlight->setPosition(camera.getCameraPosition());
+            flashlight->setDirection(camera.getCameraFront());
+
         }
         else if (activeScene == scene4) {
-            // Vytvoøíme doèasný seznam jen se sluncem
-            std::vector<Light*> scene4Lights = { sunLight };
-            // POZNÁMKA: sunLight je ve tvém kódu už vytvoøené, to je správnì
 
-            phongShaderProgram->setLightsPointer(&scene4Lights);
+
+            earthAngle += 0.005f;
+            moonAngle += 0.01f;
+
+            earthOrbitRotation->setAngle(earthAngle);
+            moonOrbitRotation->setAngle(moonAngle);
             phongShaderProgram->setLightUniforms(scene4Lights);
+
+
         }
-
-
-
-
-
-
-
-
-
 
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);

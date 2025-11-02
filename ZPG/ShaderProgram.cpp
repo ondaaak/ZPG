@@ -109,25 +109,14 @@ void ShaderProgram::setLightUniforms(const std::vector<Light*>& lights) {
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
             SetUniform(namebuf, dl->getDirection());
 
-            snprintf(namebuf, sizeof(namebuf), "lights[%zu].innerCutoff", i);
-            SetUniform(namebuf, -1.0f); 
-            snprintf(namebuf, sizeof(namebuf), "lights[%zu].outerCutoff", i);
-            SetUniform(namebuf, -1.0f); 
-
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
             SetUniform(namebuf, 2); 
         }
         else if (dynamic_cast<const AmbientLight*>(light)) {
-            snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
-            SetUniform(namebuf, glm::vec3(0.0f));
-
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
             SetUniform(namebuf, 3);
         }
         else {
-            snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
-            SetUniform(namebuf, glm::vec3(0.0f)); 
-
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
             SetUniform(namebuf, 0); 
         }

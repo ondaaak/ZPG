@@ -55,10 +55,6 @@ void main(void)
             float distance = length(lights[i].position - worldPos.xyz);
             attenuation = 1.0 / (1.0 + 0.2 * distance + 0.3 * distance * distance);
         }
-        else if (lights[i].type == TYPE_DIRECTIONAL) {
-            lightDir = normalize(-lights[i].direction); 
-            attenuation = 1.0;
-        }
 
         if (dot(norm, lightDir) < 0.0) continue;
 

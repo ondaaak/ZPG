@@ -87,22 +87,12 @@ void main(void)
         specularTotal += intensity * attenuation * spec * lights[i].specular;
     }    
 
-    // --- ZMÌNA ZDE ---
-    // Rozhodneme, jaký typ objektu kreslíme
-    
-    // Pøedpokládáme, že "svítící" materiál má difuzní SLOŽKU na nule
-    // (Jako jsme nastavili v Application.cpp)
-    if (material.diffuse == vec3(0.0))
+    if (material.diffuse == vec3(0.0)) // constant
     {
-        // 1. SVÍTÍCÍ OBJEKT (Trojúhelník, Svìtluška, Slunce)
-        // Jen vykreslíme jeho "ambientní" barvu, která teï slouží jako emise.
-        // Ignorujeme všechna svìtla ve scénì.
         fragColor = vec4(material.ambient, 1.0);
     }
     else
     {
-        // 2. NORMÁLNÍ OBJEKT (Strom, Koèka, Podlaha)
-        // Spoèítáme normální Phong osvìtlení.
         vec3 ambient = ambientTotal * material.ambient;
         vec3 diffuse = diffuseTotal * material.diffuse;
         vec3 specular = specularTotal * material.specular;
