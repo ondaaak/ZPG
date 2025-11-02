@@ -53,7 +53,7 @@ private:
 
     std::vector<Light*> scene2Lights;
     std::vector<Light*> scene3Lights;
-    Light* sunLight;
+    std::vector<Light*> scene4Lights;
 
 
     SpotLight* flashlight;

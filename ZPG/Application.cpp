@@ -45,8 +45,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 }
 
 Application::Application()
-    : window(nullptr), scene1(nullptr), scene2(nullptr), scene3(nullptr), scene4(nullptr), activeScene(nullptr),
-    sunLight(nullptr), flashlight(nullptr), isFlashlightOn(true), fKeyPressedLastFrame(false)
+    : window(nullptr), scene1(nullptr), scene2(nullptr), scene3(nullptr), scene4(nullptr), activeScene(nullptr), flashlight(nullptr), isFlashlightOn(true), fKeyPressedLastFrame(false)
 {
 }
 Application::~Application() {
@@ -209,7 +208,7 @@ void Application::run() {
     scene3Lights.push_back(forestLight1_ptr);
     scene3Lights.push_back(forestLight2_ptr);
     scene3Lights.push_back(flashlight); 
-	//scene3Lights.push_back(dirLight);
+
 
 
     DrawableObject* firefly1 = new DrawableObject(sphereModel, phongShaderProgram, mat_firefly_white); 
@@ -277,7 +276,8 @@ void Application::run() {
 
     slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
 
-    sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+    Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+    scene4Lights.push_back(sunLight);
 
     Rotate* earthOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* earthOrbitTranslation = new Translate(glm::vec3(3.0f, 0.0f, 0.0f));
@@ -313,7 +313,6 @@ void Application::run() {
     float earthAngle = 0.0f;
     float moonAngle = 0.0f;
 
-    std::vector<Light*> scene4Lights = { sunLight };
     phongShaderProgram->setLightUniforms(scene4Lights);
     phongShaderProgram->setLightsPointer(&scene3Lights);
     spheresProgram->setLightsPointer(&scene2Lights);
@@ -440,8 +439,11 @@ void Application::cleanup() {
     }
     scene3Lights.clear();
 
-    delete sunLight;
-    sunLight = nullptr;
+    for (Light* light : scene4Lights) {
+        delete light;
+    }
+    scene4Lights.clear();
+
 
     if (window) {
         glfwDestroyWindow(window);
