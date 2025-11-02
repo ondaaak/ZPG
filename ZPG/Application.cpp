@@ -99,8 +99,8 @@ void Application::run() {
     // --- Definice Materiálù ---
 
     Material white_sphere;
-    white_sphere.ambient = glm::vec3(1.0f, 0.1f, 1.0f);
-    white_sphere.diffuse = glm::vec3(0.0f, 1.0f, 0.0f);
+    white_sphere.ambient = glm::vec3(0.5f, 0.5f, 0.5f);
+    white_sphere.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
     white_sphere.specular = glm::vec3(0.5f, 0.5f, 0.5f);
     white_sphere.shininess = 32.0f;
 
@@ -235,7 +235,6 @@ void Application::run() {
 
     scene2Lights.push_back(light1_ptr);
 
-    // Registrace observerù pro svìtla
     for (Light* light : scene2Lights) {
         light->addObserver(phongShaderProgram);
     }
@@ -255,7 +254,6 @@ void Application::run() {
     float alpha = 0.0f;
     srand((unsigned int)time(NULL));
 
-    // ... (generování scény 3 zùstává stejné) ...
     // trees
     for (int i = 0; i < 50; ++i) {
         randomX = rand() % (5 + 5 + 1) - 5;
@@ -278,14 +276,13 @@ void Application::run() {
         scene3->addObject(obj);
     }
 
-    // ... (scéna 4 - sluneèní soustava) ...
+
     DrawableObject* slunce = new DrawableObject(sphereModel, phongShaderProgram, mat_sun);
     DrawableObject* zeme = new DrawableObject(sphereModel, phongShaderProgram, white_sphere);
     DrawableObject* mesic = new DrawableObject(sphereModel, phongShaderProgram, white_sphere);
 
     slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
 
-    // ZMÌNA: Uložíme do èlenské promìnné
     sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f));
 
     Rotate* earthOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));

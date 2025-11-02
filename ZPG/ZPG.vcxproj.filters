@@ -124,8 +124,5 @@
     <None Include="blinn-phong_fragment_shader.glsl">
       <Filter>Zdrojové soubory</Filter>
     </None>
-    <None Include="plane_fragment_shader.glsl">
-      <Filter>Zdrojové soubory</Filter>
-    </None>
   </ItemGroup>
 </Project>

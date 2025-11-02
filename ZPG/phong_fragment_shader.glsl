@@ -2,7 +2,6 @@
 
 #define MAX_LIGHTS 5
 
-// Typy svìtel musí odpovídat C++ kódu
 #define TYPE_POINT 0
 #define TYPE_SPOT  1
 #define TYPE_DIRECTIONAL 2

@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <glm/gtc/type_ptr.hpp>
 
-// P¯id·no pro dynamic_cast
 #include "DirectionalLight.h"
 #include "AmbientLight.h"
 #include "SpotLight.h"
@@ -76,21 +75,16 @@ void ShaderProgram::SetUniform(const char* name, const glm::vec3& value) {
     glUniform3fv(loc, 1, glm::value_ptr(value));
 }
 
-// ODSTRANÃNY starÈ setLightUniforms(const std::vector<Light>& lights)
-// a setLightUniforms(const std::vector<SpotLight>& lights)
-
-// PÿID¡NA NOV¡ POLYMORFNÕ VERZE
 void ShaderProgram::setLightUniforms(const std::vector<Light*>& lights) {
-    glUseProgram(id); // UjistÌme se, ûe pouûÌv·me tento program
+    glUseProgram(id); 
     SetUniform("numLights", static_cast<int>(lights.size()));
 
     for (size_t i = 0; i < lights.size(); ++i) {
-        if (lights[i] == nullptr) continue; // BezpeËnostnÌ kontrola
+        if (lights[i] == nullptr) continue; 
 
         char namebuf[64];
         const Light* light = lights[i];
 
-        // SpoleËnÈ vlastnosti
         snprintf(namebuf, sizeof(namebuf), "lights[%zu].position", i);
         SetUniform(namebuf, light->getPosition());
         snprintf(namebuf, sizeof(namebuf), "lights[%zu].diffuse", i);
@@ -98,63 +92,55 @@ void ShaderProgram::setLightUniforms(const std::vector<Light*>& lights) {
         snprintf(namebuf, sizeof(namebuf), "lights[%zu].specular", i);
         SetUniform(namebuf, light->getSpecular());
 
-        // PolymorfnÌ Ë·st - zjiöùov·nÌ typu
 
-        // Typ 1: SpotLight
         if (const SpotLight* sl = dynamic_cast<const SpotLight*>(light)) {
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
             SetUniform(namebuf, sl->getDirection());
 
-            // Toto uû bylo spr·vnÏ:
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].innerCutoff", i);
             SetUniform(namebuf, sl->getInnerCutoff());
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].outerCutoff", i);
             SetUniform(namebuf, sl->getOuterCutoff());
 
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
-            SetUniform(namebuf, 1); // 1 = SpotLight
+            SetUniform(namebuf, 1);
         }
-        // Typ 2: DirectionalLight
         else if (const DirectionalLight* dl = dynamic_cast<const DirectionalLight*>(light)) {
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
             SetUniform(namebuf, dl->getDirection());
 
-            // OPRAVA: Nahrazeno 'cutoff' za 'innerCutoff' a 'outerCutoff'
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].innerCutoff", i);
-            SetUniform(namebuf, -1.0f); // NenÌ relevantnÌ
+            SetUniform(namebuf, -1.0f); 
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].outerCutoff", i);
-            SetUniform(namebuf, -1.0f); // NenÌ relevantnÌ
+            SetUniform(namebuf, -1.0f); 
 
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
-            SetUniform(namebuf, 2); // 2 = DirectionalLight
+            SetUniform(namebuf, 2); 
         }
-        // Typ 3: AmbientLight
         else if (dynamic_cast<const AmbientLight*>(light)) {
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
-            SetUniform(namebuf, glm::vec3(0.0f)); // NenÌ relevantnÌ
+            SetUniform(namebuf, glm::vec3(0.0f));
 
-            // OPRAVA: Nahrazeno 'cutoff' za 'innerCutoff' a 'outerCutoff'
+            
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].innerCutoff", i);
-            SetUniform(namebuf, -1.0f); // NenÌ relevantnÌ
+            SetUniform(namebuf, -1.0f);
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].outerCutoff", i);
-            SetUniform(namebuf, -1.0f); // NenÌ relevantnÌ
+            SetUniform(namebuf, -1.0f);
 
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
-            SetUniform(namebuf, 3); // 3 = AmbientLight
+            SetUniform(namebuf, 3);
         }
-        // Typ 0: PointLight (z·kladnÌ t¯Ìda)
         else {
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].direction", i);
-            SetUniform(namebuf, glm::vec3(0.0f)); // NenÌ relevantnÌ
+            SetUniform(namebuf, glm::vec3(0.0f)); 
 
-            // OPRAVA: Nahrazeno 'cutoff' za 'innerCutoff' a 'outerCutoff'
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].innerCutoff", i);
-            SetUniform(namebuf, -1.0f); // NenÌ relevantnÌ
+            SetUniform(namebuf, -1.0f);
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].outerCutoff", i);
-            SetUniform(namebuf, -1.0f); // NenÌ relevantnÌ
+            SetUniform(namebuf, -1.0f); 
 
             snprintf(namebuf, sizeof(namebuf), "lights[%zu].type", i);
-            SetUniform(namebuf, 0); // 0 = PointLight
+            SetUniform(namebuf, 0); 
         }
     }
     hasLight = true;
@@ -174,11 +160,8 @@ void ShaderProgram::onSubjectChanged(const Subject* subject) {
         return;
     }
 
-
-    // OPRAVA: Odkomentov·no a funkËnÌ
     const Light* light = dynamic_cast<const Light*>(subject);
     if (light && allLights) {
-        // SvÏtlo se zmÏnilo, znovu nastavÌme VäECHNA svÏtla v seznamu
         setLightUniforms(*allLights);
         return;
     }
