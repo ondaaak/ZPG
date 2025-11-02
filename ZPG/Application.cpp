@@ -93,41 +93,28 @@ void Application::run() {
     scene4 = new Scene();
     activeScene = scene1;
 
-    //ShaderProgram* constantShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl")); // NOT WORKING
+
     ShaderProgram* phongShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
+	ShaderProgram* spheresProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_simple.glsl"));
 
-    // --- Definice Materiálù ---
 
-    Material white_sphere;
-    white_sphere.ambient = glm::vec3(0.5f, 0.5f, 0.5f);
-    white_sphere.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-    white_sphere.specular = glm::vec3(0.5f, 0.5f, 0.5f);
-    white_sphere.shininess = 32.0f;
+    Material white;
+    white.ambient = glm::vec3(0.5f, 0.5f, 0.5f);
+    white.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+    white.specular = glm::vec3(1.0f, 1.0f, 1.0f);
+    white.shininess = 32.0f;
 
     Material mat_blue_plastic;
-    mat_blue_plastic.ambient = glm::vec3(0.0f, 0.0f, 1.0f); // Barva, kterou má svítit (plná modrá)
-    mat_blue_plastic.diffuse = glm::vec3(0.0f, 0.0f, 0.0f); // Neodráží svìtlo
-    mat_blue_plastic.specular = glm::vec3(0.0f, 0.0f, 0.0f); // Neleskne se
+    mat_blue_plastic.ambient = glm::vec3(0.0f, 0.0f, 1.0f); 
+    mat_blue_plastic.diffuse = glm::vec3(0.0f, 0.0f, 0.0f); 
+    mat_blue_plastic.specular = glm::vec3(0.0f, 0.0f, 0.0f); 
     mat_blue_plastic.shininess = 1.0f;
-
 
     Material mat_ground;
     mat_ground.ambient = glm::vec3(0.05f, 0.1f, 0.05f);
     mat_ground.diffuse = glm::vec3(0.1f, 0.4f, 0.1f);
-    mat_ground.specular = glm::vec3(0.05f, 0.05f, 0.05f); // Tráva se moc neleskne
+    mat_ground.specular = glm::vec3(0.05f, 0.05f, 0.05f); 
     mat_ground.shininess = 10.0f;
-
-    Material mat_fox;
-    mat_fox.ambient = glm::vec3(0.2f, 0.1f, 0.05f);
-    mat_fox.diffuse = glm::vec3(0.8f, 0.4f, 0.1f);
-    mat_fox.specular = glm::vec3(0.3f, 0.3f, 0.3f);
-    mat_fox.shininess = 32.0f;
-
-    Material mat_cat;
-    mat_cat.ambient = glm::vec3(0.1f, 0.1f, 0.1f);
-    mat_cat.diffuse = glm::vec3(0.3f, 0.3f, 0.3f);
-    mat_cat.specular = glm::vec3(0.1f, 0.1f, 0.1f);
-    mat_cat.shininess = 20.0f;
 
     Material green_forest;
     green_forest.ambient = glm::vec3(0.0f, 0.05f, 0.0f);
@@ -135,15 +122,8 @@ void Application::run() {
     green_forest.specular = glm::vec3(0.05f, 0.05f, 0.05f);
     green_forest.shininess = 8.0f;
 
-
-    Material mat_sun;
-    mat_sun.ambient = glm::vec3(1.0f, 1.0f, 0.0f);
-    mat_sun.diffuse = glm::vec3(1.0f, 1.0f, 0.0f);
-    mat_sun.specular = glm::vec3(0.0f, 0.0f, 0.0f);
-    mat_sun.shininess = 1.0f;
-
-    Material mat_firefly_white; // Pøejmenováno
-    mat_firefly_white.ambient = glm::vec3(0.8f, 0.8f, 0.8f); // Zmìnìno na bílou (ne úplnì 1.0, aby nebyla oslepující)
+    Material mat_firefly_white; 
+    mat_firefly_white.ambient = glm::vec3(1.0f, 1.0f, 1.0f); 
     mat_firefly_white.diffuse = glm::vec3(0.0f, 0.0f, 0.0f);
     mat_firefly_white.specular = glm::vec3(0.0f, 0.0f, 0.0f);
     mat_firefly_white.shininess = 1.0f;
@@ -162,8 +142,8 @@ void Application::run() {
     Model* bearModel = new Model("13577_Tibetan_Hill_Fox_v1_L3.obj");
     Model* catModel = new Model("12221_Cat_v1_l3.obj");
 
-    DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, mat_cat);
-    DrawableObject* foxObject = new DrawableObject(bearModel, phongShaderProgram, mat_fox);
+    DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, white);
+    DrawableObject* foxObject = new DrawableObject(bearModel, phongShaderProgram, white);
 
     catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
     catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -174,10 +154,10 @@ void Application::run() {
 
     DrawableObject* triangleObject = new DrawableObject(triangleModel, phongShaderProgram, mat_blue_plastic);
     DrawableObject* plainObject = new DrawableObject(plainModel, phongShaderProgram, mat_ground);
-    DrawableObject* sphere1 = new DrawableObject(sphereModel, phongShaderProgram, white_sphere);
-    DrawableObject* sphere2 = new DrawableObject(sphereModel, phongShaderProgram, white_sphere);
-    DrawableObject* sphere3 = new DrawableObject(sphereModel, phongShaderProgram, white_sphere);
-    DrawableObject* sphere4 = new DrawableObject(sphereModel, phongShaderProgram, white_sphere);
+    DrawableObject* sphere1 = new DrawableObject(sphereModel, spheresProgram, white);
+    DrawableObject* sphere2 = new DrawableObject(sphereModel, spheresProgram, white);
+    DrawableObject* sphere3 = new DrawableObject(sphereModel, spheresProgram, white);
+    DrawableObject* sphere4 = new DrawableObject(sphereModel, spheresProgram, white);
 
     Rotate* rotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 1.0f));
     Rotate* rotation2 = new Rotate(0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -227,8 +207,7 @@ void Application::run() {
 
 
     camera.addObserver(phongShaderProgram);
-
-
+	camera.addObserver(spheresProgram);
 
 
     Light* light1_ptr = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -236,17 +215,11 @@ void Application::run() {
     scene2Lights.push_back(light1_ptr);
 
     for (Light* light : scene2Lights) {
-        light->addObserver(phongShaderProgram);
+		light->addObserver(spheresProgram);
     }
     for (Light* light : scene3Lights) {
         light->addObserver(phongShaderProgram);
     }
-
-    // Nastavení výchozích svìtel (pro scénu 3, protože je aktivní jako první)
-    phongShaderProgram->setLightsPointer(&scene3Lights);
-    phongShaderProgram->setLightUniforms(scene3Lights);
-
-
 
 
 
@@ -277,9 +250,9 @@ void Application::run() {
     }
 
 
-    DrawableObject* slunce = new DrawableObject(sphereModel, phongShaderProgram, mat_sun);
-    DrawableObject* zeme = new DrawableObject(sphereModel, phongShaderProgram, white_sphere);
-    DrawableObject* mesic = new DrawableObject(sphereModel, phongShaderProgram, white_sphere);
+    DrawableObject* slunce = new DrawableObject(sphereModel, phongShaderProgram, white);
+    DrawableObject* zeme = new DrawableObject(sphereModel, phongShaderProgram, white);
+    DrawableObject* mesic = new DrawableObject(sphereModel, phongShaderProgram, white);
 
     slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
 
@@ -401,8 +374,8 @@ void Application::run() {
 
         }
         else if (activeScene == scene2) {
-            phongShaderProgram->setLightsPointer(&scene2Lights);
-            phongShaderProgram->setLightUniforms(scene2Lights);
+            spheresProgram->setLightsPointer(&scene2Lights);
+            spheresProgram->setLightUniforms(scene2Lights);
         }
         else if (activeScene == scene3) {
             phongShaderProgram->setLightsPointer(&scene3Lights);
