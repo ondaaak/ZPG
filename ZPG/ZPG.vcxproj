@@ -166,7 +166,6 @@
   <ItemGroup>
     <None Include="blinn-phong_fragment_shader.glsl" />
     <None Include="constant_fragment_shader.glsl" />
-    <None Include="fragment_shader.glsl" />
     <None Include="lambert_fragment_shader.glsl" />
     <None Include="main_vertex_shader.glsl" />
     <None Include="phong_fragment_shader.glsl" />

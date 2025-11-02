@@ -109,9 +109,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment_shader.glsl">
-      <Filter>Zdrojové soubory</Filter>
-    </None>
     <None Include="main_vertex_shader.glsl">
       <Filter>Zdrojové soubory</Filter>
     </None>

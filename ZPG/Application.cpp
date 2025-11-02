@@ -97,17 +97,12 @@ void Application::run() {
     ShaderProgram* phongShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
 
     // --- Definice Materiálù ---
-    Material mat_red_plastic;
-    mat_red_plastic.ambient = glm::vec3(0.1f, 0.0f, 0.0f);
-    mat_red_plastic.diffuse = glm::vec3(1.0f, 0.0f, 0.0f);
-    mat_red_plastic.specular = glm::vec3(0.5f, 0.5f, 0.5f);
-    mat_red_plastic.shininess = 32.0f;
 
-    Material mat_green_plastic;
-    mat_green_plastic.ambient = glm::vec3(0.0f, 0.1f, 0.0f);
-    mat_green_plastic.diffuse = glm::vec3(0.0f, 1.0f, 0.0f);
-    mat_green_plastic.specular = glm::vec3(0.5f, 0.5f, 0.5f);
-    mat_green_plastic.shininess = 32.0f;
+    Material white_sphere;
+    white_sphere.ambient = glm::vec3(1.0f, 0.1f, 1.0f);
+    white_sphere.diffuse = glm::vec3(0.0f, 1.0f, 0.0f);
+    white_sphere.specular = glm::vec3(0.5f, 0.5f, 0.5f);
+    white_sphere.shininess = 32.0f;
 
     Material mat_blue_plastic;
     mat_blue_plastic.ambient = glm::vec3(0.0f, 0.0f, 1.0f); // Barva, kterou má svítit (plná modrá)
@@ -115,11 +110,6 @@ void Application::run() {
     mat_blue_plastic.specular = glm::vec3(0.0f, 0.0f, 0.0f); // Neleskne se
     mat_blue_plastic.shininess = 1.0f;
 
-    Material mat_yellow_plastic;
-    mat_yellow_plastic.ambient = glm::vec3(0.1f, 0.1f, 0.0f);
-    mat_yellow_plastic.diffuse = glm::vec3(1.0f, 1.0f, 0.0f);
-    mat_yellow_plastic.specular = glm::vec3(0.5f, 0.5f, 0.5f);
-    mat_yellow_plastic.shininess = 32.0f;
 
     Material mat_ground;
     mat_ground.ambient = glm::vec3(0.05f, 0.1f, 0.05f);
@@ -139,17 +129,12 @@ void Application::run() {
     mat_cat.specular = glm::vec3(0.1f, 0.1f, 0.1f);
     mat_cat.shininess = 20.0f;
 
-    Material mat_tree_trunk;
-    mat_tree_trunk.ambient = glm::vec3(0.1f, 0.05f, 0.0f);
-    mat_tree_trunk.diffuse = glm::vec3(0.4f, 0.2f, 0.05f);
-    mat_tree_trunk.specular = glm::vec3(0.05f, 0.05f, 0.05f);
-    mat_tree_trunk.shininess = 8.0f;
+    Material green_forest;
+    green_forest.ambient = glm::vec3(0.0f, 0.05f, 0.0f);
+    green_forest.diffuse = glm::vec3(0.0f, 0.5f, 0.0f);
+    green_forest.specular = glm::vec3(0.05f, 0.05f, 0.05f);
+    green_forest.shininess = 8.0f;
 
-    Material mat_bushes;
-    mat_bushes.ambient = glm::vec3(0.0f, 0.1f, 0.0f);
-    mat_bushes.diffuse = glm::vec3(0.05f, 0.3f, 0.05f);
-    mat_bushes.specular = glm::vec3(0.05f, 0.05f, 0.05f);
-    mat_bushes.shininess = 10.0f;
 
     Material mat_sun;
     mat_sun.ambient = glm::vec3(1.0f, 1.0f, 0.0f);
@@ -167,7 +152,7 @@ void Application::run() {
     Controller controller(&camera, window);
     glfwSetWindowUserPointer(window, &controller);
 
-    // ... (vytváøení modelù a objektù zùstává stejné) ...
+
     Model* triangleModel = new Model(triangle, sizeof(triangle) / sizeof(float) / 3, false);
     Model* sphereModel = new Model(sphere, sizeof(sphere) / sizeof(float) / 6, true);
     Model* giftModel = new Model(gift, sizeof(gift) / sizeof(float) / 6, true);
@@ -180,7 +165,6 @@ void Application::run() {
     DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, mat_cat);
     DrawableObject* foxObject = new DrawableObject(bearModel, phongShaderProgram, mat_fox);
 
-    //catObject->addTransformation(new Translate(glm::vec3(0.0f, 0.2f, 0.0f)));
     catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
     catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
@@ -190,10 +174,10 @@ void Application::run() {
 
     DrawableObject* triangleObject = new DrawableObject(triangleModel, phongShaderProgram, mat_blue_plastic);
     DrawableObject* plainObject = new DrawableObject(plainModel, phongShaderProgram, mat_ground);
-    DrawableObject* sphere1 = new DrawableObject(sphereModel, phongShaderProgram, mat_green_plastic);
-    DrawableObject* sphere2 = new DrawableObject(sphereModel, phongShaderProgram, mat_green_plastic);
-    DrawableObject* sphere3 = new DrawableObject(sphereModel, phongShaderProgram, mat_green_plastic);
-    DrawableObject* sphere4 = new DrawableObject(sphereModel, phongShaderProgram, mat_green_plastic);
+    DrawableObject* sphere1 = new DrawableObject(sphereModel, phongShaderProgram, white_sphere);
+    DrawableObject* sphere2 = new DrawableObject(sphereModel, phongShaderProgram, white_sphere);
+    DrawableObject* sphere3 = new DrawableObject(sphereModel, phongShaderProgram, white_sphere);
+    DrawableObject* sphere4 = new DrawableObject(sphereModel, phongShaderProgram, white_sphere);
 
     Rotate* rotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 1.0f));
     Rotate* rotation2 = new Rotate(0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -210,63 +194,46 @@ void Application::run() {
     sphere4->addTransformation(new Translate(glm::vec3(-2.5f, 0.0f, 0.0f)));
     triangleObject->addTransformation(rotation2);
 
-    // ZMÌNA: Vytváøení svìtel pro scénu 3
-    Light* forestLight1_ptr = new Light(glm::vec3(2.0f, 0.2f, 0.0f), glm::vec3(0.1f, 0.5f, 0.1f));
-    Light* forestLight2_ptr = new Light(glm::vec3(-2.0f, 0.2f, 1.0f), glm::vec3(0.1f, 0.5f, 0.1f));
 
-    // ZMÌNA: Vytvoøíme baterku a uložíme ji do èlenské promìnné 'flashlight'
-    // Používáme opravený konstruktor - posíláme úhel 50 stupòù
-    flashlight = new SpotLight(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f),
-        glm::radians(20.0f), glm::radians(30.0f));
-    // PØIDÁNO: Uložíme si pùvodní barvy baterky
+    Light* forestLight1_ptr = new Light(glm::vec3(2.0f, 0.2f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f));
+    Light* forestLight2_ptr = new Light(glm::vec3(-2.0f, 0.2f, 1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
+
+    flashlight = new SpotLight(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::radians(20.0f), glm::radians(30.0f));
+
     flashlightDiffuseColor = flashlight->getDiffuse();
     flashlightSpecularColor = flashlight->getSpecular();
 
 
-    // Pøidáme všechna svìtla do seznamu scény 3
+
     scene3Lights.push_back(forestLight1_ptr);
     scene3Lights.push_back(forestLight2_ptr);
-    scene3Lights.push_back(flashlight); // Pøidáme baterku do seznamu
+    scene3Lights.push_back(flashlight); 
 	
 
 
-    DrawableObject* forestSphere1 = new DrawableObject(sphereModel, phongShaderProgram, mat_firefly_white); // Zmìna zde
-    DrawableObject* forestSphere2 = new DrawableObject(sphereModel, phongShaderProgram, mat_firefly_white); // Zmìna zde
+    DrawableObject* firefly1 = new DrawableObject(sphereModel, phongShaderProgram, mat_firefly_white); 
+    DrawableObject* firefly2 = new DrawableObject(sphereModel, phongShaderProgram, mat_firefly_white); 
 
-    // Používáme ukazatele
+
     Translate* forestSphere1Translate = new Translate(forestLight1_ptr->getPosition());
-    forestSphere1->addTransformation(forestSphere1Translate);
+    firefly1->addTransformation(forestSphere1Translate);
 
     Translate* forestSphere2Translate = new Translate(forestLight2_ptr->getPosition());
-    forestSphere2->addTransformation(forestSphere2Translate);
+    firefly2->addTransformation(forestSphere2Translate);
 
-    forestSphere1->addTransformation(new Scale(glm::vec3(0.005f)));
-    forestSphere2->addTransformation(new Scale(glm::vec3(0.005f)));
+    firefly1->addTransformation(new Scale(glm::vec3(0.005f)));
+    firefly2->addTransformation(new Scale(glm::vec3(0.005f)));
 
 
 
-/*
-    // ZMÌNA: Nastavení svìtel jednou pøi inicializaci
-    sphereProgram1->setLightUniforms(scene2Lights);
-    sphereProgram2->setLightUniforms(scene2Lights);
-    sphereProgram3->setLightUniforms(scene2Lights);
-    sphereProgram4->setLightUniforms(scene2Lights);
-
-    // Toto je pro scénu 3
-    forestShaderProgram->setLightUniforms(scene3Lights);
-    groundShaderProgram->setLightUniforms(scene3Lights);
-    */
-
-    // Registrace observerù pro kameru
     camera.addObserver(phongShaderProgram);
 
 
 
-    // Vytvoøení svìtel pro scénu 2 (musí být na haldì a v èlenské promìnné)
+
     Light* light1_ptr = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-    Light* light2_ptr = new Light(glm::vec3(0.0f, -3.0f, 2.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
     scene2Lights.push_back(light1_ptr);
-    scene2Lights.push_back(light2_ptr);
 
     // Registrace observerù pro svìtla
     for (Light* light : scene2Lights) {
@@ -293,7 +260,7 @@ void Application::run() {
     for (int i = 0; i < 50; ++i) {
         randomX = rand() % (5 + 5 + 1) - 5;
         randomZ = rand() % (5 + 5 + 1) - 5;
-        DrawableObject* obj = new DrawableObject(treeModel, phongShaderProgram,mat_tree_trunk);
+        DrawableObject* obj = new DrawableObject(treeModel, phongShaderProgram, green_forest);
         obj->addTransformation(new Translate(glm::vec3(randomX, 0.0f, randomZ)));
         obj->addTransformation(new Scale(glm::vec3(0.1f)));
         obj->addTransformation(new Rotate(i * 0.2f, glm::vec3(0, 1, 0)));
@@ -304,7 +271,7 @@ void Application::run() {
     for (int i = 0; i < 50; ++i) {
         randomX = rand() % (5 + 5 + 1) - 5;
         randomZ = rand() % (5 + 5 + 1) - 5;
-        DrawableObject* obj = new DrawableObject(bushModel, phongShaderProgram, mat_bushes);
+        DrawableObject* obj = new DrawableObject(bushModel, phongShaderProgram, green_forest);
         obj->addTransformation(new Translate(glm::vec3(randomX, 0.0f, randomZ)));
         obj->addTransformation(new Scale(glm::vec3(0.5f)));
         obj->addTransformation(new Rotate(i * 0.7f, glm::vec3(0, 1, 0)));
@@ -313,8 +280,8 @@ void Application::run() {
 
     // ... (scéna 4 - sluneèní soustava) ...
     DrawableObject* slunce = new DrawableObject(sphereModel, phongShaderProgram, mat_sun);
-    DrawableObject* zeme = new DrawableObject(sphereModel, phongShaderProgram, mat_red_plastic);
-    DrawableObject* mesic = new DrawableObject(sphereModel, phongShaderProgram, mat_red_plastic);
+    DrawableObject* zeme = new DrawableObject(sphereModel, phongShaderProgram, white_sphere);
+    DrawableObject* mesic = new DrawableObject(sphereModel, phongShaderProgram, white_sphere);
 
     slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
 
@@ -343,14 +310,14 @@ void Application::run() {
     scene2->addObject(sphere3);
     scene2->addObject(sphere4);
     scene3->addObject(plainObject);
-    scene3->addObject(forestSphere1);
-    scene3->addObject(forestSphere2);
+    scene3->addObject(firefly1);
+    scene3->addObject(firefly2);
     scene3->addObject(catObject);
     scene3->addObject(foxObject);
     scene4->addObject(slunce);
     scene4->addObject(zeme);
     scene4->addObject(mesic);
-
+     
     float lastFrame = glfwGetTime();
     float earthAngle = 0.0f;
     float moonAngle = 0.0f;
@@ -363,11 +330,9 @@ void Application::run() {
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // Zpracování pohybu kamery
+
         controller.processInput(deltaTime);
 
-        // --- PØIDÁNO: Logika pro pøepínání baterky ---
-        // Zjistíme, jestli je F stisknuto teï
         bool fKeyPressed = (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS);
 
         // Zareagujeme jen na "hranu" - když je klávesa stisknutá teï, ale nebyla minule
@@ -436,9 +401,7 @@ void Application::run() {
 
 
         if (activeScene == scene1) {
-            // Scene 1 nemá svìtla, ale phong shader nìjaká oèekává
-            // Mùžeme mu poslat prázdný seznam, ale je to komplikované.
-            // Pro jednoduchost necháme svìtla z minulé scény.
+
         }
         else if (activeScene == scene2) {
             phongShaderProgram->setLightsPointer(&scene2Lights);
@@ -484,8 +447,7 @@ void Application::cleanup() {
     delete scene3;
     delete scene4;
 
-    // Pamatuj, že 'flashlight' je také v 'scene3Lights',
-    // takže bude smazán zde. Není potøeba ho mazat dvakrát.
+
     for (Light* light : scene2Lights) {
         delete light;
     }

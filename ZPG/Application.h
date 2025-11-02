@@ -6,11 +6,11 @@
 #include <GLFW/glfw3.h>  
 
 //Include GLM  
-#include <glm/vec3.hpp> // glm::vec3
-#include <glm/vec4.hpp> // glm::vec4
-#include <glm/mat4x4.hpp> // glm::mat4
-#include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
-#include <glm/gtc/type_ptr.hpp> // glm::value_ptr
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp> 
+#include <glm/gtc/type_ptr.hpp>
 #include "Scene.h"
 #include "Translate.h"
 #include "Scale.h"
@@ -53,13 +53,12 @@ private:
     std::vector<Light*> scene3Lights;
     Light* sunLight;
 
-    // --- PØIDÁNO PRO BATERKU ---
+
     SpotLight* flashlight;
     glm::vec3 flashlightDiffuseColor;
     glm::vec3 flashlightSpecularColor;
     bool isFlashlightOn;
     bool fKeyPressedLastFrame;
-    // ---------------------------
 
     bool init();
     void cleanup();
