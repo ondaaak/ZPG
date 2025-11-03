@@ -1,11 +1,25 @@
-#include "Application.h"
+﻿#include "Application.h"
 #include "Material.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 
 float triangle[] = {
     0.0f, 0.5f, 0.0f,
     0.5f, -0.5f, 0.0f,
    -0.5f, -0.5f, 0.0f
+};
+
+const float plainn[] = {
+    //vrchol, normála, uv souřadnice
+    1.0f, 0.0f, 1.0f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
+    1.0f, 0.0f,-1.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
+   -1.0f, 0.0f,-1.0f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,
+
+   -1.0f, 0.0f, 1.0f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f,
+    1.0f, 0.0f, 1.0f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
+   -1.0f, 0.0f,-1.0f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f
 };
 
 // X'= P * V * M * X;
@@ -35,6 +49,8 @@ void Application::switchScene(int sceneNumber) {
 		break;
 	}
 }
+
+
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -96,6 +112,7 @@ void Application::run() {
 
     ShaderProgram* phongShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
 	ShaderProgram* spheresProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_simple.glsl"));
+    ShaderProgram* textureProgram = new ShaderProgram(std::string("texture_vertex.glsl"), std::string("texture_fragment.glsl"));
 
 
     Material white;
@@ -143,6 +160,12 @@ void Application::run() {
     Material earth;
     earth.ambient = glm::vec3(0.0f, 0.4f, 0.0f);
     earth.diffuse = glm::vec3(0.0f, 1.0f, 0.0f);
+    earth.specular = glm::vec3(1.0f, 1.0f, 1.0f);
+    earth.shininess = 32.0f;
+
+    Material basic;
+    earth.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
+    earth.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
     earth.specular = glm::vec3(1.0f, 1.0f, 1.0f);
     earth.shininess = 32.0f;
 
@@ -228,6 +251,7 @@ void Application::run() {
 
     camera.addObserver(phongShaderProgram);
 	camera.addObserver(spheresProgram);
+	camera.addObserver(textureProgram);
 
 
     Light* light1_ptr = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -294,6 +318,50 @@ void Application::run() {
     mesic->addTransformation(moonOrbitRotation);
     mesic->addTransformation(moonOrbitTranslation);
     mesic->addTransformation(new Scale(glm::vec3(0.1f, 0.1f, 0.1f)));
+
+
+
+
+	Model* grassModel = new Model(plainn, sizeof(plainn) / sizeof(float) / 8, 2);
+
+	DrawableObject* grassObject = new DrawableObject(grassModel, textureProgram, basic);
+
+	grassObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
+
+    //Texture one in texture unit 0
+    glActiveTexture(GL_TEXTURE0);
+    int text_width, text_height, channels;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* data = stbi_load("assets/grass.png", &text_width, &text_height, &channels, 4);
+    if (!data) {
+        std::cerr << "Error loading texture: grass.png" << std::endl;
+    }
+    GLuint tex1;
+    glGenTextures(1, &tex1);
+    glBindTexture(GL_TEXTURE_2D, tex1);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, text_width, text_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_image_free(data);
+
+
+
+	scene1->addObject(grassObject);
+
+
+
+	textureProgram->SetUniform("textureUnitID", 0);
+
+
+
+
+
 
     scene1->addObject(triangleObject);
     scene2->addObject(sphere1);

@@ -158,6 +158,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="SpotLight.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="Transformation.h" />
@@ -170,6 +171,8 @@
     <None Include="main_vertex_shader.glsl" />
     <None Include="phong_fragment_shader.glsl" />
     <None Include="phong_simple.glsl" />
+    <None Include="texture_fragment.glsl" />
+    <None Include="texture_vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

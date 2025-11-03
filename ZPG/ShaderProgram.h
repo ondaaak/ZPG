@@ -19,6 +19,7 @@ public:
     void SetUniform(const char* name, const glm::mat4& value);
     void setLight(bool option) { hasLight = option; } // remove if not used
 
+    bool HasUniform(const char* name) const;
 
     void setLightUniforms(const std::vector<Light*>& lights);
 
