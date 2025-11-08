@@ -1,5 +1,6 @@
 ﻿#include "Application.h"
 #include "Material.h"
+#include "Texture.h" // <-- PŘIDÁNO
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -27,27 +28,27 @@ const float plainn[] = {
 static Application* app = nullptr;
 
 void Application::switchScene(int sceneNumber) {
-	switch (sceneNumber) {
-	case 1:
-		activeScene = scene1;
-		printf("Switched to Scene 1\n");
-		break;
-	case 2:
-		activeScene = scene2;
-		printf("Switched to Scene 2\n");
-		break;
-	case 3:
-		activeScene = scene3;
-		printf("Switched to Scene 3\n");
-		break;
+    switch (sceneNumber) {
+    case 1:
+        activeScene = scene1;
+        printf("Switched to Scene 1\n");
+        break;
+    case 2:
+        activeScene = scene2;
+        printf("Switched to Scene 2\n");
+        break;
+    case 3:
+        activeScene = scene3;
+        printf("Switched to Scene 3\n");
+        break;
     case 4:
         activeScene = scene4;
         printf("Switched to Scene 4\n");
         break;
-	default:
-		printf("Invalid scene number: %d\n", sceneNumber);
-		break;
-	}
+    default:
+        printf("Invalid scene number: %d\n", sceneNumber);
+        break;
+    }
 }
 
 
@@ -111,7 +112,7 @@ void Application::run() {
 
 
     ShaderProgram* phongShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
-	ShaderProgram* spheresProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_simple.glsl"));
+    ShaderProgram* spheresProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_simple.glsl"));
     ShaderProgram* textureProgram = new ShaderProgram(std::string("texture_vertex.glsl"), std::string("texture_fragment.glsl"));
 
 
@@ -122,15 +123,15 @@ void Application::run() {
     white.shininess = 32.0f;
 
     Material mat_blue_plastic;
-    mat_blue_plastic.ambient = glm::vec3(0.0f, 0.0f, 1.0f); 
-    mat_blue_plastic.diffuse = glm::vec3(0.0f, 0.0f, 0.0f); 
-    mat_blue_plastic.specular = glm::vec3(0.0f, 0.0f, 0.0f); 
+    mat_blue_plastic.ambient = glm::vec3(0.0f, 0.0f, 1.0f);
+    mat_blue_plastic.diffuse = glm::vec3(0.0f, 0.0f, 0.0f);
+    mat_blue_plastic.specular = glm::vec3(0.0f, 0.0f, 0.0f);
     mat_blue_plastic.shininess = 1.0f;
 
     Material mat_ground;
     mat_ground.ambient = glm::vec3(0.05f, 0.1f, 0.05f);
     mat_ground.diffuse = glm::vec3(0.1f, 0.4f, 0.1f);
-    mat_ground.specular = glm::vec3(0.05f, 0.05f, 0.05f); 
+    mat_ground.specular = glm::vec3(0.05f, 0.05f, 0.05f);
     mat_ground.shininess = 10.0f;
 
     Material green_forest;
@@ -139,8 +140,8 @@ void Application::run() {
     green_forest.specular = glm::vec3(0.05f, 0.05f, 0.05f);
     green_forest.shininess = 8.0f;
 
-    Material mat_firefly_white; 
-    mat_firefly_white.ambient = glm::vec3(1.0f, 1.0f, 1.0f); 
+    Material mat_firefly_white;
+    mat_firefly_white.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
     mat_firefly_white.diffuse = glm::vec3(0.0f, 0.0f, 0.0f);
     mat_firefly_white.specular = glm::vec3(0.0f, 0.0f, 0.0f);
     mat_firefly_white.shininess = 1.0f;
@@ -164,10 +165,10 @@ void Application::run() {
     earth.shininess = 32.0f;
 
     Material basic;
-    earth.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
-    earth.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-    earth.specular = glm::vec3(1.0f, 1.0f, 1.0f);
-    earth.shininess = 32.0f;
+    basic.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
+    basic.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+    basic.specular = glm::vec3(1.0f, 1.0f, 1.0f);
+    basic.shininess = 32.0f;
 
 
     Camera camera;
@@ -220,7 +221,7 @@ void Application::run() {
     Light* forestLight1_ptr = new Light(glm::vec3(2.0f, 0.2f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f));
     Light* forestLight2_ptr = new Light(glm::vec3(-2.0f, 0.2f, 1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
 
-	//DirectionalLight* dirLight = new DirectionalLight(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(4.3f, 0.3f, 0.3f));
+    //DirectionalLight* dirLight = new DirectionalLight(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(4.3f, 0.3f, 0.3f));
 
     flashlight = new SpotLight(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::radians(20.0f), glm::radians(30.0f));
 
@@ -230,12 +231,12 @@ void Application::run() {
 
     scene3Lights.push_back(forestLight1_ptr);
     scene3Lights.push_back(forestLight2_ptr);
-    scene3Lights.push_back(flashlight); 
+    scene3Lights.push_back(flashlight);
 
 
 
-    DrawableObject* firefly1 = new DrawableObject(sphereModel, phongShaderProgram, mat_firefly_white); 
-    DrawableObject* firefly2 = new DrawableObject(sphereModel, phongShaderProgram, mat_firefly_white); 
+    DrawableObject* firefly1 = new DrawableObject(sphereModel, phongShaderProgram, mat_firefly_white);
+    DrawableObject* firefly2 = new DrawableObject(sphereModel, phongShaderProgram, mat_firefly_white);
 
 
     Translate* forestSphere1Translate = new Translate(forestLight1_ptr->getPosition());
@@ -250,8 +251,8 @@ void Application::run() {
 
 
     camera.addObserver(phongShaderProgram);
-	camera.addObserver(spheresProgram);
-	camera.addObserver(textureProgram);
+    camera.addObserver(spheresProgram);
+    camera.addObserver(textureProgram);
 
 
     Light* light1_ptr = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -259,7 +260,7 @@ void Application::run() {
     scene2Lights.push_back(light1_ptr);
 
     for (Light* light : scene2Lights) {
-		light->addObserver(spheresProgram);
+        light->addObserver(spheresProgram);
     }
     for (Light* light : scene3Lights) {
         light->addObserver(phongShaderProgram);
@@ -302,6 +303,9 @@ void Application::run() {
 
     Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f));
     scene4Lights.push_back(sunLight);
+    for (Light* light : scene4Lights) {
+        light->addObserver(phongShaderProgram);
+    }
 
     Rotate* earthOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* earthOrbitTranslation = new Translate(glm::vec3(3.0f, 0.0f, 0.0f));
@@ -321,54 +325,23 @@ void Application::run() {
 
 
 
+    Model* grassModel = new Model(plainn, sizeof(plainn) / sizeof(float) / 8, 2);
+    DrawableObject* grassObject = new DrawableObject(grassModel, textureProgram, basic);
+    grassObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
 
-	Model* grassModel = new Model(plainn, sizeof(plainn) / sizeof(float) / 8, 2);
+ 
+    Texture* grassTexture = new Texture("assets/grass.png");
+    textureProgram->SetUniform("textureUnitID", 0); // Řekneme shaderu, ať používá slot 0
+    // --- KONEC ZMĚNY ---
 
-	DrawableObject* grassObject = new DrawableObject(grassModel, textureProgram, basic);
+    scene3->addObject(grassObject);
+    scene1->addObject(triangleObject); 
 
-	grassObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
-
-    //Texture one in texture unit 0
-    glActiveTexture(GL_TEXTURE0);
-    int text_width, text_height, channels;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load("assets/grass.png", &text_width, &text_height, &channels, 4);
-    if (!data) {
-        std::cerr << "Error loading texture: grass.png" << std::endl;
-    }
-    GLuint tex1;
-    glGenTextures(1, &tex1);
-    glBindTexture(GL_TEXTURE_2D, tex1);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, text_width, text_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    stbi_image_free(data);
-
-
-
-	scene1->addObject(grassObject);
-
-
-
-	textureProgram->SetUniform("textureUnitID", 0);
-
-
-
-
-
-
-    scene1->addObject(triangleObject);
     scene2->addObject(sphere1);
     scene2->addObject(sphere2);
     scene2->addObject(sphere3);
     scene2->addObject(sphere4);
-    scene3->addObject(plainObject);
+    //scene3->addObject(plainObject);
     scene3->addObject(firefly1);
     scene3->addObject(firefly2);
     scene3->addObject(catObject);
@@ -376,12 +349,13 @@ void Application::run() {
     scene4->addObject(slunce);
     scene4->addObject(zeme);
     scene4->addObject(mesic);
-     
+
     float lastFrame = glfwGetTime();
     float earthAngle = 0.0f;
     float moonAngle = 0.0f;
 
-    phongShaderProgram->setLightUniforms(scene4Lights);
+    // Nastavení výchozích světel
+    phongShaderProgram->setLightUniforms(scene3Lights); // Phong začne se světly ze scény 3
     phongShaderProgram->setLightsPointer(&scene3Lights);
     spheresProgram->setLightsPointer(&scene2Lights);
     spheresProgram->setLightUniforms(scene2Lights);
@@ -402,27 +376,32 @@ void Application::run() {
         alpha += 0.01f;
         rotation->setAngle(alpha);
         rotation2->setAngle(alpha);
-        
 
-
-
+        // Přepínání světel pro aktivní scénu
         if (activeScene == scene1) {
+            // Scéna 1 nemá světla
+            // Musíme phong shaderu poslat prázdný seznam, aby zhasla světla z jiných scén
+            std::vector<Light*> emptyLights;
+            phongShaderProgram->setLightsPointer(&emptyLights);
+            phongShaderProgram->setLightUniforms(emptyLights);
 
-
-
+            // Aktivujeme texturu pro trávu
+            grassTexture->bind(GL_TEXTURE0);
         }
         else if (activeScene == scene2) {
-
+            // Nastavíme světla pro spheresProgram
+            spheresProgram->setLightsPointer(&scene2Lights);
+            spheresProgram->setLightUniforms(scene2Lights);
         }
         else if (activeScene == scene3) {
-         
+            // Nastavíme světla pro phongShaderProgram
+            phongShaderProgram->setLightsPointer(&scene3Lights);
+            phongShaderProgram->setLightUniforms(scene3Lights);
 
-
+            // Logika baterky
             bool fKeyPressed = (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS);
-
             if (fKeyPressed && !fKeyPressedLastFrame) {
                 isFlashlightOn = !isFlashlightOn;
-
                 if (isFlashlightOn) {
                     flashlight->setDiffuse(flashlightDiffuseColor);
                     flashlight->setSpecular(flashlightSpecularColor);
@@ -434,29 +413,20 @@ void Application::run() {
             }
             fKeyPressedLastFrame = fKeyPressed;
 
-
+            // Pohyb světlušek
             float dx = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f;
             float dy = ((rand() / (float)RAND_MAX) - 0.5f) * 0.01f;
             float dz = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f;
 
-
             glm::vec3 pos = forestLight1_ptr->getPosition();
-            pos.x += dx;
-            pos.y += dy;
-            pos.z += dz;
-            if (pos.y < 0.1f) pos.y = 0.1f;
-            if (pos.y > 1.0f) pos.y = 1.0f;
+            pos.x += dx; pos.y += dy; pos.z += dz;
+            if (pos.y < 0.1f) pos.y = 0.1f; if (pos.y > 1.0f) pos.y = 1.0f;
             forestLight1_ptr->setPosition(pos);
 
-
             pos = forestLight2_ptr->getPosition();
-            pos.x += dx;
-            pos.y += dy;
-            pos.z += dz;
-            if (pos.y < 0.1f) pos.y = 0.1f;
-            if (pos.y > 1.0f) pos.y = 1.0f;
+            pos.x += dx; pos.y += dy; pos.z += dz;
+            if (pos.y < 0.1f) pos.y = 0.1f; if (pos.y > 1.0f) pos.y = 1.0f;
             forestLight2_ptr->setPosition(pos);
-
 
             forestSphere1Translate->setOffset(forestLight1_ptr->getPosition());
             forestSphere2Translate->setOffset(forestLight2_ptr->getPosition());
@@ -466,16 +436,15 @@ void Application::run() {
 
         }
         else if (activeScene == scene4) {
-
-
+            // Pohyb planet
             earthAngle += 0.005f;
             moonAngle += 0.01f;
-
             earthOrbitRotation->setAngle(earthAngle);
             moonOrbitRotation->setAngle(moonAngle);
+
+            // Nastavíme světla pro phongShaderProgram (slunce)
+            phongShaderProgram->setLightsPointer(&scene4Lights);
             phongShaderProgram->setLightUniforms(scene4Lights);
-
-
         }
 
         int width, height;
@@ -488,6 +457,10 @@ void Application::run() {
         glfwPollEvents();
         glfwSwapBuffers(window);
     }
+
+    // --- SMAZÁNÍ TEXTURY ---
+    delete grassTexture;
+    // --- KONEC SMAZÁNÍ ---
 }
 
 void Application::cleanup() {
