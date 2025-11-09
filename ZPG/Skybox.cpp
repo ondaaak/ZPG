@@ -1,7 +1,5 @@
 #include "Skybox.h"
 
-// Data pro krychli (pøesunuto z Application.cpp)
-// 36 vrcholù (108 / 3)
 const float skyboxVertices[108] = {
     -1.0f,-1.0f,-1.0f,
     -1.0f,-1.0f, 1.0f,
@@ -42,12 +40,11 @@ const float skyboxVertices[108] = {
 };
 
 Skybox::Skybox(const std::vector<std::string>& faces) {
-    // 1. Vytvoøíme shader program
+
     shaderProgram = new ShaderProgram("skybox_vertex.glsl", "skybox_fragment.glsl");
     shaderProgram->setShaderProgram();
     shaderProgram->SetUniform("skybox", 0); 
 
-    // 2. Vytvoøíme VAO/VBO pro krychli
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
     glBindVertexArray(skyboxVAO);
@@ -56,7 +53,6 @@ Skybox::Skybox(const std::vector<std::string>& faces) {
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-    // 3. Naèteme cubemapa texturu
     loadCubemap(faces);
 }
 
@@ -72,7 +68,6 @@ void Skybox::loadCubemap(const std::vector<std::string>& faces) {
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 
     int width, height, nrChannels;
-    // Pro cubemapy se flip nedìlá
     stbi_set_flip_vertically_on_load(false);
 
     for (unsigned int i = 0; i < faces.size(); i++) {
@@ -104,7 +99,7 @@ void Skybox::draw() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 
-    glDrawArrays(GL_TRIANGLES, 0, 36); // Vykreslíme 36 vrcholù
+    glDrawArrays(GL_TRIANGLES, 0, 36); 
 
     glBindVertexArray(0);
     glDepthFunc(GL_LESS); 
