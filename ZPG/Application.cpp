@@ -145,7 +145,7 @@ void Application::run() {
     DrawableObject* shrekObject = new DrawableObject(shrekModel, phongShaderProgram, white, shrekTexture);
     DrawableObject* fionaObject = new DrawableObject(fionaModel, phongShaderProgram, white, fionaTexture);
     DrawableObject* grassObject = new DrawableObject(grassModel, phongShaderProgram, basic, grassTexture);
-
+    // T R S
     catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
     catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
     catObject->addTransformation(new Translate(glm::vec3(-3.0f, 0.0f, 5.0f)));
