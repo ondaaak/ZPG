@@ -188,9 +188,9 @@ void Application::run() {
     Model* catModel = new Model("12221_Cat_v1_l3.obj");
 
     // --- ZDE JE ZMĚNA ---
-    Texture* grassTexture = new Texture("assets/grass.png");
-    Texture* catTexture = new Texture("assets/Cat_diffuse.jpg");
-    Texture* foxTexture = new Texture("assets/Tibetan_Hill_Fox_dif.jpg");
+    Texture* grassTexture = new Texture("../assets/grass.png");
+    Texture* catTexture = new Texture("../assets/Cat_diffuse.jpg");
+    Texture* foxTexture = new Texture("../assets/Tibetan_Hill_Fox_dif.jpg");
     
 
     DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, white, catTexture);
