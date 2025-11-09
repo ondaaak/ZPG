@@ -4,11 +4,12 @@
 #include "ShaderProgram.h"
 #include "Transformation.h"
 #include "Material.h"
+#include "Texture.h"
 
 class DrawableObject {
 public:
 
-    DrawableObject(Model* model, ShaderProgram* shaderProgram, const Material& material);
+    DrawableObject(Model* model, ShaderProgram* shaderProgram, const Material& material, Texture* texture = nullptr);
     ~DrawableObject();
 
     void addTransformation(Transformation* t) { transformations.push_back(t); }
@@ -21,4 +22,5 @@ private:
     ShaderProgram* shaderProgram;
     std::vector<Transformation*> transformations;
     Material material;
+    Texture* texture;
 };

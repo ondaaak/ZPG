@@ -113,6 +113,11 @@ void Application::run() {
     ShaderProgram* spheresProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_simple.glsl"));
     ShaderProgram* textureProgram = new ShaderProgram(std::string("texture_vertex.glsl"), std::string("texture_fragment.glsl"));
 
+    // Nastavíme výchozí hodnoty pro phong shader
+    phongShaderProgram->setShaderProgram();
+    phongShaderProgram->SetUniform("textureSampler", 0); // Řekneme shaderu, ať používá slot 0
+    phongShaderProgram->SetUniform("useTexture", 0);     // Výchozí hodnota = nepoužívat texturu
+
 
     Material white;
     white.ambient = glm::vec3(0.5f, 0.5f, 0.5f);
@@ -182,8 +187,14 @@ void Application::run() {
     Model* foxModel = new Model("13577_Tibetan_Hill_Fox_v1_L3.obj");
     Model* catModel = new Model("12221_Cat_v1_l3.obj");
 
-    DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, white);
-    DrawableObject* foxObject = new DrawableObject(foxModel, phongShaderProgram, white);
+    // --- ZDE JE ZMĚNA ---
+    Texture* grassTexture = new Texture("assets/grass.png");
+    Texture* catTexture = new Texture("assets/Cat_diffuse.jpg");
+    Texture* foxTexture = new Texture("assets/Tibetan_Hill_Fox_dif.jpg");
+    
+
+    DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, white, catTexture);
+    DrawableObject* foxObject = new DrawableObject(foxModel, phongShaderProgram, white, foxTexture);
 
     catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
     catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -193,7 +204,7 @@ void Application::run() {
     foxObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
     DrawableObject* triangleObject = new DrawableObject(triangleModel, phongShaderProgram, mat_blue_plastic);
-    
+
     DrawableObject* sphere1 = new DrawableObject(sphereModel, spheresProgram, white);
     DrawableObject* sphere2 = new DrawableObject(sphereModel, spheresProgram, white);
     DrawableObject* sphere3 = new DrawableObject(sphereModel, spheresProgram, white);
@@ -320,18 +331,14 @@ void Application::run() {
     mesic->addTransformation(new Scale(glm::vec3(0.1f, 0.1f, 0.1f)));
 
 
-
     Model* grassModel = new Model(plain, sizeof(plain) / sizeof(float) / 8, 2);
-    DrawableObject* grassObject = new DrawableObject(grassModel, textureProgram, basic);
+
+    DrawableObject* grassObject = new DrawableObject(grassModel, phongShaderProgram, basic, grassTexture);
     grassObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
 
- 
-    Texture* grassTexture = new Texture("assets/grass.png");
-    textureProgram->SetUniform("textureUnitID", 0); // Řekneme shaderu, ať používá slot 0
-    // --- KONEC ZMĚNY ---
 
-    scene3->addObject(grassObject);
-    scene1->addObject(triangleObject); 
+    scene3->addObject(grassObject); 
+    scene1->addObject(triangleObject);
 
     scene2->addObject(sphere1);
     scene2->addObject(sphere2);
@@ -340,8 +347,8 @@ void Application::run() {
 
     scene3->addObject(firefly1);
     scene3->addObject(firefly2);
-    scene3->addObject(catObject);
-    scene3->addObject(foxObject);
+    scene3->addObject(catObject); 
+    scene3->addObject(foxObject); 
     scene4->addObject(slunce);
     scene4->addObject(zeme);
     scene4->addObject(mesic);
@@ -381,8 +388,8 @@ void Application::run() {
             phongShaderProgram->setLightsPointer(&emptyLights);
             phongShaderProgram->setLightUniforms(emptyLights);
 
-            // Aktivujeme texturu pro trávu
-            grassTexture->bind(GL_TEXTURE0);
+            // TENTO ŘÁDEK JE PRYČ (byl špatně a způsobil, že scéna 1 měla trávu)
+            // grassTexture->bind(GL_TEXTURE0); 
         }
         else if (activeScene == scene2) {
             // Nastavíme světla pro spheresProgram
@@ -454,7 +461,7 @@ void Application::run() {
     }
 
     delete grassTexture;
-
+    delete catTexture; // <-- PŘIDÁNO
 }
 
 void Application::cleanup() {
