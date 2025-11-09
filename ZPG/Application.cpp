@@ -1,5 +1,5 @@
 ﻿#include "Application.h"
-
+#include "Skybox.h" // PŘIDÁNO
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -60,7 +60,8 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 }
 
 Application::Application()
-    : window(nullptr), scene1(nullptr), scene2(nullptr), scene3(nullptr), scene4(nullptr), activeScene(nullptr), flashlight(nullptr), isFlashlightOn(true), fKeyPressedLastFrame(false)
+    : window(nullptr), scene1(nullptr), scene2(nullptr), scene3(nullptr), scene4(nullptr), activeScene(nullptr),
+    flashlight(nullptr), isFlashlightOn(true), fKeyPressedLastFrame(false), skybox(nullptr)
 {
 }
 Application::~Application() {
@@ -84,6 +85,8 @@ bool Application::init() {
 
     glewExperimental = GL_TRUE;
     glewInit();
+
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     printf("OpenGL Version: %s\n", glGetString(GL_VERSION));
     printf("Using GLEW %s\n", glewGetString(GLEW_VERSION));
@@ -114,9 +117,8 @@ void Application::run() {
 
     // Nastavíme výchozí hodnoty pro phong shader
     phongShaderProgram->setShaderProgram();
-    phongShaderProgram->SetUniform("textureSampler", 0); // Řekneme shaderu, ať používá slot 0
-    phongShaderProgram->SetUniform("useTexture", 0);     // Výchozí hodnota = nepoužívat texturu
-
+    phongShaderProgram->SetUniform("textureSampler", 0);
+    phongShaderProgram->SetUniform("useTexture", 0);
 
     Material white;
     white.ambient = glm::vec3(0.5f, 0.5f, 0.5f);
@@ -185,25 +187,38 @@ void Application::run() {
     Model* bushModel = new Model(bushes, sizeof(bushes) / sizeof(float) / 6, 1);
     Model* foxModel = new Model("13577_Tibetan_Hill_Fox_v1_L3.obj");
     Model* catModel = new Model("12221_Cat_v1_l3.obj");
-	Model* shrekModel = new Model("shrek.obj");
-	Model* fionaModel = new Model("fiona.obj");
+    Model* shrekModel = new Model("shrek.obj");
+    Model* fionaModel = new Model("fiona.obj");
 
     Texture* grassTexture = new Texture("../assets/grass.png");
     Texture* catTexture = new Texture("../assets/Cat_diffuse.jpg");
-    Texture* foxTexture = new Texture("../assets/Tibetan_Hill_Fox_dif.jpg");
-	Texture* shrekTexture = new Texture("../assets/shrek.png");
-	Texture* fionaTexture = new Texture("../assets/fiona.png");
+    Texture* foxTexture = new Texture("../assets"
+        "/Tibetan_Hill_Fox_dif.jpg");
+    Texture* shrekTexture = new Texture("../assets/shrek.png");
+    Texture* fionaTexture = new Texture("../assets/fiona.png");
+
+    std::vector<std::string> faces = {
+        "../assets/posx.jpg",
+        "../assets/negx.jpg",
+        "../assets/posy.jpg",
+        "../assets/negy.jpg",
+        "../assets"
+        "/posz.jpg",
+        "../assets/negz.jpg"
+    };
+    skybox = new Skybox(faces);
+
 
     DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, white, catTexture);
     DrawableObject* foxObject = new DrawableObject(foxModel, phongShaderProgram, white, foxTexture);
-	DrawableObject* shrekObject = new DrawableObject(shrekModel, phongShaderProgram, white, shrekTexture);
-	DrawableObject* fionaObject = new DrawableObject(fionaModel, phongShaderProgram, white, fionaTexture);
-    
-    
+    DrawableObject* shrekObject = new DrawableObject(shrekModel, phongShaderProgram, white, shrekTexture);
+    DrawableObject* fionaObject = new DrawableObject(fionaModel, phongShaderProgram, white, fionaTexture);
+
+
     catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
     catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
     catObject->addTransformation(new Translate(glm::vec3(-3.0f, 0.0f, 5.0f)));
-    
+
 
     foxObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 0.5f)));
     foxObject->addTransformation(new Scale(glm::vec3(0.0025f, 0.0025f, 0.0025f)));
@@ -265,6 +280,7 @@ void Application::run() {
 
     camera.addObserver(phongShaderProgram);
     camera.addObserver(spheresProgram);
+    camera.addObserver(skybox->getShader());
 
 
 
@@ -342,14 +358,14 @@ void Application::run() {
     DrawableObject* grassObject = new DrawableObject(grassModel, phongShaderProgram, basic, grassTexture);
     grassObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
 
-	shrekObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
-	fionaObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
+    shrekObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
+    fionaObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
 
-	shrekObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 1.2f)));
-	fionaObject->addTransformation(new Translate(glm::vec3(2.8f, 0.0f, 1.5f)));
+    shrekObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 1.2f)));
+    fionaObject->addTransformation(new Translate(glm::vec3(2.8f, 0.0f, 1.5f)));
 
 
-    scene3->addObject(grassObject); 
+    scene3->addObject(grassObject);
     scene1->addObject(triangleObject);
 
     scene2->addObject(sphere1);
@@ -359,20 +375,22 @@ void Application::run() {
 
     scene3->addObject(firefly1);
     scene3->addObject(firefly2);
-    scene3->addObject(catObject); 
-    scene3->addObject(foxObject); 
-	scene3->addObject(shrekObject);
-	scene3->addObject(fionaObject);
+    scene3->addObject(catObject);
+    scene3->addObject(foxObject);
+    scene3->addObject(shrekObject);
+    scene3->addObject(fionaObject);
 
     scene4->addObject(slunce);
     scene4->addObject(zeme);
     scene4->addObject(mesic);
 
+    scene3->setSkybox(skybox);
+
     float lastFrame = glfwGetTime();
     float earthAngle = 0.0f;
     float moonAngle = 0.0f;
 
-    phongShaderProgram->setLightUniforms(scene3Lights); 
+    phongShaderProgram->setLightUniforms(scene3Lights);
     phongShaderProgram->setLightsPointer(&scene3Lights);
     spheresProgram->setLightsPointer(&scene2Lights);
     spheresProgram->setLightUniforms(scene2Lights);
@@ -395,22 +413,15 @@ void Application::run() {
         rotation2->setAngle(alpha);
 
         if (activeScene == scene1) {
-            // Scéna 1 nemá světla
-            // Musíme phong shaderu poslat prázdný seznam, aby zhasla světla z jiných scén
             std::vector<Light*> emptyLights;
             phongShaderProgram->setLightsPointer(&emptyLights);
             phongShaderProgram->setLightUniforms(emptyLights);
-
-            // TENTO ŘÁDEK JE PRYČ (byl špatně a způsobil, že scéna 1 měla trávu)
-            // grassTexture->bind(GL_TEXTURE0); 
         }
         else if (activeScene == scene2) {
-            // Nastavíme světla pro spheresProgram
             spheresProgram->setLightsPointer(&scene2Lights);
             spheresProgram->setLightUniforms(scene2Lights);
         }
         else if (activeScene == scene3) {
-            // Nastavíme světla pro phongShaderProgram
             phongShaderProgram->setLightsPointer(&scene3Lights);
             phongShaderProgram->setLightUniforms(scene3Lights);
 
@@ -457,7 +468,6 @@ void Application::run() {
             earthOrbitRotation->setAngle(earthAngle);
             moonOrbitRotation->setAngle(moonAngle);
 
-            // Nastavíme světla pro phongShaderProgram (slunce)
             phongShaderProgram->setLightsPointer(&scene4Lights);
             phongShaderProgram->setLightUniforms(scene4Lights);
         }
@@ -468,22 +478,44 @@ void Application::run() {
         float ratio = width / (float)height;
         camera.setAspectRatio(ratio);
 
+        // ZMĚNA POŘADÍ VYKRESLOVÁNÍ
+        // 1. Vykreslíme scénu
         if (activeScene) activeScene->render();
+
+
         glfwPollEvents();
         glfwSwapBuffers(window);
     }
 
-    delete grassTexture;
-    delete catTexture; // <-- PŘIDÁNO
+    // --- TADY BYLA CHYBA (DOUBLE FREE) ---
+    // Tyto delete příkazy jsou smazány, protože 
+    // mazání probíhá ve funkci cleanup()
+    //
+    // delete grassTexture;
+    // delete catTexture; 
+    // delete foxTexture; 
+    // delete shrekTexture; 
+    // delete fionaTexture; 
+    // delete skybox; 
+    // ------------------------------------
 }
 
 void Application::cleanup() {
+    // Tady je správné místo pro mazání
+
+    // Nejprve smažeme scény, které mažou DrawableObjects
     delete scene1;
     delete scene2;
     delete scene3;
     delete scene4;
 
+    // Smažeme skybox
+    if (skybox) {
+        delete skybox;
+        skybox = nullptr;
+    }
 
+    // Pak smažeme světla (pokud je nevlastní scény, což nevlastní)
     for (Light* light : scene2Lights) {
         delete light;
     }
@@ -498,6 +530,13 @@ void Application::cleanup() {
         delete light;
     }
     scene4Lights.clear();
+
+    // Textury a modely by se měly mazat ideálně zde,
+    // ale tvůj kód je nevlastní v Application,
+    // jsou vlastněny jednotlivými DrawableObjects (nebo by měly být)
+    // Pro jednoduchost (a aby odpovídal tvému kódu) je zde nemažu,
+    // ale pamatuj, že na konci run() je špatné místo.
+    // Destruktor ~Application volá cleanup(), to je jediné správné místo.
 
 
     if (window) {

@@ -35,6 +35,7 @@
 #include "AmbientLight.h"
 #include "Material.h"
 #include "Texture.h"
+#include "Skybox.h" 
 
 class Application {
 public:
@@ -51,6 +52,7 @@ private:
     Scene* scene2;
     Scene* scene3;
     Scene* scene4;
+    Skybox* skybox; // <-- PØIDAT TENTO ÈLEN
 
     std::vector<Light*> scene2Lights;
     std::vector<Light*> scene3Lights;

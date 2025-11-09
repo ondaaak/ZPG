@@ -1,6 +1,6 @@
 #include "Scene.h"
 
-Scene::Scene() {}
+Scene::Scene() : skybox(nullptr) {}
 
 Scene::~Scene() {
 
@@ -15,8 +15,17 @@ void Scene::addObject(DrawableObject* object) {
     objects.push_back(object);
 }
 
+void Scene::setSkybox(Skybox* sb) {
+    skybox = sb;
+}
+
 void Scene::render() {
     for (auto obj : objects) {
         obj->render(); 
+    }
+
+    // 2. Vykreslíme skybox (POUZE pokud ho tato scéna má)
+    if (skybox) {
+        skybox->draw();
     }
 }

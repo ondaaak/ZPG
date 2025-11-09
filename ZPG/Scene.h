@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "DrawableObject.h"
+#include "Skybox.h"
 
 class Scene {
 public:
@@ -9,7 +10,9 @@ public:
 
     void addObject(DrawableObject* object);
     void render();
+    void setSkybox(Skybox* sb);
 
 private:
     std::vector<DrawableObject*> objects;
+    Skybox* skybox;
 };

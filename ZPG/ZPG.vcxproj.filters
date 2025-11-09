@@ -45,6 +45,12 @@
     <ClCompile Include="tiny_obj_loader.cc">
       <Filter>Zdrojové soubory</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -107,6 +113,15 @@
     <ClInclude Include="Material.h">
       <Filter>Hlavičkové soubory</Filter>
     </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="main_vertex_shader.glsl">
@@ -127,5 +142,9 @@
     <None Include="phong_simple.glsl">
       <Filter>Zdrojové soubory</Filter>
     </None>
+    <None Include="texture_fragment.glsl" />
+    <None Include="texture_vertex.glsl" />
+    <None Include="skybox_vertex.glsl" />
+    <None Include="skybox_fragment.glsl" />
   </ItemGroup>
 </Project>
