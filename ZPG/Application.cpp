@@ -1,6 +1,5 @@
 ﻿#include "Application.h"
-#include "Material.h"
-#include "Texture.h" // <-- PŘIDÁNO
+
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -12,8 +11,7 @@ float triangle[] = {
    -0.5f, -0.5f, 0.0f
 };
 
-const float plainn[] = {
-    //vrchol, normála, uv souřadnice
+const float plain[] = {
     1.0f, 0.0f, 1.0f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
     1.0f, 0.0f,-1.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
    -1.0f, 0.0f,-1.0f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,
@@ -176,12 +174,11 @@ void Application::run() {
     glfwSetWindowUserPointer(window, &controller);
 
 
-    Model* triangleModel = new Model(triangle, sizeof(triangle) / sizeof(float) / 3, false);
-    Model* sphereModel = new Model(sphere, sizeof(sphere) / sizeof(float) / 6, true);
-    Model* giftModel = new Model(gift, sizeof(gift) / sizeof(float) / 6, true);
-    Model* treeModel = new Model(tree, sizeof(tree) / sizeof(float) / 6, true);
-    Model* bushModel = new Model(bushes, sizeof(bushes) / sizeof(float) / 6, true);
-    Model* plainModel = new Model(plain, sizeof(plain) / sizeof(float) / 6, true);
+    Model* triangleModel = new Model(triangle, sizeof(triangle) / sizeof(float) / 3, 0);
+    Model* sphereModel = new Model(sphere, sizeof(sphere) / sizeof(float) / 6, 1);
+    Model* giftModel = new Model(gift, sizeof(gift) / sizeof(float) / 6, 1);
+    Model* treeModel = new Model(tree, sizeof(tree) / sizeof(float) / 6, 1);
+    Model* bushModel = new Model(bushes, sizeof(bushes) / sizeof(float) / 6, 1);
     Model* foxModel = new Model("13577_Tibetan_Hill_Fox_v1_L3.obj");
     Model* catModel = new Model("12221_Cat_v1_l3.obj");
 
@@ -196,7 +193,7 @@ void Application::run() {
     foxObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
     DrawableObject* triangleObject = new DrawableObject(triangleModel, phongShaderProgram, mat_blue_plastic);
-    DrawableObject* plainObject = new DrawableObject(plainModel, phongShaderProgram, mat_ground);
+    
     DrawableObject* sphere1 = new DrawableObject(sphereModel, spheresProgram, white);
     DrawableObject* sphere2 = new DrawableObject(sphereModel, spheresProgram, white);
     DrawableObject* sphere3 = new DrawableObject(sphereModel, spheresProgram, white);
@@ -205,8 +202,7 @@ void Application::run() {
     Rotate* rotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 1.0f));
     Rotate* rotation2 = new Rotate(0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 
-    plainObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
-    plainObject->addTransformation(new Translate(glm::vec3(0.0f, -0.01f, 0.0f)));
+
     sphere1->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
     sphere2->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
     sphere3->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
@@ -325,7 +321,7 @@ void Application::run() {
 
 
 
-    Model* grassModel = new Model(plainn, sizeof(plainn) / sizeof(float) / 8, 2);
+    Model* grassModel = new Model(plain, sizeof(plain) / sizeof(float) / 8, 2);
     DrawableObject* grassObject = new DrawableObject(grassModel, textureProgram, basic);
     grassObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
 
@@ -341,7 +337,7 @@ void Application::run() {
     scene2->addObject(sphere2);
     scene2->addObject(sphere3);
     scene2->addObject(sphere4);
-    //scene3->addObject(plainObject);
+
     scene3->addObject(firefly1);
     scene3->addObject(firefly2);
     scene3->addObject(catObject);
@@ -436,7 +432,6 @@ void Application::run() {
 
         }
         else if (activeScene == scene4) {
-            // Pohyb planet
             earthAngle += 0.005f;
             moonAngle += 0.01f;
             earthOrbitRotation->setAngle(earthAngle);
@@ -458,9 +453,8 @@ void Application::run() {
         glfwSwapBuffers(window);
     }
 
-    // --- SMAZÁNÍ TEXTURY ---
     delete grassTexture;
-    // --- KONEC SMAZÁNÍ ---
+
 }
 
 void Application::cleanup() {

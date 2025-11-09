@@ -23,7 +23,6 @@
 #include "../Models/tree.h"
 #include "../Models/bushes.h"
 #include "../Models/suzi_flat.h"
-#include "../Models/plain.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "Camera.h"
@@ -34,6 +33,8 @@
 #include <vector>
 #include "DirectionalLight.h"
 #include "AmbientLight.h"
+#include "Material.h"
+#include "Texture.h"
 
 class Application {
 public:
