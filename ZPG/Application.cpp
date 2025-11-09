@@ -111,7 +111,6 @@ void Application::run() {
 
     ShaderProgram* phongShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
     ShaderProgram* spheresProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_simple.glsl"));
-    ShaderProgram* textureProgram = new ShaderProgram(std::string("texture_vertex.glsl"), std::string("texture_fragment.glsl"));
 
     // Nastavíme výchozí hodnoty pro phong shader
     phongShaderProgram->setShaderProgram();
@@ -186,18 +185,25 @@ void Application::run() {
     Model* bushModel = new Model(bushes, sizeof(bushes) / sizeof(float) / 6, 1);
     Model* foxModel = new Model("13577_Tibetan_Hill_Fox_v1_L3.obj");
     Model* catModel = new Model("12221_Cat_v1_l3.obj");
+	Model* shrekModel = new Model("shrek.obj");
+	Model* fionaModel = new Model("fiona.obj");
 
-    // --- ZDE JE ZMĚNA ---
     Texture* grassTexture = new Texture("../assets/grass.png");
     Texture* catTexture = new Texture("../assets/Cat_diffuse.jpg");
     Texture* foxTexture = new Texture("../assets/Tibetan_Hill_Fox_dif.jpg");
-    
+	Texture* shrekTexture = new Texture("../assets/shrek.png");
+	Texture* fionaTexture = new Texture("../assets/fiona.png");
 
     DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, white, catTexture);
     DrawableObject* foxObject = new DrawableObject(foxModel, phongShaderProgram, white, foxTexture);
-
+	DrawableObject* shrekObject = new DrawableObject(shrekModel, phongShaderProgram, white, shrekTexture);
+	DrawableObject* fionaObject = new DrawableObject(fionaModel, phongShaderProgram, white, fionaTexture);
+    
+    
     catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
     catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+    catObject->addTransformation(new Translate(glm::vec3(-3.0f, 0.0f, 5.0f)));
+    
 
     foxObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 0.5f)));
     foxObject->addTransformation(new Scale(glm::vec3(0.0025f, 0.0025f, 0.0025f)));
@@ -259,7 +265,7 @@ void Application::run() {
 
     camera.addObserver(phongShaderProgram);
     camera.addObserver(spheresProgram);
-    camera.addObserver(textureProgram);
+
 
 
     Light* light1_ptr = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -336,6 +342,12 @@ void Application::run() {
     DrawableObject* grassObject = new DrawableObject(grassModel, phongShaderProgram, basic, grassTexture);
     grassObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
 
+	shrekObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
+	fionaObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
+
+	shrekObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 1.2f)));
+	fionaObject->addTransformation(new Translate(glm::vec3(2.8f, 0.0f, 1.5f)));
+
 
     scene3->addObject(grassObject); 
     scene1->addObject(triangleObject);
@@ -349,6 +361,9 @@ void Application::run() {
     scene3->addObject(firefly2);
     scene3->addObject(catObject); 
     scene3->addObject(foxObject); 
+	scene3->addObject(shrekObject);
+	scene3->addObject(fionaObject);
+
     scene4->addObject(slunce);
     scene4->addObject(zeme);
     scene4->addObject(mesic);
@@ -357,8 +372,7 @@ void Application::run() {
     float earthAngle = 0.0f;
     float moonAngle = 0.0f;
 
-    // Nastavení výchozích světel
-    phongShaderProgram->setLightUniforms(scene3Lights); // Phong začne se světly ze scény 3
+    phongShaderProgram->setLightUniforms(scene3Lights); 
     phongShaderProgram->setLightsPointer(&scene3Lights);
     spheresProgram->setLightsPointer(&scene2Lights);
     spheresProgram->setLightUniforms(scene2Lights);
@@ -380,7 +394,6 @@ void Application::run() {
         rotation->setAngle(alpha);
         rotation2->setAngle(alpha);
 
-        // Přepínání světel pro aktivní scénu
         if (activeScene == scene1) {
             // Scéna 1 nemá světla
             // Musíme phong shaderu poslat prázdný seznam, aby zhasla světla z jiných scén
