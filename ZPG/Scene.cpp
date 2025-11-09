@@ -24,7 +24,6 @@ void Scene::render() {
         obj->render(); 
     }
 
-    // 2. Vykreslíme skybox (POUZE pokud ho tato scéna má)
     if (skybox) {
         skybox->draw();
     }

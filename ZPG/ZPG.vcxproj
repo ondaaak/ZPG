@@ -169,16 +169,12 @@
     <ClInclude Include="Translate.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="blinn-phong_fragment_shader.glsl" />
     <None Include="constant_fragment_shader.glsl" />
-    <None Include="lambert_fragment_shader.glsl" />
     <None Include="main_vertex_shader.glsl" />
     <None Include="phong_fragment_shader.glsl" />
     <None Include="phong_simple.glsl" />
     <None Include="skybox_fragment.glsl" />
     <None Include="skybox_vertex.glsl" />
-    <None Include="texture_fragment.glsl" />
-    <None Include="texture_vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

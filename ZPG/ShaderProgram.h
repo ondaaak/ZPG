@@ -17,7 +17,6 @@ public:
     void SetUniform(const char* name, float value);
     void SetUniform(const char* name, const glm::vec3& value);
     void SetUniform(const char* name, const glm::mat4& value);
-    void setLight(bool option) { hasLight = option; } // remove if not used
 
     bool HasUniform(const char* name) const;
 

@@ -1,4 +1,5 @@
 #include "Skybox.h"
+#include <glm/gtc/type_ptr.hpp> 
 
 const float skyboxVertices[108] = {
     -1.0f,-1.0f,-1.0f,
@@ -39,11 +40,12 @@ const float skyboxVertices[108] = {
     1.0f,-1.0f, 1.0f
 };
 
-Skybox::Skybox(const std::vector<std::string>& faces) {
+Skybox::Skybox(const std::vector<std::string>& faces, ShaderProgram* shader)
+    : shaderProgram(shader) 
+{
 
-    shaderProgram = new ShaderProgram("skybox_vertex.glsl", "skybox_fragment.glsl");
     shaderProgram->setShaderProgram();
-    shaderProgram->SetUniform("skybox", 0); 
+    shaderProgram->SetUniform("skybox", 0);
 
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
@@ -60,7 +62,6 @@ Skybox::~Skybox() {
     glDeleteVertexArrays(1, &skyboxVAO);
     glDeleteBuffers(1, &skyboxVBO);
     glDeleteTextures(1, &cubemapTexture);
-    delete shaderProgram;
 }
 
 void Skybox::loadCubemap(const std::vector<std::string>& faces) {
@@ -90,7 +91,7 @@ void Skybox::loadCubemap(const std::vector<std::string>& faces) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
-void Skybox::draw() {
+void Skybox::draw() const {
     glDepthFunc(GL_LEQUAL);
 
     shaderProgram->setShaderProgram();
@@ -99,12 +100,8 @@ void Skybox::draw() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 
-    glDrawArrays(GL_TRIANGLES, 0, 36); 
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glBindVertexArray(0);
-    glDepthFunc(GL_LESS); 
-}
-
-ShaderProgram* Skybox::getShader() {
-    return shaderProgram;
+    glDepthFunc(GL_LESS);
 }

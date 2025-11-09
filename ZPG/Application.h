@@ -44,7 +44,6 @@ public:
     void run();
     void switchScene(int sceneNumber);
 
-
 private:
     GLFWwindow* window;
     Scene* activeScene;
@@ -52,12 +51,11 @@ private:
     Scene* scene2;
     Scene* scene3;
     Scene* scene4;
-    Skybox* skybox; // <-- PØIDAT TENTO ÈLEN
+    Skybox* skybox;
 
     std::vector<Light*> scene2Lights;
     std::vector<Light*> scene3Lights;
     std::vector<Light*> scene4Lights;
-
 
     SpotLight* flashlight;
     glm::vec3 flashlightDiffuseColor;

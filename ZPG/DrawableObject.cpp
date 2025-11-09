@@ -28,23 +28,16 @@ void DrawableObject::render() const {
         shaderProgram->SetUniform("material.shininess", material.shininess);
     }
 
-    // --- ZDE JE FINÁLNÍ OPRAVA ---
-    // Zkusíme nastavit texturu, POUZE POKUD shader má uniform "useTexture"
     if (shaderProgram->HasUniform("useTexture"))
     {
         if (texture) {
-            // Shader to podporuje A my máme texturu
             shaderProgram->SetUniform("useTexture", 1);
             texture->bind(GL_TEXTURE0);
         }
         else {
-            // Shader to podporuje, ale my texturu nemáme
             shaderProgram->SetUniform("useTexture", 0);
         }
     }
-    // -----------------------------
-    // Pokud shader "useTexture" nemá (jako napø. spheresProgram), 
-    // celı tento blok se pøeskoèí a nic se nestane.
 
     model->draw();
 }
