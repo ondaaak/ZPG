@@ -38,7 +38,7 @@ uniform vec3 viewPos;
 void main(void)
 {
     vec3 norm = normalize(worldNorm);
-    vec3 viewDir = normalize(viewPos - worldPos.xyz);
+    vec3 viewDir = normalize(viewPos - worldPos.xyz);// x.xyz/x.w
 
     vec3 ambientTotal = vec3(0.0); 
     vec3 diffuseTotal = vec3(0.0);
