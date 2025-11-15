@@ -59,10 +59,8 @@ bool Application::init() {
         return false;
     }
 
-    // --- UPRAVA DLE ZADANI (Krok 1) ---
-    // Musíme si vyžádat Stencil Buffer při vytváření okna
     glfwWindowHint(GLFW_STENCIL_BITS, 8);
-    // ---------------------------------
+
 
     window = glfwCreateWindow(1024, 800, "ZPG", NULL, NULL);
     if (!window) {
@@ -119,11 +117,9 @@ void Application::run() {
     Material basic; basic.ambient = glm::vec3(1.0f, 1.0f, 1.0f); basic.diffuse = glm::vec3(1.0f, 1.0f, 1.0f); basic.specular = glm::vec3(1.0f, 1.0f, 1.0f); basic.shininess = 32.0f;
 
     Camera camera;
-    // Vytvoření controlleru - předáváme mu aktivní scénu
+
     Controller controller(&camera, window, activeScene);
-    // Nastavení user pointeru (pro callbacky myši) - toto je v pořádku, 
-    // protože 'controller' je na stacku funkce run() a nikdy nezanikne
-    glfwSetWindowUserPointer(window, &controller);
+
 
     Model* triangleModel = new Model(triangle, sizeof(triangle) / sizeof(float) / 3, 0);
     Model* sphereModel = new Model(sphere, sizeof(sphere) / sizeof(float) / 6, 1);
@@ -149,11 +145,7 @@ void Application::run() {
     };
     skybox = new Skybox(faces, skyboxShaderProgram);
 
-    // --- UPRAVA DLE ZADANI (Krok 2) ---
-    // Všem objektům musíme přiřadit unikátní ID (1-255)
-    // Používáme nový konstruktor: (Model*, Shader*, Material, ID, Texture*)
-
-    int currentId = 1; // Začneme ID od 1 (0 je pro pozadí)
+    int currentId = 1; 
 
     DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, white, currentId++, catTexture);
     DrawableObject* foxObject = new DrawableObject(foxModel, phongShaderProgram, white, currentId++, foxTexture);
@@ -223,7 +215,7 @@ void Application::run() {
     for (int i = 0; i < 50; ++i) {
         randomX = rand() % (5 + 5 + 1) - 5;
         randomZ = rand() % (5 + 5 + 1) - 5;
-        // Přidání ID (ujisti se, že nepřesáhneš 255)
+
         DrawableObject* obj = new DrawableObject(treeModel, phongShaderProgram, green_forest, (currentId < 255 ? currentId++ : 255), nullptr);
         obj->addTransformation(new Translate(glm::vec3(randomX, 0.0f, randomZ)));
         obj->addTransformation(new Scale(glm::vec3(0.1f)));
@@ -234,7 +226,7 @@ void Application::run() {
     for (int i = 0; i < 50; ++i) {
         randomX = rand() % (5 + 5 + 1) - 5;
         randomZ = rand() % (5 + 5 + 1) - 5;
-        // Přidání ID
+
         DrawableObject* obj = new DrawableObject(bushModel, phongShaderProgram, green_forest, (currentId < 255 ? currentId++ : 255), nullptr);
         obj->addTransformation(new Translate(glm::vec3(randomX, 0.0f, randomZ)));
         obj->addTransformation(new Scale(glm::vec3(0.5f)));
@@ -298,17 +290,12 @@ void Application::run() {
 
     glEnable(GL_DEPTH_TEST);
 
-    // --- UPRAVA DLE ZADANI (Krok 3) ---
-    // Nastavíme, jakou hodnotou se má stencil buffer mazat (0)
     glClearStencil(0);
-    // ---------------------------------
+
 
     while (!glfwWindowShouldClose(window)) {
 
-        // --- UPRAVA DLE ZADANI (Krok 4) ---
-        // Přidáno mazání STENCIL_BUFFER_BIT
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        // ---------------------------------
 
         float currentFrame = glfwGetTime();
         float deltaTime = currentFrame - lastFrame;

@@ -1,28 +1,24 @@
 #include "Controller.h"
 #include "Scene.h"
-#include <stdio.h> // Pro printf
+#include <stdio.h>
 
-// --- Definice statických promìnných ---
 bool Controller::rightMousePressed = false;
 bool Controller::firstMouse = true;
-double Controller::lastX = 1024.0 / 2.0;
-double Controller::lastY = 800.0 / 2.0;
+double Controller::lastX = 0.0;
+double Controller::lastY = 0.0;
 
 
 Controller::Controller(Camera* camera, GLFWwindow* window, Scene* scene)
     : camera(camera), window(window), activeScene(scene)
 {
-    // 1. Zaregistrujeme callbacky
+
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
     glfwSetCursorPosCallback(window, cursorPosCallback);
-
-    // 2. ULOŽÍME "this" (aktuální instanci controlleru) do okna.
     glfwSetWindowUserPointer(window, this);
 }
 
 void Controller::processInput(float deltaTime)
 {
-    // (Pohyb klávesnicí)
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera->processKeyboard(GLFW_KEY_W, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -38,7 +34,6 @@ void Controller::processInput(float deltaTime)
 }
 
 
-// --- Callback pro kliknutí myši ---
 void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
     Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
@@ -51,7 +46,6 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
     GLint y_new = height - (GLint)ypos;
     GLint x = (GLint)xpos;
 
-    // --- 1. FUNKCIONALITA: OTÁÈENÍ KAMERY (Pravé tlaèítko - Držet) ---
     if (button == GLFW_MOUSE_BUTTON_RIGHT) {
         if (action == GLFW_PRESS) {
             rightMousePressed = true;
@@ -68,11 +62,11 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
         glReadPixels(x, y_new, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
 
         if (index > 0) {
-            printf("Kliknuto na objekt s ID: %u\n", index);
+            printf("Clicked on object with ID: %u\n", index);
             // controller->activeScene->collectObject(index);
         }
         else {
-            printf("Kliknuto do prazdna (stencil index 0)\n");
+            printf("Clicked to void (stencil index 0)\n");
         }
     }
 
@@ -86,26 +80,24 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
             glm::mat4 proj = controller->camera->getProjectionMatrix();
             glm::vec4 viewport = glm::vec4(0, 0, width, height);
             glm::vec3 screenPos = glm::vec3(xpos, y_new, depth);
-            glm::vec3 worldPos = glm::unProject(screenPos, view, proj, viewport);
+            glm::vec3 pos = glm::unProject(screenPos, view, proj, viewport);
 
-            printf("Svetove souradnice kliknuti: [%f, %f, %f]\n", worldPos.x, worldPos.y, worldPos.z);
+            printf("unProject [%f,%f,%f]\n", pos.x, pos.y, pos.z);
 
             // Zde pøijde logika pro vložení objektu
         }
         else {
-            printf("Kliknuto na skybox, nelze vlozit objekt.\n");
+            printf("Clicked on skybox.\n");
         }
     }
 }
 
 
-// --- Callback pro pohyb myši ---
 void Controller::cursorPosCallback(GLFWwindow* window, double xpos, double ypos)
 {
     Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
     if (!controller) return;
 
-    // Tuto logiku provedeme, POUZE pokud je držené pravé tlaèítko
     if (rightMousePressed) {
 
         if (firstMouse) {
@@ -115,16 +107,11 @@ void Controller::cursorPosCallback(GLFWwindow* window, double xpos, double ypos)
         }
 
         float xoffset = (float)(xpos - lastX);
-
-        // --- ZDE JE OPRAVA INVERZE ---
-        // Pùvodní kód: float yoffset = (float)(lastY - ypos); // Myš nahoru = pitch nahoru
-        // Nový kód:    float yoffset = (float)(ypos - lastY); // Myš nahoru = pitch dolù
         float yoffset = (float)(ypos - lastY);
 
         lastX = xpos;
         lastY = ypos;
 
-        // Pøedáme pohyb myši kameøe
         controller->camera->processMouse(xoffset, yoffset);
     }
 }
