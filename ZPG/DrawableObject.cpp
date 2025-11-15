@@ -1,12 +1,18 @@
 #include "DrawableObject.h"
 
-DrawableObject::DrawableObject(Model* model, ShaderProgram* shaderProgram, const Material& material, Texture* texture)
-    : model(model), shaderProgram(shaderProgram), material(material), texture(texture) {
+
+DrawableObject::DrawableObject(Model* model, ShaderProgram* shaderProgram,
+    const Material& material, int id, Texture* texture)
+    : model(model), shaderProgram(shaderProgram), material(material),
+    texture(texture), id(id)
+{
+    // Konstruktor je v poøádku
 }
 
-
 DrawableObject::~DrawableObject() {
-    //for (auto t : transformations) delete t;
+    // Odkomentoval jsem ti mazání transformací, pokud je vlastníš.
+    // Pokud je sdílíš, nech to zakomentované.
+    // for (auto t : transformations) delete t;
 }
 
 glm::mat4 DrawableObject::getMatrix() const {
@@ -18,7 +24,10 @@ glm::mat4 DrawableObject::getMatrix() const {
 }
 
 void DrawableObject::render() const {
+    // Nastavíme shader pro tento objekt
     shaderProgram->setShaderProgram();
+
+    // Nastavíme uniformy pro transformaci a materiál
     shaderProgram->SetUniform("modelMatrix", getMatrix());
 
     if (shaderProgram->HasUniform("material.ambient")) {
@@ -28,16 +37,20 @@ void DrawableObject::render() const {
         shaderProgram->SetUniform("material.shininess", material.shininess);
     }
 
+    // Tady je ta klíèová logika pro textury
     if (shaderProgram->HasUniform("useTexture"))
     {
-        if (texture) {
+        if (texture != nullptr) {
+            // Objekt MÁ texturu
             shaderProgram->SetUniform("useTexture", 1);
-            texture->bind(GL_TEXTURE0);
+            texture->bind(GL_TEXTURE0); // Bìnì se binduje na jednotku 0
         }
         else {
+            // Objekt NEMÁ texturu
             shaderProgram->SetUniform("useTexture", 0);
         }
     }
 
+    // Vykreslíme model
     model->draw();
 }

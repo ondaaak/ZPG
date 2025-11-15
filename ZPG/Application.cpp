@@ -10,6 +10,7 @@ float triangle[] = {
 };
 
 const float plain[] = {
+    // Pozice           // Normály         // UV
     1.0f, 0.0f, 1.0f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
     1.0f, 0.0f,-1.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
    -1.0f, 0.0f,-1.0f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,
@@ -57,6 +58,11 @@ bool Application::init() {
         fprintf(stderr, "ERROR: could not start GLFW3\n");
         return false;
     }
+
+    // --- UPRAVA DLE ZADANI (Krok 1) ---
+    // Musíme si vyžádat Stencil Buffer při vytváření okna
+    glfwWindowHint(GLFW_STENCIL_BITS, 8);
+    // ---------------------------------
 
     window = glfwCreateWindow(1024, 800, "ZPG", NULL, NULL);
     if (!window) {
@@ -113,7 +119,10 @@ void Application::run() {
     Material basic; basic.ambient = glm::vec3(1.0f, 1.0f, 1.0f); basic.diffuse = glm::vec3(1.0f, 1.0f, 1.0f); basic.specular = glm::vec3(1.0f, 1.0f, 1.0f); basic.shininess = 32.0f;
 
     Camera camera;
-    Controller controller(&camera, window);
+    // Vytvoření controlleru - předáváme mu aktivní scénu
+    Controller controller(&camera, window, activeScene);
+    // Nastavení user pointeru (pro callbacky myši) - toto je v pořádku, 
+    // protože 'controller' je na stacku funkce run() a nikdy nezanikne
     glfwSetWindowUserPointer(window, &controller);
 
     Model* triangleModel = new Model(triangle, sizeof(triangle) / sizeof(float) / 3, 0);
@@ -131,7 +140,7 @@ void Application::run() {
     Texture* catTexture = new Texture("../assets/Cat_diffuse.jpg");
     Texture* foxTexture = new Texture("../assets/Tibetan_Hill_Fox_dif.jpg");
     Texture* shrekTexture = new Texture("../assets/shrek.png");
-    Texture* fionaTexture = new Texture("../assets/fiona.png"); 
+    Texture* fionaTexture = new Texture("../assets/fiona.png");
 
     std::vector<std::string> faces = {
         "../assets/posx.jpg", "../assets/negx.jpg",
@@ -140,12 +149,18 @@ void Application::run() {
     };
     skybox = new Skybox(faces, skyboxShaderProgram);
 
-    DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, white, catTexture);
-    DrawableObject* foxObject = new DrawableObject(foxModel, phongShaderProgram, white, foxTexture);
-    DrawableObject* shrekObject = new DrawableObject(shrekModel, phongShaderProgram, white, shrekTexture);
-    DrawableObject* fionaObject = new DrawableObject(fionaModel, phongShaderProgram, white, fionaTexture);
-    DrawableObject* grassObject = new DrawableObject(grassModel, phongShaderProgram, basic, grassTexture);
-    // T R S
+    // --- UPRAVA DLE ZADANI (Krok 2) ---
+    // Všem objektům musíme přiřadit unikátní ID (1-255)
+    // Používáme nový konstruktor: (Model*, Shader*, Material, ID, Texture*)
+
+    int currentId = 1; // Začneme ID od 1 (0 je pro pozadí)
+
+    DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, white, currentId++, catTexture);
+    DrawableObject* foxObject = new DrawableObject(foxModel, phongShaderProgram, white, currentId++, foxTexture);
+    DrawableObject* shrekObject = new DrawableObject(shrekModel, phongShaderProgram, white, currentId++, shrekTexture);
+    DrawableObject* fionaObject = new DrawableObject(fionaModel, phongShaderProgram, white, currentId++, fionaTexture);
+    DrawableObject* grassObject = new DrawableObject(grassModel, phongShaderProgram, basic, currentId++, grassTexture);
+
     catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
     catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
     catObject->addTransformation(new Translate(glm::vec3(-3.0f, 0.0f, 5.0f)));
@@ -154,12 +169,13 @@ void Application::run() {
     foxObject->addTransformation(new Scale(glm::vec3(0.0025f, 0.0025f, 0.0025f)));
     foxObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
-    DrawableObject* triangleObject = new DrawableObject(triangleModel, phongShaderProgram, mat_blue_plastic);
+    // Objekt bez textury - předáme nullptr (nebo nic, je to defaultní)
+    DrawableObject* triangleObject = new DrawableObject(triangleModel, phongShaderProgram, mat_blue_plastic, currentId++, nullptr);
 
-    DrawableObject* sphere1 = new DrawableObject(sphereModel, spheresProgram, white);
-    DrawableObject* sphere2 = new DrawableObject(sphereModel, spheresProgram, white);
-    DrawableObject* sphere3 = new DrawableObject(sphereModel, spheresProgram, white);
-    DrawableObject* sphere4 = new DrawableObject(sphereModel, spheresProgram, white);
+    DrawableObject* sphere1 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
+    DrawableObject* sphere2 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
+    DrawableObject* sphere3 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
+    DrawableObject* sphere4 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
 
     Rotate* rotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 1.0f));
     Rotate* rotation2 = new Rotate(0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -183,8 +199,8 @@ void Application::run() {
     scene3Lights.push_back(forestLight2_ptr);
     scene3Lights.push_back(flashlight);
 
-    DrawableObject* firefly1 = new DrawableObject(sphereModel, phongShaderProgram, mat_firefly_white);
-    DrawableObject* firefly2 = new DrawableObject(sphereModel, phongShaderProgram, mat_firefly_white);
+    DrawableObject* firefly1 = new DrawableObject(sphereModel, phongShaderProgram, mat_firefly_white, currentId++, nullptr);
+    DrawableObject* firefly2 = new DrawableObject(sphereModel, phongShaderProgram, mat_firefly_white, currentId++, nullptr);
     Translate* forestSphere1Translate = new Translate(forestLight1_ptr->getPosition());
     firefly1->addTransformation(forestSphere1Translate);
     Translate* forestSphere2Translate = new Translate(forestLight2_ptr->getPosition());
@@ -207,7 +223,8 @@ void Application::run() {
     for (int i = 0; i < 50; ++i) {
         randomX = rand() % (5 + 5 + 1) - 5;
         randomZ = rand() % (5 + 5 + 1) - 5;
-        DrawableObject* obj = new DrawableObject(treeModel, phongShaderProgram, green_forest);
+        // Přidání ID (ujisti se, že nepřesáhneš 255)
+        DrawableObject* obj = new DrawableObject(treeModel, phongShaderProgram, green_forest, (currentId < 255 ? currentId++ : 255), nullptr);
         obj->addTransformation(new Translate(glm::vec3(randomX, 0.0f, randomZ)));
         obj->addTransformation(new Scale(glm::vec3(0.1f)));
         obj->addTransformation(new Rotate(i * 0.2f, glm::vec3(0, 1, 0)));
@@ -217,16 +234,17 @@ void Application::run() {
     for (int i = 0; i < 50; ++i) {
         randomX = rand() % (5 + 5 + 1) - 5;
         randomZ = rand() % (5 + 5 + 1) - 5;
-        DrawableObject* obj = new DrawableObject(bushModel, phongShaderProgram, green_forest);
+        // Přidání ID
+        DrawableObject* obj = new DrawableObject(bushModel, phongShaderProgram, green_forest, (currentId < 255 ? currentId++ : 255), nullptr);
         obj->addTransformation(new Translate(glm::vec3(randomX, 0.0f, randomZ)));
         obj->addTransformation(new Scale(glm::vec3(0.5f)));
         obj->addTransformation(new Rotate(i * 0.7f, glm::vec3(0, 1, 0)));
         scene3->addObject(obj);
     }
 
-    DrawableObject* slunce = new DrawableObject(sphereModel, phongShaderProgram, sun);
-    DrawableObject* zeme = new DrawableObject(sphereModel, phongShaderProgram, earth);
-    DrawableObject* mesic = new DrawableObject(sphereModel, phongShaderProgram, moon);
+    DrawableObject* slunce = new DrawableObject(sphereModel, phongShaderProgram, sun, (currentId < 255 ? currentId++ : 255), nullptr);
+    DrawableObject* zeme = new DrawableObject(sphereModel, phongShaderProgram, earth, (currentId < 255 ? currentId++ : 255), nullptr);
+    DrawableObject* mesic = new DrawableObject(sphereModel, phongShaderProgram, moon, (currentId < 255 ? currentId++ : 255), nullptr);
     slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
     Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f));
     scene4Lights.push_back(sunLight);
@@ -279,9 +297,18 @@ void Application::run() {
     spheresProgram->setLightUniforms(scene2Lights);
 
     glEnable(GL_DEPTH_TEST);
+
+    // --- UPRAVA DLE ZADANI (Krok 3) ---
+    // Nastavíme, jakou hodnotou se má stencil buffer mazat (0)
+    glClearStencil(0);
+    // ---------------------------------
+
     while (!glfwWindowShouldClose(window)) {
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // --- UPRAVA DLE ZADANI (Krok 4) ---
+        // Přidáno mazání STENCIL_BUFFER_BIT
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        // ---------------------------------
 
         float currentFrame = glfwGetTime();
         float deltaTime = currentFrame - lastFrame;
@@ -326,18 +353,18 @@ void Application::run() {
             float dy = ((rand() / (float)RAND_MAX) - 0.5f) * 0.01f;
             float dz = ((rand() / (float)RAND_MAX) - 0.5f) * 0.02f;
             glm::vec3 pos = forestLight1_ptr->getPosition();
-            pos.x += dx; 
-            pos.y += dy; 
+            pos.x += dx;
+            pos.y += dy;
             pos.z += dz;
-            if (pos.y < 0.1f) pos.y = 0.1f; 
+            if (pos.y < 0.1f) pos.y = 0.1f;
             if (pos.y > 1.0f) pos.y = 1.0f;
             forestLight1_ptr->setPosition(pos);
 
             pos = forestLight2_ptr->getPosition();
-            pos.x += dx; 
-            pos.y += dy; 
+            pos.x += dx;
+            pos.y += dy;
             pos.z += dz;
-            if (pos.y < 0.1f) pos.y = 0.1f; 
+            if (pos.y < 0.1f) pos.y = 0.1f;
             if (pos.y > 1.0f) pos.y = 1.0f;
             forestLight2_ptr->setPosition(pos);
 
