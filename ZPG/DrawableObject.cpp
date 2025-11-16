@@ -12,7 +12,7 @@ DrawableObject::DrawableObject(Model* model, ShaderProgram* shaderProgram,
 DrawableObject::~DrawableObject() {
     // Odkomentoval jsem ti mazání transformací, pokud je vlastníš.
     // Pokud je sdílíš, nech to zakomentované.
-    // for (auto t : transformations) delete t;
+     //for (auto t : transformations) delete t;
 }
 
 glm::mat4 DrawableObject::getMatrix() const {

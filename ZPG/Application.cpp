@@ -3,6 +3,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+// Transformace
+#include "Translate.h"
+
 float triangle[] = {
     0.0f, 0.5f, 0.0f,
     0.5f, -0.5f, 0.0f,
@@ -10,11 +13,9 @@ float triangle[] = {
 };
 
 const float plain[] = {
-    // Pozice           // Normály         // UV
     1.0f, 0.0f, 1.0f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
     1.0f, 0.0f,-1.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
    -1.0f, 0.0f,-1.0f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,
-
    -1.0f, 0.0f, 1.0f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f,
     1.0f, 0.0f, 1.0f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
    -1.0f, 0.0f,-1.0f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f
@@ -30,6 +31,10 @@ void Application::switchScene(int sceneNumber) {
     case 4: activeScene = scene4; printf("Switched to Scene 4\n"); break;
     default: printf("Invalid scene number: %d\n", sceneNumber); break;
     }
+    // OPRAVA 1: Aktualizujeme scénu v controlleru
+    if (controller) {
+        controller->setActiveScene(activeScene);
+    }
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -38,12 +43,19 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_KP_2 && action == GLFW_PRESS) app->switchScene(2);
     if (key == GLFW_KEY_KP_3 && action == GLFW_PRESS) app->switchScene(3);
     if (key == GLFW_KEY_KP_4 && action == GLFW_PRESS) app->switchScene(4);
+
+    if (key == GLFW_KEY_DELETE && action == GLFW_PRESS) {
+        if (app && app->getActiveScene()) {
+            app->getActiveScene()->deleteSelectedObject();
+        }
+    }
 }
 
 Application::Application()
     : window(nullptr), activeScene(nullptr),
     scene1(nullptr), scene2(nullptr), scene3(nullptr), scene4(nullptr),
-    skybox(nullptr), flashlight(nullptr),
+    skybox(nullptr), controller(nullptr), // Inicializovat controller
+    flashlight(nullptr),
     isFlashlightOn(true), fKeyPressedLastFrame(false)
 {
 }
@@ -53,14 +65,13 @@ Application::~Application() {
 }
 
 bool Application::init() {
-
     if (!glfwInit()) {
         fprintf(stderr, "ERROR: could not start GLFW3\n");
         return false;
     }
 
+    // Vyžádáme si Stencil buffer
     glfwWindowHint(GLFW_STENCIL_BITS, 8);
-
 
     window = glfwCreateWindow(1024, 800, "ZPG", NULL, NULL);
     if (!window) {
@@ -117,9 +128,7 @@ void Application::run() {
     Material basic; basic.ambient = glm::vec3(1.0f, 1.0f, 1.0f); basic.diffuse = glm::vec3(1.0f, 1.0f, 1.0f); basic.specular = glm::vec3(1.0f, 1.0f, 1.0f); basic.shininess = 32.0f;
 
     Camera camera;
-
-    Controller controller(&camera, window, activeScene);
-
+    controller = new Controller(&camera, window, activeScene); // Upraveno na `new`
 
     Model* triangleModel = new Model(triangle, sizeof(triangle) / sizeof(float) / 3, 0);
     Model* sphereModel = new Model(sphere, sizeof(sphere) / sizeof(float) / 6, 1);
@@ -145,7 +154,7 @@ void Application::run() {
     };
     skybox = new Skybox(faces, skyboxShaderProgram);
 
-    int currentId = 1; 
+    int currentId = 1;
 
     DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, white, currentId++, catTexture);
     DrawableObject* foxObject = new DrawableObject(foxModel, phongShaderProgram, white, currentId++, foxTexture);
@@ -161,7 +170,6 @@ void Application::run() {
     foxObject->addTransformation(new Scale(glm::vec3(0.0025f, 0.0025f, 0.0025f)));
     foxObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
-    // Objekt bez textury - předáme nullptr (nebo nic, je to defaultní)
     DrawableObject* triangleObject = new DrawableObject(triangleModel, phongShaderProgram, mat_blue_plastic, currentId++, nullptr);
 
     DrawableObject* sphere1 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
@@ -215,7 +223,6 @@ void Application::run() {
     for (int i = 0; i < 50; ++i) {
         randomX = rand() % (5 + 5 + 1) - 5;
         randomZ = rand() % (5 + 5 + 1) - 5;
-
         DrawableObject* obj = new DrawableObject(treeModel, phongShaderProgram, green_forest, (currentId < 255 ? currentId++ : 255), nullptr);
         obj->addTransformation(new Translate(glm::vec3(randomX, 0.0f, randomZ)));
         obj->addTransformation(new Scale(glm::vec3(0.1f)));
@@ -226,7 +233,6 @@ void Application::run() {
     for (int i = 0; i < 50; ++i) {
         randomX = rand() % (5 + 5 + 1) - 5;
         randomZ = rand() % (5 + 5 + 1) - 5;
-
         DrawableObject* obj = new DrawableObject(bushModel, phongShaderProgram, green_forest, (currentId < 255 ? currentId++ : 255), nullptr);
         obj->addTransformation(new Translate(glm::vec3(randomX, 0.0f, randomZ)));
         obj->addTransformation(new Scale(glm::vec3(0.5f)));
@@ -241,19 +247,30 @@ void Application::run() {
     Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f));
     scene4Lights.push_back(sunLight);
     for (Light* light : scene4Lights) { light->addObserver(phongShaderProgram); }
+
+    // --- OPRAVA CHYBY č. 2 (Double-delete) ---
+    // Vytvoříme ukazatele na transformace, které budeme animovat
     Rotate* earthOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* earthOrbitTranslation = new Translate(glm::vec3(3.0f, 0.0f, 0.0f));
+    Rotate* moonOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    Translate* moonOrbitTranslation = new Translate(glm::vec3(0.8f, 0.0f, 0.0f));
+
+    // A vytvoříme jejich duplikáty pro měsíc, abychom nesdíleli ukazatele
+    Rotate* moonEarthOrbitCopy = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    Translate* earthTranslationCopy = new Translate(glm::vec3(3.0f, 0.0f, 0.0f));
+
+    // Přiřadíme "Zemi" její transformace
     zeme->addTransformation(earthOrbitRotation);
     zeme->addTransformation(earthOrbitTranslation);
     zeme->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
-    Rotate* moonOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-    Translate* moonOrbitTranslation = new Translate(glm::vec3(0.8f, 0.0f, 0.0f));
-    mesic->addTransformation(earthOrbitRotation);
-    mesic->addTransformation(earthOrbitTranslation);
+
+    // Přiřadíme "Měsíci" jeho transformace (včetně kopií transformací Země)
+    mesic->addTransformation(moonEarthOrbitCopy);     // Kopie rotace Země
+    mesic->addTransformation(earthTranslationCopy); // Kopie translace Země
     mesic->addTransformation(moonOrbitRotation);
     mesic->addTransformation(moonOrbitTranslation);
     mesic->addTransformation(new Scale(glm::vec3(0.1f, 0.1f, 0.1f)));
-
+    // ---------------------------------------------
 
     grassObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
     shrekObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
@@ -289,19 +306,18 @@ void Application::run() {
     spheresProgram->setLightUniforms(scene2Lights);
 
     glEnable(GL_DEPTH_TEST);
-
-    glClearStencil(0);
-
+    glClearStencil(0); // Nastavíme clear hodnotu pro stencil
 
     while (!glfwWindowShouldClose(window)) {
 
+        // Mažeme všechny tři buffery
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         float currentFrame = glfwGetTime();
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        controller.processInput(deltaTime);
+        controller->processInput(deltaTime);
 
         alpha += 0.01f;
         rotation->setAngle(alpha);
@@ -364,8 +380,14 @@ void Application::run() {
         else if (activeScene == scene4) {
             earthAngle += 0.005f;
             moonAngle += 0.01f;
+
+            // OPRAVA CHYBY č. 2: Aktualizujeme obě sady transformací
             earthOrbitRotation->setAngle(earthAngle);
+            moonEarthOrbitCopy->setAngle(earthAngle); // Aktualizujeme i kopii
+
             moonOrbitRotation->setAngle(moonAngle);
+            // Ostatní (translace) se nemění
+
             phongShaderProgram->setLightsPointer(&scene4Lights);
             phongShaderProgram->setLightUniforms(scene4Lights);
         }
@@ -381,6 +403,8 @@ void Application::run() {
         glfwPollEvents();
         glfwSwapBuffers(window);
     }
+
+    // --- OPRAVA: Musíme smazat VŠECHNY alokované objekty ---
 
     delete phongShaderProgram;
     delete spheresProgram;
@@ -403,6 +427,18 @@ void Application::run() {
     delete fionaModel;
     delete grassModel;
 
+    // Smazání uložených transformací (prevence memory leaků)
+    delete rotation;
+    delete rotation2;
+    delete forestSphere1Translate;
+    delete forestSphere2Translate;
+    delete earthOrbitRotation;
+    delete earthOrbitTranslation;
+    delete moonOrbitRotation;
+    delete moonOrbitTranslation;
+    delete moonEarthOrbitCopy;
+    delete earthTranslationCopy;
+    // ----------------------------------------------------
 }
 
 void Application::cleanup() {
@@ -415,6 +451,28 @@ void Application::cleanup() {
         delete skybox;
         skybox = nullptr;
     }
+
+    if (controller) { // Smazání controlleru
+        delete controller;
+        controller = nullptr;
+    }
+
+    // Smazání světel
+    for (Light* light : scene2Lights) {
+        delete light;
+    }
+    scene2Lights.clear();
+
+    for (Light* light : scene3Lights) {
+        delete light;
+    }
+    scene3Lights.clear();
+
+    for (Light* light : scene4Lights) {
+        delete light;
+    }
+    scene4Lights.clear();
+
 
     if (window) {
         glfwDestroyWindow(window);

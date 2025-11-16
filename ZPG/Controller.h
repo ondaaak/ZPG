@@ -1,6 +1,8 @@
 #pragma once
+
 #include "Camera.h"
-#include "Scene.h"
+
+#include "Scene.h" 
 #include <GLFW/glfw3.h>
 
 class Controller {
@@ -10,6 +12,8 @@ public:
     void processInput(float deltaTime);
     static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
     static void cursorPosCallback(GLFWwindow* window, double xpos, double ypos);
+
+    void setActiveScene(Scene* scene); // <-- ZMÌNA: Pøidat tuto metodu
 
 private:
     Camera* camera;

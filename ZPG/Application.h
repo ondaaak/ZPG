@@ -43,7 +43,8 @@ public:
     ~Application();
     void run();
     void switchScene(int sceneNumber);
-
+    // --- PØIDAT TUTO METODU ---
+    Scene* getActiveScene() { return activeScene; }
 private:
     GLFWwindow* window;
     Scene* activeScene;
@@ -56,6 +57,8 @@ private:
     std::vector<Light*> scene2Lights;
     std::vector<Light*> scene3Lights;
     std::vector<Light*> scene4Lights;
+
+    Controller* controller;
 
     SpotLight* flashlight;
     glm::vec3 flashlightDiffuseColor;
