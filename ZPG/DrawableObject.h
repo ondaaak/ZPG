@@ -5,8 +5,6 @@
 #include "Transformation.h"
 #include "Material.h"
 #include "Texture.h"
-#include "Translate.h"
-#include <glm/glm.hpp> 
 
 class DrawableObject {
 public:
@@ -24,13 +22,10 @@ public:
     void render() const;
     int getID() const { return id; }
 
-    Model* getModel() const { return model; }
-    ShaderProgram* getShaderProgram() const { return shaderProgram; }
-    const Material& getMaterial() const { return material; }
-    Texture* getTexture() const { return texture; }
-    const std::vector<Transformation*>& getTransformations() const { return transformations; }
-
     void setTranslation(const glm::vec3& newPosition);
+
+    DrawableObject* clone(int newID) const;
+
 
 private:
     Model* model;

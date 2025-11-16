@@ -1,7 +1,7 @@
 #include "Controller.h"
 #include "Scene.h"
-#include "Application.h" 
-#include "Translate.h"  
+#include "Application.h"  
+#include "Translate.h"    
 #include <stdio.h> 
 
 extern Application* app;
@@ -10,7 +10,6 @@ bool Controller::rightMousePressed = false;
 bool Controller::firstMouse = true;
 double Controller::lastX = 0.0;
 double Controller::lastY = 0.0;
-
 
 Controller::Controller(Camera* camera, GLFWwindow* window, Scene* scene)
     : camera(camera), window(window), activeScene(scene)
@@ -39,7 +38,6 @@ void Controller::processInput(float deltaTime)
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
         camera->processKeyboard(GLFW_KEY_LEFT_CONTROL, deltaTime);
 }
-
 
 void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
@@ -70,20 +68,17 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
         if (mods == GLFW_MOD_ALT) {
             DrawableObject* selected = controller->activeScene->getSelectedObject();
             if (selected == nullptr) {
-                printf("No selected object, can't move.\n");
+                printf("No object selected. Can't move.\n");
                 return;
             }
-
             GLfloat depth = 0.0f;
             glReadPixels(x, y_new, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
-
             if (depth < 1.0f) {
                 glm::mat4 view = controller->camera->getViewMatrix();
                 glm::mat4 proj = controller->camera->getProjectionMatrix();
                 glm::vec4 viewport = glm::vec4(0, 0, width, height);
                 glm::vec3 screenPos = glm::vec3(xpos, y_new, depth);
                 glm::vec3 worldPos = glm::unProject(screenPos, view, proj, viewport);
-
                 selected->setTranslation(worldPos);
                 printf("Object ID %d moved to [%f, %f, %f]\n", selected->getID(), worldPos.x, worldPos.y, worldPos.z);
             }
@@ -102,7 +97,7 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
 
         DrawableObject* selected = controller->activeScene->getSelectedObject();
         if (selected == nullptr) {
-            printf("No selected object, can't clone.\n");
+            printf("No object selected. Can't clone.\n");
             return;
         }
 
@@ -118,38 +113,23 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
 
             int newID = app->currentId++;
             if (newID > 255) {
-                printf("Maximum number of objects reached (255)!\n");
+                printf("Maximum number of objects reached (255)\n");
                 app->currentId = 255;
                 return;
             }
 
             printf("Cloning object ID %d to [%f, %f, %f] with new ID %d\n",
                 selected->getID(), worldPos.x, worldPos.y, worldPos.z, newID);
-            
-            DrawableObject* clone = new DrawableObject(
-                selected->getModel(),
-                selected->getShaderProgram(),
-                selected->getMaterial(),
-                newID,
-                selected->getTexture()
-            );
 
-            for (const auto* t : selected->getTransformations()) {
-                const Translate* trans = dynamic_cast<const Translate*>(t);
-                if (trans != nullptr) {
-                    continue;
-                }
-                else {
-                    clone->addTransformation(t->clone());
-                }
-            }
+            DrawableObject* clone = selected->clone(newID);
 
-            clone->addTransformationToFront(new Translate(worldPos));
+            clone->setTranslation(worldPos);
 
             controller->activeScene->addObject(clone);
+
         }
         else {
-            printf("Can't clone skybox.\n");
+            printf("Can't put clone on skybox.\n");
         }
     }
 }

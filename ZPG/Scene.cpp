@@ -67,7 +67,6 @@ DrawableObject* Scene::getSelectedObject() const {
 void Scene::render() {
     glEnable(GL_STENCIL_TEST);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-    glStencilMask(0xFF);
 
     for (DrawableObject* obj : objects) {
         if (obj == nullptr) continue;
