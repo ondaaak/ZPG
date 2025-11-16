@@ -21,7 +21,7 @@ const float plain[] = {
    -1.0f, 0.0f,-1.0f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f
 };
 
-static Application* app = nullptr;
+Application* app = nullptr;
 
 void Application::switchScene(int sceneNumber) {
     switch (sceneNumber) {
@@ -58,6 +58,7 @@ Application::Application()
     flashlight(nullptr),
     isFlashlightOn(true), fKeyPressedLastFrame(false)
 {
+	currentId = 1; // Začínáme od ID 1
 }
 
 Application::~Application() {
@@ -154,7 +155,7 @@ void Application::run() {
     };
     skybox = new Skybox(faces, skyboxShaderProgram);
 
-    int currentId = 1;
+    //int currentId = 1;
 
     DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, white, currentId++, catTexture);
     DrawableObject* foxObject = new DrawableObject(foxModel, phongShaderProgram, white, currentId++, foxTexture);

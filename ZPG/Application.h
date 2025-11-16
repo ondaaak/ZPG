@@ -45,6 +45,9 @@ public:
     void switchScene(int sceneNumber);
     // --- PØIDAT TUTO METODU ---
     Scene* getActiveScene() { return activeScene; }
+
+    int currentId;
+
 private:
     GLFWwindow* window;
     Scene* activeScene;
