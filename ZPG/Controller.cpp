@@ -88,7 +88,7 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
                 glm::vec3 screenPos = glm::vec3(xpos, y_new, depth);
                 glm::vec3 worldPos = glm::unProject(screenPos, view, proj, viewport);
 
-                selected->setTranslation(worldPos); // Použijeme metodu, co jsi vytvoøil
+                selected->setTranslation(worldPos);
                 printf("Objekt ID %d premisten na [%f, %f, %f]\n", selected->getID(), worldPos.x, worldPos.y, worldPos.z);
             }
             else {
@@ -132,7 +132,6 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
             printf("Klonovani objektu ID %d na pozici [%f, %f, %f] s novym ID %d\n",
                 selected->getID(), worldPos.x, worldPos.y, worldPos.z, newID);
 
-            // Vytvoøíme klon (zatím bez transformací)
             DrawableObject* clone = new DrawableObject(
                 selected->getModel(),
                 selected->getShaderProgram(),
@@ -142,24 +141,19 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
             );
 
             // --- ZMÌNA: Kopírování transformací ---
-            // Projdeme všechny transformace pùvodního objektu
             for (const auto* t : selected->getTransformations()) {
-
-                // Zkusíme, jestli to není Translate
                 const Translate* trans = dynamic_cast<const Translate*>(t);
-
                 if (trans != nullptr) {
-                    // Je to Translate. Pøeskoèíme ho (nahradíme ho novým).
-                    continue;
+                    continue; // Pùvodní translaci pøeskoèíme
                 }
                 else {
-                    // Je to Scale nebo Rotate, naklonujeme ho
-                    clone->addTransformation(t->clone());
+                    clone->addTransformation(t->clone()); // Ostatní (S, R) naklonujeme
                 }
             }
-            // Nakonec pøidáme novou Translaci s pozicí kliknutí
-            clone->addTransformation(new Translate(worldPos));
-            // ------------------------------------
+
+            // --- OPRAVA: Pøidáme novou Translaci NA ZAÈÁTEK ---
+            clone->addTransformationToFront(new Translate(worldPos));
+            // --------------------------------------------------
 
             controller->activeScene->addObject(clone);
         }

@@ -5,7 +5,6 @@
 #include "Transformation.h"
 #include "Material.h"
 #include "Texture.h"
-#include "Translate.h"
 #include <glm/glm.hpp> 
 
 class DrawableObject {
@@ -16,6 +15,16 @@ public:
     ~DrawableObject();
 
     void addTransformation(Transformation* t) { transformations.push_back(t); }
+
+    // --- PØIDÁNO ---
+    /**
+     * Pøidá transformaci na zaèátek seznamu (pro zajištìní správného poøadí T*R*S).
+     */
+    void addTransformationToFront(Transformation* t) {
+        transformations.insert(transformations.begin(), t);
+    }
+    // -------------
+
     glm::mat4 getMatrix() const;
     void render() const;
     int getID() const { return id; }
@@ -25,14 +34,9 @@ public:
     ShaderProgram* getShaderProgram() const { return shaderProgram; }
     const Material& getMaterial() const { return material; }
     Texture* getTexture() const { return texture; }
-
-    /**
-     * Najde první transformaci typu Translate a nastaví její pozici.
-     */
-    void setTranslation(const glm::vec3& newPosition);
-
-    // --- PØIDEJ TENTO ØÁDEK ---
     const std::vector<Transformation*>& getTransformations() const { return transformations; }
+
+    void setTranslation(const glm::vec3& newPosition);
 
 private:
     Model* model;

@@ -1,5 +1,5 @@
 #include "DrawableObject.h"
-
+#include "Translate.h" // Potøebné pro setTranslation
 
 DrawableObject::DrawableObject(Model* model, ShaderProgram* shaderProgram,
     const Material& material, int id, Texture* texture)
@@ -9,18 +9,19 @@ DrawableObject::DrawableObject(Model* model, ShaderProgram* shaderProgram,
 }
 
 DrawableObject::~DrawableObject() {
-    //for (auto t : transformations) delete t;
+    for (auto t : transformations) delete t;
 }
 
 glm::mat4 DrawableObject::getMatrix() const {
     glm::mat4 mat(1.0f);
+    // Matice se násobí v poøadí T * S * R
+    // (Vertex je nejdøív rotován, pak škálován, pak pøemístìn)
     for (const auto& t : transformations) {
         mat = mat * t->getMatrix();
     }
     return mat;
 }
 
-// --- PØIDANÁ METODA ---
 void DrawableObject::setTranslation(const glm::vec3& newPosition) {
     // Projdeme všechny transformace
     for (auto* t : transformations) {
@@ -33,21 +34,9 @@ void DrawableObject::setTranslation(const glm::vec3& newPosition) {
         }
     }
 
-    // Pokud jsme žádný Translate nenašli (objekt má tøeba jen Scale/Rotate),
-    // vytvoøíme nový a vložíme ho na ZAÈÁTEK seznamu.
-    // (Je dùležité, aby byla translace až po rotaci/škálování,
-    // ale pro jednoduchost ji dáme na zaèátek).
-    // Pro správné poøadí (TRS) bychom ji vložili na konec:
-    // transformations.push_back(new Translate(newPosition));
-
-    // Pro poøadí TRS (Translate * Rotate * Scale) ji musíme vložit na zaèátek
-    // POZOR: getMatrix() násobí v poøadí, v jakém jsou v seznamu.
-    // Aby byla translace poslední (mat = ... * T), musí být na konci seznamu.
-    // Ale tvoje objekty (napø. koèka) mají poøadí S * R * T.
-
-    // Dle tvého kódu (napø. catObject) pøidáváš transformace v poøadí S, R, T.
-    // Proto pøidáme novou Translaci na konec.
-    transformations.push_back(new Translate(newPosition));
+    // Pokud jsme žádný Translate nenašli, vytvoøíme nový a
+    // vložíme ho na ZAÈÁTEK seznamu, aby bylo zachováno poøadí T*S*R.
+    transformations.insert(transformations.begin(), new Translate(newPosition));
 }
 
 
