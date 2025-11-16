@@ -13,9 +13,6 @@ public:
         offset = newOffset;
     }
 
-    /**
-     * Vytvoøí kopii této Translate transformace.
-     */
     virtual Transformation* clone() const override {
         return new Translate(offset);
     }

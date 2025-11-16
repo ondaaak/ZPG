@@ -9,9 +9,6 @@ public:
         return glm::scale(glm::mat4(1.0f), scale);
     }
 
-    /**
-     * Vytvoøí kopii této Scale transformace.
-     */
     virtual Transformation* clone() const override {
         return new Scale(scale);
     }

@@ -10,9 +10,6 @@ public:
     }
     void setAngle(float newAngle) { angle = newAngle; }
 
-    /**
-     * Vytvoøí kopii této Rotate transformace.
-     */
     virtual Transformation* clone() const override {
         return new Rotate(angle, axis);
     }

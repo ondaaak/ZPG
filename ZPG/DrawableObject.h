@@ -5,6 +5,7 @@
 #include "Transformation.h"
 #include "Material.h"
 #include "Texture.h"
+#include "Translate.h"
 #include <glm/glm.hpp> 
 
 class DrawableObject {
@@ -15,21 +16,14 @@ public:
     ~DrawableObject();
 
     void addTransformation(Transformation* t) { transformations.push_back(t); }
-
-    // --- PØIDÁNO ---
-    /**
-     * Pøidá transformaci na zaèátek seznamu (pro zajištìní správného poøadí T*R*S).
-     */
     void addTransformationToFront(Transformation* t) {
         transformations.insert(transformations.begin(), t);
     }
-    // -------------
 
     glm::mat4 getMatrix() const;
     void render() const;
     int getID() const { return id; }
 
-    // Gettery pro klonování
     Model* getModel() const { return model; }
     ShaderProgram* getShaderProgram() const { return shaderProgram; }
     const Material& getMaterial() const { return material; }

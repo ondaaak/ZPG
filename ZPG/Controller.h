@@ -13,7 +13,7 @@ public:
     static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
     static void cursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 
-    void setActiveScene(Scene* scene); // <-- ZMÌNA: Pøidat tuto metodu
+    void setActiveScene(Scene* scene);
 
 private:
     Camera* camera;

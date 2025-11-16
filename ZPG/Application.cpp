@@ -3,9 +3,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-// Transformace
-#include "Translate.h"
-
 float triangle[] = {
     0.0f, 0.5f, 0.0f,
     0.5f, -0.5f, 0.0f,
@@ -31,7 +28,7 @@ void Application::switchScene(int sceneNumber) {
     case 4: activeScene = scene4; printf("Switched to Scene 4\n"); break;
     default: printf("Invalid scene number: %d\n", sceneNumber); break;
     }
-    // OPRAVA 1: Aktualizujeme scénu v controlleru
+
     if (controller) {
         controller->setActiveScene(activeScene);
     }
@@ -39,7 +36,7 @@ void Application::switchScene(int sceneNumber) {
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if (key == GLFW_KEY_KP_1 && action == GLFW_PRESS) app->switchScene(1);
+    if (key == GLFW_KEY_KP_1 && action == GLFW_PRESS) app->switchScene(1); 
     if (key == GLFW_KEY_KP_2 && action == GLFW_PRESS) app->switchScene(2);
     if (key == GLFW_KEY_KP_3 && action == GLFW_PRESS) app->switchScene(3);
     if (key == GLFW_KEY_KP_4 && action == GLFW_PRESS) app->switchScene(4);
@@ -54,11 +51,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 Application::Application()
     : window(nullptr), activeScene(nullptr),
     scene1(nullptr), scene2(nullptr), scene3(nullptr), scene4(nullptr),
-    skybox(nullptr), controller(nullptr), // Inicializovat controller
+    skybox(nullptr), 
+    controller(nullptr),
     flashlight(nullptr),
     isFlashlightOn(true), fKeyPressedLastFrame(false)
 {
-	currentId = 1; // Začínáme od ID 1
+	currentId = 1;
 }
 
 Application::~Application() {
@@ -70,9 +68,6 @@ bool Application::init() {
         fprintf(stderr, "ERROR: could not start GLFW3\n");
         return false;
     }
-
-    // Vyžádáme si Stencil buffer
-    glfwWindowHint(GLFW_STENCIL_BITS, 8);
 
     window = glfwCreateWindow(1024, 800, "ZPG", NULL, NULL);
     if (!window) {
@@ -129,7 +124,7 @@ void Application::run() {
     Material basic; basic.ambient = glm::vec3(1.0f, 1.0f, 1.0f); basic.diffuse = glm::vec3(1.0f, 1.0f, 1.0f); basic.specular = glm::vec3(1.0f, 1.0f, 1.0f); basic.shininess = 32.0f;
 
     Camera camera;
-    controller = new Controller(&camera, window, activeScene); // Upraveno na `new`
+    controller = new Controller(&camera, window, activeScene);
 
     Model* triangleModel = new Model(triangle, sizeof(triangle) / sizeof(float) / 3, 0);
     Model* sphereModel = new Model(sphere, sizeof(sphere) / sizeof(float) / 6, 1);
@@ -155,21 +150,16 @@ void Application::run() {
     };
     skybox = new Skybox(faces, skyboxShaderProgram);
 
-    //int currentId = 1;
-
     DrawableObject* catObject = new DrawableObject(catModel, phongShaderProgram, white, currentId++, catTexture);
     DrawableObject* foxObject = new DrawableObject(foxModel, phongShaderProgram, white, currentId++, foxTexture);
     DrawableObject* shrekObject = new DrawableObject(shrekModel, phongShaderProgram, white, currentId++, shrekTexture);
     DrawableObject* fionaObject = new DrawableObject(fionaModel, phongShaderProgram, white, currentId++, fionaTexture);
     DrawableObject* grassObject = new DrawableObject(grassModel, phongShaderProgram, basic, currentId++, grassTexture);
 
-    // --- OPRAVA POŘADÍ ---
-      // T (Translate) musí být první, aby setTranslation fungovalo.
     catObject->addTransformation(new Translate(glm::vec3(0.0f, 0.0f, 1.0f)));
     catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
     catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
-    // Fox už to měl správně
     foxObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 0.5f)));
     foxObject->addTransformation(new Scale(glm::vec3(0.0025f, 0.0025f, 0.0025f)));
     foxObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -252,39 +242,29 @@ void Application::run() {
     scene4Lights.push_back(sunLight);
     for (Light* light : scene4Lights) { light->addObserver(phongShaderProgram); }
 
-    // --- OPRAVA CHYBY č. 2 (Double-delete) ---
-    // Vytvoříme ukazatele na transformace, které budeme animovat
     Rotate* earthOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* earthOrbitTranslation = new Translate(glm::vec3(3.0f, 0.0f, 0.0f));
     Rotate* moonOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* moonOrbitTranslation = new Translate(glm::vec3(0.8f, 0.0f, 0.0f));
 
-    // A vytvoříme jejich duplikáty pro měsíc, abychom nesdíleli ukazatele
     Rotate* moonEarthOrbitCopy = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* earthTranslationCopy = new Translate(glm::vec3(3.0f, 0.0f, 0.0f));
 
-    // Přiřadíme "Zemi" její transformace
     zeme->addTransformation(earthOrbitRotation);
     zeme->addTransformation(earthOrbitTranslation);
     zeme->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
 
-    // Přiřadíme "Měsíci" jeho transformace (včetně kopií transformací Země)
-    mesic->addTransformation(moonEarthOrbitCopy);     // Kopie rotace Země
-    mesic->addTransformation(earthTranslationCopy); // Kopie translace Země
+    mesic->addTransformation(moonEarthOrbitCopy);    
+    mesic->addTransformation(earthTranslationCopy); 
     mesic->addTransformation(moonOrbitRotation);
     mesic->addTransformation(moonOrbitTranslation);
     mesic->addTransformation(new Scale(glm::vec3(0.1f, 0.1f, 0.1f)));
-    // ---------------------------------------------
 
-  // --- OPRAVA POŘADÍ ---
     grassObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
-    // (Tráva nemá Translate, takže setTranslation jí ho přidá na konec - to je v pořádku)
 
-    // --- OPRAVA POŘADÍ ---
     shrekObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 1.2f)));
     shrekObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
 
-    // --- OPRAVA POŘADÍ ---
     fionaObject->addTransformation(new Translate(glm::vec3(2.8f, 0.0f, 1.5f)));
     fionaObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
 
@@ -315,11 +295,10 @@ void Application::run() {
     spheresProgram->setLightUniforms(scene2Lights);
 
     glEnable(GL_DEPTH_TEST);
-    glClearStencil(0); // Nastavíme clear hodnotu pro stencil
+    glClearStencil(0); 
 
     while (!glfwWindowShouldClose(window)) {
 
-        // Mažeme všechny tři buffery
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         float currentFrame = glfwGetTime();
@@ -390,12 +369,10 @@ void Application::run() {
             earthAngle += 0.005f;
             moonAngle += 0.01f;
 
-            // OPRAVA CHYBY č. 2: Aktualizujeme obě sady transformací
             earthOrbitRotation->setAngle(earthAngle);
-            moonEarthOrbitCopy->setAngle(earthAngle); // Aktualizujeme i kopii
+            moonEarthOrbitCopy->setAngle(earthAngle); 
 
             moonOrbitRotation->setAngle(moonAngle);
-            // Ostatní (translace) se nemění
 
             phongShaderProgram->setLightsPointer(&scene4Lights);
             phongShaderProgram->setLightUniforms(scene4Lights);
@@ -412,8 +389,6 @@ void Application::run() {
         glfwPollEvents();
         glfwSwapBuffers(window);
     }
-
-    // --- OPRAVA: Musíme smazat VŠECHNY alokované objekty ---
 
     delete phongShaderProgram;
     delete spheresProgram;
@@ -436,7 +411,6 @@ void Application::run() {
     delete fionaModel;
     delete grassModel;
 
-    // Smazání uložených transformací (prevence memory leaků)
     delete rotation;
     delete rotation2;
     delete forestSphere1Translate;
@@ -447,7 +421,6 @@ void Application::run() {
     delete moonOrbitTranslation;
     delete moonEarthOrbitCopy;
     delete earthTranslationCopy;
-    // ----------------------------------------------------
 }
 
 void Application::cleanup() {
@@ -461,12 +434,11 @@ void Application::cleanup() {
         skybox = nullptr;
     }
 
-    if (controller) { // Smazání controlleru
+    if (controller) { 
         delete controller;
         controller = nullptr;
     }
 
-    // Smazání světel
     for (Light* light : scene2Lights) {
         delete light;
     }

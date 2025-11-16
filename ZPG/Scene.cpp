@@ -1,27 +1,17 @@
 #include "Scene.h"
-#include <stdio.h> // Pro printf
+#include <stdio.h>
 
 Scene::Scene()
-    : skybox(nullptr), selectedObject(nullptr) // Inicializujeme selectedObject
+    : skybox(nullptr), selectedObject(nullptr)
 {
 }
 
 Scene::~Scene() {
-    // Smažeme všechny objekty, které scéna vlastní
+
     for (auto* obj : objects) {
         delete obj;
     }
     objects.clear();
-
-    // --- OPRAVA CHYBY è. 1 ---
-    // Skybox je vlastnìn a mazán v Application.cpp
-    // Odebereme tento øádek, abychom zabránili dvojitému smazání.
-    /*
-    if (skybox) {
-        delete skybox;
-    }
-    */
-    // -------------------------
 }
 
 void Scene::addObject(DrawableObject* object) {
@@ -32,16 +22,10 @@ void Scene::setSkybox(Skybox* sb) {
     skybox = sb;
 }
 
-// --- ZDE ZAÈÍNÁ NOVÁ LOGIKA ---
-
-/**
- * Najde objekt podle jeho ID a nastaví ho jako 'selectedObject'.
- * Pokud je ID 0 (pozadí), zruší výbìr.
- */
 void Scene::selectObjectByID(int id) {
     if (id == 0) {
         if (selectedObject != nullptr) {
-            printf("Vyber zrusen.\n");
+            printf("Deselected object.\n");
         }
         selectedObject = nullptr;
         return;
@@ -50,44 +34,36 @@ void Scene::selectObjectByID(int id) {
     for (DrawableObject* obj : objects) {
         if (obj->getID() == id) {
             selectedObject = obj;
-            printf("Objekt vybran! ID: %d\n", id);
+            printf("Object ID %d selected.\n", id);
             return;
         }
     }
 
-    printf("Chyba: Objekt s ID %d nenalezen.\n", id);
+    printf("Object ID %d not found.\n", id);
     selectedObject = nullptr;
 }
 
-/**
- * Smaže aktuálnì vybraný objekt ze scény.
- */
 void Scene::deleteSelectedObject() {
     if (selectedObject == nullptr) {
-        printf("Zadny objekt neni vybran k smazani.\n");
+        printf("No object selected.\n");
         return;
     }
 
     auto it = std::find(objects.begin(), objects.end(), selectedObject);
 
     if (it != objects.end()) {
-        printf("Mazani objektu s ID: %d\n", selectedObject->getID());
+        printf("Deleting object ID: %d\n", selectedObject->getID());
 
         objects.erase(it);
-        delete selectedObject; // Tímto se zavolá DrawableObject::~DrawableObject()
+        delete selectedObject; 
         selectedObject = nullptr;
     }
 }
 
-/**
- * Vrátí ukazatel na aktuálnì vybraný objekt.
- */
 DrawableObject* Scene::getSelectedObject() const {
     return selectedObject;
 }
 
-
-// --- ZDE JE TVOJE STÁVAJÍCÍ FUNKCE RENDER ---
 void Scene::render() {
     glEnable(GL_STENCIL_TEST);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);

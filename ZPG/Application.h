@@ -36,6 +36,7 @@
 #include "Material.h"
 #include "Texture.h"
 #include "Skybox.h" 
+#include "Translate.h"
 
 class Application {
 public:
@@ -43,7 +44,6 @@ public:
     ~Application();
     void run();
     void switchScene(int sceneNumber);
-    // --- PØIDAT TUTO METODU ---
     Scene* getActiveScene() { return activeScene; }
 
     int currentId;

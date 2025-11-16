@@ -1,13 +1,11 @@
 #include "Controller.h"
 #include "Scene.h"
-#include "Application.h"  // Pro 'app->currentId'
-#include "Translate.h"    // Pro klonování a dynamický cast
+#include "Application.h" 
+#include "Translate.h"  
 #include <stdio.h> 
 
-// Globální ukazatel na aplikaci
 extern Application* app;
 
-// --- Definice statických promìnných ---
 bool Controller::rightMousePressed = false;
 bool Controller::firstMouse = true;
 double Controller::lastX = 0.0;
@@ -67,14 +65,12 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
     GLint y_new = height - (GLint)ypos;
     GLint x = (GLint)xpos;
 
-    // --- 1. VÝBÌR / PØEMÍSTÌNÍ (Levé tlaèítko) ---
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
 
-        // --- A) PØEMÍSTÌNÍ (Alt + Klik) ---
         if (mods == GLFW_MOD_ALT) {
             DrawableObject* selected = controller->activeScene->getSelectedObject();
             if (selected == nullptr) {
-                printf("Nelze premistit: Zadny objekt neni vybran.\n");
+                printf("No selected object, can't move.\n");
                 return;
             }
 
@@ -89,13 +85,12 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
                 glm::vec3 worldPos = glm::unProject(screenPos, view, proj, viewport);
 
                 selected->setTranslation(worldPos);
-                printf("Objekt ID %d premisten na [%f, %f, %f]\n", selected->getID(), worldPos.x, worldPos.y, worldPos.z);
+                printf("Object ID %d moved to [%f, %f, %f]\n", selected->getID(), worldPos.x, worldPos.y, worldPos.z);
             }
             else {
-                printf("Nelze premistit na skybox.\n");
+                printf("Can't move to skybox.\n");
             }
         }
-        // --- B) BÌŽNÝ VÝBÌR ---
         else {
             GLuint index = 0;
             glReadPixels(x, y_new, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
@@ -103,12 +98,11 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
         }
     }
 
-    // --- 2. KLONOVÁNÍ (Sázení) (Støední tlaèítko) ---
     if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
 
         DrawableObject* selected = controller->activeScene->getSelectedObject();
         if (selected == nullptr) {
-            printf("Nelze klonovat: Zadny objekt neni vybran.\n");
+            printf("No selected object, can't clone.\n");
             return;
         }
 
@@ -124,14 +118,14 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
 
             int newID = app->currentId++;
             if (newID > 255) {
-                printf("Dosazen maximalni pocet objektu (255)!\n");
+                printf("Maximum number of objects reached (255)!\n");
                 app->currentId = 255;
                 return;
             }
 
-            printf("Klonovani objektu ID %d na pozici [%f, %f, %f] s novym ID %d\n",
+            printf("Cloning object ID %d to [%f, %f, %f] with new ID %d\n",
                 selected->getID(), worldPos.x, worldPos.y, worldPos.z, newID);
-
+            
             DrawableObject* clone = new DrawableObject(
                 selected->getModel(),
                 selected->getShaderProgram(),
@@ -140,31 +134,26 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
                 selected->getTexture()
             );
 
-            // --- ZMÌNA: Kopírování transformací ---
             for (const auto* t : selected->getTransformations()) {
                 const Translate* trans = dynamic_cast<const Translate*>(t);
                 if (trans != nullptr) {
-                    continue; // Pùvodní translaci pøeskoèíme
+                    continue;
                 }
                 else {
-                    clone->addTransformation(t->clone()); // Ostatní (S, R) naklonujeme
+                    clone->addTransformation(t->clone());
                 }
             }
 
-            // --- OPRAVA: Pøidáme novou Translaci NA ZAÈÁTEK ---
             clone->addTransformationToFront(new Translate(worldPos));
-            // --------------------------------------------------
 
             controller->activeScene->addObject(clone);
         }
         else {
-            printf("Nelze klonovat na skybox.\n");
+            printf("Can't clone skybox.\n");
         }
     }
 }
 
-
-// --- Callback pro pohyb myši (beze zmìny) ---
 void Controller::cursorPosCallback(GLFWwindow* window, double xpos, double ypos)
 {
     Controller* controller = static_cast<Controller*>(glfwGetWindowUserPointer(window));
@@ -179,7 +168,7 @@ void Controller::cursorPosCallback(GLFWwindow* window, double xpos, double ypos)
         }
 
         float xoffset = (float)(xpos - lastX);
-        float yoffset = (float)(ypos - lastY); // Inverzní ovládání
+        float yoffset = (float)(ypos - lastY);
 
         lastX = xpos;
         lastY = ypos;
