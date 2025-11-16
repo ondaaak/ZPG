@@ -5,8 +5,8 @@
 #include "Transformation.h"
 #include "Material.h"
 #include "Texture.h"
-#include <glm/glm.hpp> 
 #include "Translate.h"
+#include <glm/glm.hpp> 
 
 class DrawableObject {
 public:
@@ -20,8 +20,6 @@ public:
     void render() const;
     int getID() const { return id; }
 
-    // --- PØIDANÉ METODY ---
-
     // Gettery pro klonování
     Model* getModel() const { return model; }
     ShaderProgram* getShaderProgram() const { return shaderProgram; }
@@ -30,9 +28,11 @@ public:
 
     /**
      * Najde první transformaci typu Translate a nastaví její pozici.
-     * Pokud žádná není, vytvoøí novou na zaèátku seznamu.
      */
     void setTranslation(const glm::vec3& newPosition);
+
+    // --- PØIDEJ TENTO ØÁDEK ---
+    const std::vector<Transformation*>& getTransformations() const { return transformations; }
 
 private:
     Model* model;

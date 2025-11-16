@@ -1,5 +1,6 @@
 #pragma once
 #include "Transformation.h"
+
 class Rotate : public Transformation {
 public:
     Rotate(float angle, const glm::vec3& axis) : angle(angle), axis(axis) {}
@@ -7,7 +8,14 @@ public:
     glm::mat4 getMatrix() const override {
         return glm::rotate(glm::mat4(1.0f), angle, axis);
     }
-	void setAngle(float newAngle) { angle = newAngle; }
+    void setAngle(float newAngle) { angle = newAngle; }
+
+    /**
+     * Vytvoøí kopii této Rotate transformace.
+     */
+    virtual Transformation* clone() const override {
+        return new Rotate(angle, axis);
+    }
 
 private:
     float angle;

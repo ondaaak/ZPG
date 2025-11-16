@@ -163,10 +163,13 @@ void Application::run() {
     DrawableObject* fionaObject = new DrawableObject(fionaModel, phongShaderProgram, white, currentId++, fionaTexture);
     DrawableObject* grassObject = new DrawableObject(grassModel, phongShaderProgram, basic, currentId++, grassTexture);
 
+    // --- OPRAVA POŘADÍ ---
+      // T (Translate) musí být první, aby setTranslation fungovalo.
+    catObject->addTransformation(new Translate(glm::vec3(0.0f, 0.0f, 1.0f)));
     catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
     catObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-    catObject->addTransformation(new Translate(glm::vec3(-3.0f, 0.0f, 5.0f)));
 
+    // Fox už to měl správně
     foxObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 0.5f)));
     foxObject->addTransformation(new Scale(glm::vec3(0.0025f, 0.0025f, 0.0025f)));
     foxObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -273,12 +276,17 @@ void Application::run() {
     mesic->addTransformation(new Scale(glm::vec3(0.1f, 0.1f, 0.1f)));
     // ---------------------------------------------
 
+  // --- OPRAVA POŘADÍ ---
     grassObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
-    shrekObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
-    fionaObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
-    shrekObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 1.2f)));
-    fionaObject->addTransformation(new Translate(glm::vec3(2.8f, 0.0f, 1.5f)));
+    // (Tráva nemá Translate, takže setTranslation jí ho přidá na konec - to je v pořádku)
 
+    // --- OPRAVA POŘADÍ ---
+    shrekObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 1.2f)));
+    shrekObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
+
+    // --- OPRAVA POŘADÍ ---
+    fionaObject->addTransformation(new Translate(glm::vec3(2.8f, 0.0f, 1.5f)));
+    fionaObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
 
     scene3->addObject(grassObject);
     scene1->addObject(triangleObject);

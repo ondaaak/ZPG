@@ -1,5 +1,6 @@
 #pragma once
 #include "Transformation.h"
+
 class Translate : public Transformation {
 public:
     Translate(const glm::vec3& offset) : offset(offset) {}
@@ -8,9 +9,16 @@ public:
         return glm::translate(glm::mat4(1.0f), offset);
     }
 
-	void setOffset(const glm::vec3& newOffset) {
-		offset = newOffset;
-	}
+    void setOffset(const glm::vec3& newOffset) {
+        offset = newOffset;
+    }
+
+    /**
+     * Vytvoøí kopii této Translate transformace.
+     */
+    virtual Transformation* clone() const override {
+        return new Translate(offset);
+    }
 
 private:
     glm::vec3 offset;
