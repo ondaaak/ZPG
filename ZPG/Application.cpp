@@ -112,6 +112,7 @@ void Application::run() {
     phongShaderProgram->setShaderProgram();
     phongShaderProgram->SetUniform("textureSampler", 0);
     phongShaderProgram->SetUniform("useTexture", 0);
+    phongShaderProgram->SetUniform("w", 500.0f);
 
     Material white; white.ambient = glm::vec3(0.5f, 0.5f, 0.5f); white.diffuse = glm::vec3(1.0f, 1.0f, 1.0f); white.specular = glm::vec3(1.0f, 1.0f, 1.0f); white.shininess = 32.0f;
     Material mat_blue_plastic; mat_blue_plastic.ambient = glm::vec3(0.0f, 0.0f, 1.0f); mat_blue_plastic.diffuse = glm::vec3(0.0f, 0.0f, 0.0f); mat_blue_plastic.specular = glm::vec3(0.0f, 0.0f, 0.0f); mat_blue_plastic.shininess = 1.0f;
@@ -267,6 +268,8 @@ void Application::run() {
 
     fionaObject->addTransformation(new Translate(glm::vec3(2.8f, 0.0f, 1.5f)));
     fionaObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
+
+
 
     scene3->addObject(grassObject);
     scene1->addObject(triangleObject);

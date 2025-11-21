@@ -9,7 +9,7 @@
 
 struct lightSource {
     vec3 position;
-vec3 diffuse;
+    vec3 diffuse;
     vec3 specular;
     vec3 direction;
     float innerCutoff;
@@ -37,8 +37,10 @@ uniform vec3 viewPos;
 
 void main(void)
 {
+    vec3 fragmentWorldPos = worldPos.xyz / worldPos.w;
+
     vec3 norm = normalize(worldNorm);
-    vec3 viewDir = normalize(viewPos - worldPos.xyz);// x.xyz/x.w
+    vec3 viewDir = normalize(viewPos - fragmentWorldPos); 
 
     vec3 ambientTotal = vec3(0.0); 
     vec3 diffuseTotal = vec3(0.0);
@@ -54,8 +56,8 @@ void main(void)
         float attenuation = 1.0; 
         float intensity = 1.0;
         if (lights[i].type == TYPE_POINT) {
-            lightDir = normalize(lights[i].position - worldPos.xyz);
-            float distance = length(lights[i].position - worldPos.xyz);
+            lightDir = normalize(lights[i].position - fragmentWorldPos); // Použijte opravenou pozici
+            float distance = length(lights[i].position - fragmentWorldPos); // Použijte opravenou pozici
             attenuation = 1.0 / (1.0 + 0.2 * distance + 0.3 * distance * distance);
         }
         else if (lights[i].type == TYPE_DIRECTIONAL) {
@@ -63,8 +65,8 @@ void main(void)
             attenuation = 1.0; 
         }
         else if (lights[i].type == TYPE_SPOT) {
-            lightDir = normalize(lights[i].position - worldPos.xyz);
-            float distance = length(lights[i].position - worldPos.xyz);
+            lightDir = normalize(lights[i].position - fragmentWorldPos); // Použijte opravenou pozici
+            float distance = length(lights[i].position - fragmentWorldPos); // Použijte opravenou pozici
             attenuation = 1.0 / (1.0 + 0.2 * distance + 0.3 * distance * distance);
             vec3 lightToFragDir = normalize(-lightDir);
             float theta = dot(lightToFragDir, normalize(lights[i].direction));
@@ -83,7 +85,7 @@ void main(void)
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
         diffuseTotal+= intensity * attenuation * diff * lights[i].diffuse;        
         specularTotal+= intensity * attenuation * spec * lights[i].specular;
-}    
+    }    
 
     vec3 baseColor = vec3(1.0);
     if (useTexture == 1) {
