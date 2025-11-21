@@ -148,6 +148,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="CustomTransform.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="DrawableObject.h" />
     <ClInclude Include="Light.h" />

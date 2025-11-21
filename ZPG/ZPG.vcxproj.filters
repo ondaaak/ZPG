@@ -122,6 +122,9 @@
     <ClInclude Include="Skybox.h">
       <Filter>Hlavičkové soubory</Filter>
     </ClInclude>
+    <ClInclude Include="CustomTransform.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="main_vertex_shader.glsl">

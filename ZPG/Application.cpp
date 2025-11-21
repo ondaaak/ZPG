@@ -1,4 +1,5 @@
 ﻿#include "Application.h"
+#include "CustomTransform.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -263,7 +264,10 @@ void Application::run() {
 
     grassObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
 
+
+
     shrekObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 1.2f)));
+    shrekObject->addTransformation(new CustomTransform(3.0f));
     shrekObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
 
     fionaObject->addTransformation(new Translate(glm::vec3(2.8f, 0.0f, 1.5f)));
