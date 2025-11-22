@@ -299,16 +299,16 @@ void Application::run() {
         glm::vec3(-2.5f, 0.0f, 2.5f)
     };
 
-    PathTransform* mole1Anim = new PathTransform(mole1Path, 1.5f);
-    PathTransform* mole2Anim = new PathTransform(mole2Path, 1.5f);
-    PathTransform* mole3Anim = new PathTransform(mole3Path, 1.5f);
-    PathTransform* mole4Anim = new PathTransform(mole4Path, 1.5f);
+    PathTransform* mole1Anim = new PathTransform(mole1Path, 3.0f);
+    PathTransform* mole2Anim = new PathTransform(mole2Path, 3.0f);
+    PathTransform* mole3Anim = new PathTransform(mole3Path, 3.0f);
+    PathTransform* mole4Anim = new PathTransform(mole4Path, 3.0f);
 /*
     mole1Anim->setLoop(true);
     mole2Anim->setLoop(true);
     mole3Anim->setLoop(true);
     mole4Anim->setLoop(true);
-    */
+  */  
 
     DrawableObject* mole1 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
     DrawableObject* mole2 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
@@ -454,12 +454,24 @@ void Application::run() {
             spheresProgram->setLightsPointer(&scene5Lights);
             spheresProgram->setLightUniforms(scene5Lights);
        
-          
-            mole1Anim->update(deltaTime);
-            mole2Anim->update(deltaTime);
-            mole3Anim->update(deltaTime);
-            mole4Anim->update(deltaTime);
-            //mole4Anim->reset();
+            static int frameCounter = 0;
+            static int activeMole = rand() % 4;
+            frameCounter++;
+
+            if (frameCounter >= 3000) {
+                frameCounter = 0;
+                
+
+                activeMole = rand() % 4;
+            }
+
+            switch (activeMole) {
+                case 0: mole1Anim->update(deltaTime); break;
+                case 1: mole2Anim->update(deltaTime); break;
+                case 2: mole3Anim->update(deltaTime); break;
+                case 3: mole4Anim->update(deltaTime); break;
+            }
+            
         }
         
         int width, height;
