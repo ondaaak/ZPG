@@ -37,6 +37,7 @@
 #include "Texture.h"
 #include "Skybox.h" 
 #include "Translate.h"
+#include "PathTransform.h"
 
 class Application {
 public:

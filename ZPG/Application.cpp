@@ -279,22 +279,54 @@ void Application::run() {
     fionaObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
 
 
+    std::vector<glm::vec3> mole1Path = {
+        glm::vec3(0.0f, 2.5f, 0.0f),   
+        glm::vec3(0.0f, 2.5f, 2.5f)    
+    };
+
+    std::vector<glm::vec3> mole2Path = {
+        glm::vec3(2.5f, 0.0f, 0.0f),   
+        glm::vec3(2.5f, 0.0f, 2.5f)
+    };
+
+    std::vector<glm::vec3> mole3Path = {
+        glm::vec3(0.0f, -2.5f, 0.0f),  
+        glm::vec3(0.0f, -2.5f, 2.5f)
+    };
+
+    std::vector<glm::vec3> mole4Path = {
+        glm::vec3(-2.5f, 0.0f, 0.0f),  
+        glm::vec3(-2.5f, 0.0f, 2.5f)
+    };
+
+    PathTransform* mole1Anim = new PathTransform(mole1Path, 1.5f);
+    PathTransform* mole2Anim = new PathTransform(mole2Path, 1.5f);
+    PathTransform* mole3Anim = new PathTransform(mole3Path, 1.5f);
+    PathTransform* mole4Anim = new PathTransform(mole4Path, 1.5f);
+/*
+    mole1Anim->setLoop(true);
+    mole2Anim->setLoop(true);
+    mole3Anim->setLoop(true);
+    mole4Anim->setLoop(true);
+    */
+
     DrawableObject* mole1 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
     DrawableObject* mole2 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
     DrawableObject* mole3 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
     DrawableObject* mole4 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
 	DrawableObject* moleBarrier = new DrawableObject(grassModel, spheresProgram, white, currentId++, nullptr);
-
+    
     mole1->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
     mole2->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
     mole3->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
     mole4->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
-	moleBarrier->addTransformation(new Scale(glm::vec3(0.8f, 0.8f, 1.0f)));
+    
+    mole1->addTransformation(mole1Anim);
+    mole2->addTransformation(mole2Anim);
+    mole3->addTransformation(mole3Anim);
+    mole4->addTransformation(mole4Anim);
 
-    mole1->addTransformation(new Translate(glm::vec3(0.0f, 2.5f, 0.0f)));
-    mole2->addTransformation(new Translate(glm::vec3(2.5f, 0.0f, 0.0f)));
-    mole3->addTransformation(new Translate(glm::vec3(0.0f, -2.5f, 0.0f)));
-    mole4->addTransformation(new Translate(glm::vec3(-2.5f, 0.0f, 0.0f)));
+    moleBarrier->addTransformation(new Scale(glm::vec3(0.8f, 0.8f, 1.0f)));
 	moleBarrier->addTransformation(new Translate(glm::vec3(0.0f, 0.0f, 0.5f)));
 	moleBarrier->addTransformation(new Rotate(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
     
@@ -422,8 +454,12 @@ void Application::run() {
             spheresProgram->setLightsPointer(&scene5Lights);
             spheresProgram->setLightUniforms(scene5Lights);
        
-        
-        
+          
+            mole1Anim->update(deltaTime);
+            mole2Anim->update(deltaTime);
+            mole3Anim->update(deltaTime);
+            mole4Anim->update(deltaTime);
+            //mole4Anim->reset();
         }
         
         int width, height;
