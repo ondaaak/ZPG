@@ -54,12 +54,14 @@ private:
     Scene* scene1;
     Scene* scene2;
     Scene* scene3;
-    Scene* scene4;
+    Scene* scene4; 
+    Scene* scene5;
     Skybox* skybox;
 
     std::vector<Light*> scene2Lights;
     std::vector<Light*> scene3Lights;
     std::vector<Light*> scene4Lights;
+    std::vector<Light*> scene5Lights;
 
     Controller* controller;
 

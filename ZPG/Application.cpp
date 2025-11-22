@@ -27,6 +27,7 @@ void Application::switchScene(int sceneNumber) {
     case 2: activeScene = scene2; printf("Switched to Scene 2\n"); break;
     case 3: activeScene = scene3; printf("Switched to Scene 3\n"); break;
     case 4: activeScene = scene4; printf("Switched to Scene 4\n"); break;
+    case 5: activeScene = scene5; printf("Switched to Scene 5\n"); break;
     default: printf("Invalid scene number: %d\n", sceneNumber); break;
     }
 
@@ -41,6 +42,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_KP_2 && action == GLFW_PRESS) app->switchScene(2);
     if (key == GLFW_KEY_KP_3 && action == GLFW_PRESS) app->switchScene(3);
     if (key == GLFW_KEY_KP_4 && action == GLFW_PRESS) app->switchScene(4);
+    if (key == GLFW_KEY_KP_5 && action == GLFW_PRESS) app->switchScene(5);
 
     if (key == GLFW_KEY_DELETE && action == GLFW_PRESS) {
         if (app && app->getActiveScene()) {
@@ -51,10 +53,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 Application::Application()
     : window(nullptr), activeScene(nullptr),
-    scene1(nullptr), scene2(nullptr), scene3(nullptr), scene4(nullptr),
+    scene1(nullptr), scene2(nullptr), scene3(nullptr), scene4(nullptr), scene5(nullptr),
     skybox(nullptr), 
     controller(nullptr),
     flashlight(nullptr),
+    flashlightDiffuseColor(glm::vec3(0.0f)),   
+    flashlightSpecularColor(glm::vec3(0.0f)),
     isFlashlightOn(true), fKeyPressedLastFrame(false)
 {
 	currentId = 1;
@@ -104,6 +108,7 @@ void Application::run() {
     scene2 = new Scene();
     scene3 = new Scene();
     scene4 = new Scene();
+	scene5 = new Scene();
     activeScene = scene1;
 
     ShaderProgram* phongShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
@@ -274,6 +279,30 @@ void Application::run() {
     fionaObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
 
 
+    DrawableObject* mole1 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
+    DrawableObject* mole2 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
+    DrawableObject* mole3 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
+    DrawableObject* mole4 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
+	DrawableObject* moleBarrier = new DrawableObject(grassModel, spheresProgram, white, currentId++, nullptr);
+
+    mole1->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
+    mole2->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
+    mole3->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
+    mole4->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
+	moleBarrier->addTransformation(new Scale(glm::vec3(0.8f, 0.8f, 1.0f)));
+
+    mole1->addTransformation(new Translate(glm::vec3(0.0f, 2.5f, 0.0f)));
+    mole2->addTransformation(new Translate(glm::vec3(2.5f, 0.0f, 0.0f)));
+    mole3->addTransformation(new Translate(glm::vec3(0.0f, -2.5f, 0.0f)));
+    mole4->addTransformation(new Translate(glm::vec3(-2.5f, 0.0f, 0.0f)));
+	moleBarrier->addTransformation(new Translate(glm::vec3(0.0f, 0.0f, 0.5f)));
+	moleBarrier->addTransformation(new Rotate(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+    
+
+    Light* scene5Light = new Light(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+    scene5Lights.push_back(scene5Light);
+    for (Light* light : scene5Lights) { light->addObserver(spheresProgram); }
+
 
     scene3->addObject(grassObject);
     scene1->addObject(triangleObject);
@@ -290,16 +319,20 @@ void Application::run() {
     scene4->addObject(slunce);
     scene4->addObject(zeme);
     scene4->addObject(mesic);
+    
 
+
+	scene5->addObject(mole1);
+	scene5->addObject(mole2);
+	scene5->addObject(mole3);
+	scene5->addObject(mole4);
+	scene5->addObject(moleBarrier);
+    
     scene3->setSkybox(skybox);
 
     float lastFrame = glfwGetTime();
     float earthAngle = 0.0f;
     float moonAngle = 0.0f;
-    phongShaderProgram->setLightUniforms(scene3Lights);
-    phongShaderProgram->setLightsPointer(&scene3Lights);
-    spheresProgram->setLightsPointer(&scene2Lights);
-    spheresProgram->setLightUniforms(scene2Lights);
 
     glEnable(GL_DEPTH_TEST);
     glClearStencil(0); 
@@ -314,7 +347,7 @@ void Application::run() {
 
         controller->processInput(deltaTime);
 
-        alpha += 0.01f;
+        alpha += 0.0005f;
         rotation->setAngle(alpha);
         rotation2->setAngle(alpha);
 
@@ -373,8 +406,8 @@ void Application::run() {
             flashlight->setDirection(camera.getCameraFront());
         }
         else if (activeScene == scene4) {
-            earthAngle += 0.005f;
-            moonAngle += 0.01f;
+            earthAngle += 0.0001f;
+            moonAngle += 0.0005f;
 
             earthOrbitRotation->setAngle(earthAngle);
             moonEarthOrbitCopy->setAngle(earthAngle); 
@@ -384,7 +417,15 @@ void Application::run() {
             phongShaderProgram->setLightsPointer(&scene4Lights);
             phongShaderProgram->setLightUniforms(scene4Lights);
         }
-
+		else if (activeScene == scene5) {
+        
+            spheresProgram->setLightsPointer(&scene5Lights);
+            spheresProgram->setLightUniforms(scene5Lights);
+       
+        
+        
+        }
+        
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
@@ -428,6 +469,10 @@ void Application::run() {
     delete moonOrbitTranslation;
     delete moonEarthOrbitCopy;
     delete earthTranslationCopy;
+
+
+
+
 }
 
 void Application::cleanup() {
@@ -435,6 +480,7 @@ void Application::cleanup() {
     delete scene2;
     delete scene3;
     delete scene4;
+    delete scene5;
 
     if (skybox) {
         delete skybox;
