@@ -3,6 +3,8 @@
 #include <algorithm> 
 #include "DrawableObject.h"
 #include "Skybox.h"
+#include "Transformation.h"
+#include "PathTransform.h"
 
 class Scene {
 public:
@@ -16,9 +18,12 @@ public:
     void selectObjectByID(int id);
     void deleteSelectedObject();
     DrawableObject* getSelectedObject() const;
+    void resetObjectAnimation(DrawableObject* obj);
+
+    DrawableObject* findObjectByID(int id) const;
 
 private:
     std::vector<DrawableObject*> objects;
     Skybox* skybox;
-    DrawableObject* selectedObject; 
+    DrawableObject* selectedObject;
 };

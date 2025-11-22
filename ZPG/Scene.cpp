@@ -35,6 +35,7 @@ void Scene::selectObjectByID(int id) {
         if (obj->getID() == id) {
             selectedObject = obj;
             printf("Object ID %d selected.\n", id);
+
             return;
         }
     }
@@ -62,6 +63,30 @@ void Scene::deleteSelectedObject() {
 
 DrawableObject* Scene::getSelectedObject() const {
     return selectedObject;
+}
+
+DrawableObject* Scene::findObjectByID(int id) const {
+    for (DrawableObject* obj : objects) {
+        if (obj->getID() == id) {
+            return obj;
+        }
+    }
+    return nullptr;
+}
+
+void Scene::resetObjectAnimation(DrawableObject* obj) {
+    if (!obj) return;
+
+    for (Transformation* transform : obj->getTransformations()) {
+        PathTransform* pathTransform = dynamic_cast<PathTransform*>(transform);
+        if (pathTransform) {
+            pathTransform->reset();
+            printf("Animation reset for object ID %d\n", obj->getID());
+            return;
+        }
+    }
+
+    printf("No PathTransform found for object ID %d\n", obj->getID());
 }
 
 void Scene::render() {

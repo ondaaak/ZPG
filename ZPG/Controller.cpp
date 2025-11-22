@@ -65,6 +65,24 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
 
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
 
+        if (controller->activeScene == app->getScene5() && mods == 0) {
+            GLuint index = 0;
+            glReadPixels(x, y_new, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
+
+            if (index > 0) {
+                
+                DrawableObject* hitObject = controller->activeScene->findObjectByID(index);
+
+                if (hitObject) {
+                    controller->activeScene->resetObjectAnimation(hitObject);
+                    printf("Mole hit! Object ID %d reset.\n", index);
+                }
+            }
+            return;  
+        }
+
+        
+
         if (mods == GLFW_MOD_ALT) {
             DrawableObject* selected = controller->activeScene->getSelectedObject();
             if (selected == nullptr) {

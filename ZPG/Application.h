@@ -46,9 +46,9 @@ public:
     void run();
     void switchScene(int sceneNumber);
     Scene* getActiveScene() { return activeScene; }
-
+    Scene* getScene5() const { return scene5; }
     int currentId;
-
+    
 private:
     GLFWwindow* window;
     Scene* activeScene;

@@ -23,9 +23,11 @@ public:
     int getID() const { return id; }
 
     void setTranslation(const glm::vec3& newPosition);
-
     DrawableObject* clone(int newID) const;
 
+    const std::vector<Transformation*>& getTransformations() const {
+        return transformations;
+    }
 
 private:
     Model* model;
