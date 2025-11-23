@@ -118,16 +118,14 @@ void Application::run() {
     phongShaderProgram->setShaderProgram();
     phongShaderProgram->SetUniform("textureSampler", 0);
     phongShaderProgram->SetUniform("useTexture", 0);
+
     phongShaderProgram->SetUniform("w", 500.0f);
 
     Material white; white.ambient = glm::vec3(0.5f, 0.5f, 0.5f); white.diffuse = glm::vec3(1.0f, 1.0f, 1.0f); white.specular = glm::vec3(1.0f, 1.0f, 1.0f); white.shininess = 32.0f;
     Material mat_blue_plastic; mat_blue_plastic.ambient = glm::vec3(0.0f, 0.0f, 1.0f); mat_blue_plastic.diffuse = glm::vec3(0.0f, 0.0f, 0.0f); mat_blue_plastic.specular = glm::vec3(0.0f, 0.0f, 0.0f); mat_blue_plastic.shininess = 1.0f;
-    Material mat_ground; mat_ground.ambient = glm::vec3(0.05f, 0.1f, 0.05f); mat_ground.diffuse = glm::vec3(0.1f, 0.4f, 0.1f); mat_ground.specular = glm::vec3(0.05f, 0.05f, 0.05f); mat_ground.shininess = 10.0f;
     Material green_forest; green_forest.ambient = glm::vec3(0.0f, 0.05f, 0.0f); green_forest.diffuse = glm::vec3(0.0f, 0.5f, 0.0f); green_forest.specular = glm::vec3(0.05f, 0.05f, 0.05f); green_forest.shininess = 8.0f;
     Material mat_firefly_white; mat_firefly_white.ambient = glm::vec3(1.0f, 1.0f, 1.0f); mat_firefly_white.diffuse = glm::vec3(0.0f, 0.0f, 0.0f); mat_firefly_white.specular = glm::vec3(0.0f, 0.0f, 0.0f); mat_firefly_white.shininess = 1.0f;
-    Material sun; sun.ambient = glm::vec3(0.6f, 0.4f, 0.0f); sun.diffuse = glm::vec3(0.0f, 0.0f, 0.0f); sun.specular = glm::vec3(0.0f, 0.0f, 0.0f); sun.shininess = 1.0f;
-    Material moon; moon.ambient = glm::vec3(0.4f, 0.4f, 0.4f); moon.diffuse = glm::vec3(1.0f, 1.0f, 1.0f); moon.specular = glm::vec3(1.0f, 1.0f, 1.0f); moon.shininess = 32.0f;
-    Material earth; earth.ambient = glm::vec3(0.0f, 0.4f, 0.0f); earth.diffuse = glm::vec3(0.0f, 1.0f, 0.0f); earth.specular = glm::vec3(1.0f, 1.0f, 1.0f); earth.shininess = 32.0f;
+    Material sun; sun.ambient = glm::vec3(1.0f, 1.0f, 1.0f); sun.diffuse = glm::vec3(0.0f, 0.0f, 0.0f); sun.specular = glm::vec3(0.0f, 0.0f, 0.0f); sun.shininess = 1.0f;
     Material basic; basic.ambient = glm::vec3(1.0f, 1.0f, 1.0f); basic.diffuse = glm::vec3(1.0f, 1.0f, 1.0f); basic.specular = glm::vec3(1.0f, 1.0f, 1.0f); basic.shininess = 32.0f;
 
     Camera camera;
@@ -135,6 +133,7 @@ void Application::run() {
 
     Model* triangleModel = new Model(triangle, sizeof(triangle) / sizeof(float) / 3, 0);
     Model* sphereModel = new Model(sphere, sizeof(sphere) / sizeof(float) / 6, 1);
+	Model* planetModel = new Model("planet.obj");
     Model* giftModel = new Model(gift, sizeof(gift) / sizeof(float) / 6, 1);
     Model* treeModel = new Model(tree, sizeof(tree) / sizeof(float) / 6, 1);
     Model* bushModel = new Model(bushes, sizeof(bushes) / sizeof(float) / 6, 1);
@@ -149,6 +148,9 @@ void Application::run() {
     Texture* foxTexture = new Texture("../assets/Tibetan_Hill_Fox_dif.jpg");
     Texture* shrekTexture = new Texture("../assets/shrek.png");
     Texture* fionaTexture = new Texture("../assets/fiona.png");
+	Texture* earthTexture = new Texture("../assets/2k_earth.jpg");
+	Texture* sunTexture = new Texture("../assets/2k_sun.jpg");
+	Texture* moonTexture = new Texture("../assets/2k_moon.jpg");
 
     std::vector<std::string> faces = {
         "../assets/posx.jpg", "../assets/negx.jpg",
@@ -241,16 +243,19 @@ void Application::run() {
         scene3->addObject(obj);
     }
 
-    DrawableObject* slunce = new DrawableObject(sphereModel, phongShaderProgram, sun, (currentId < 255 ? currentId++ : 255), nullptr);
-    DrawableObject* zeme = new DrawableObject(sphereModel, phongShaderProgram, earth, (currentId < 255 ? currentId++ : 255), nullptr);
-    DrawableObject* mesic = new DrawableObject(sphereModel, phongShaderProgram, moon, (currentId < 255 ? currentId++ : 255), nullptr);
+    DrawableObject* slunce = new DrawableObject(planetModel, phongShaderProgram, sun, (currentId < 255 ? currentId++ : 255), sunTexture);
+    DrawableObject* zeme = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), earthTexture);
+    DrawableObject* mesic = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), moonTexture);
     slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
-    Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+    Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(3.0f, 3.0f, 3.0f));
     scene4Lights.push_back(sunLight);
     for (Light* light : scene4Lights) { light->addObserver(phongShaderProgram); }
 
     Rotate* earthOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* earthOrbitTranslation = new Translate(glm::vec3(3.0f, 0.0f, 0.0f));
+
+    Rotate* earthSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 1.0f));
+
     Rotate* moonOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* moonOrbitTranslation = new Translate(glm::vec3(0.8f, 0.0f, 0.0f));
 
@@ -259,6 +264,7 @@ void Application::run() {
 
     zeme->addTransformation(earthOrbitRotation);
     zeme->addTransformation(earthOrbitTranslation);
+    zeme->addTransformation(earthSelfRotation);
     zeme->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
 
     mesic->addTransformation(moonEarthOrbitCopy);    
@@ -303,12 +309,6 @@ void Application::run() {
     PathTransform* mole2Anim = new PathTransform(mole2Path, 3.0f);
     PathTransform* mole3Anim = new PathTransform(mole3Path, 3.0f);
     PathTransform* mole4Anim = new PathTransform(mole4Path, 3.0f);
-/*
-    mole1Anim->setLoop(true);
-    mole2Anim->setLoop(true);
-    mole3Anim->setLoop(true);
-    mole4Anim->setLoop(true);
-  */  
 
     DrawableObject* mole1 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
     DrawableObject* mole2 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
@@ -365,6 +365,7 @@ void Application::run() {
     float lastFrame = glfwGetTime();
     float earthAngle = 0.0f;
     float moonAngle = 0.0f;
+    float earthSelfAngle = 0.0f;
 
     glEnable(GL_DEPTH_TEST);
     glClearStencil(0); 
@@ -439,10 +440,15 @@ void Application::run() {
         }
         else if (activeScene == scene4) {
             earthAngle += 0.0001f;
-            moonAngle += 0.0005f;
+            moonAngle += 0.0001f;
+            
+            earthSelfAngle += 0.0001f; 
 
             earthOrbitRotation->setAngle(earthAngle);
             moonEarthOrbitCopy->setAngle(earthAngle); 
+
+            
+            earthSelfRotation->setAngle(earthSelfAngle);
 
             moonOrbitRotation->setAngle(moonAngle);
 
@@ -513,6 +519,7 @@ void Application::run() {
     delete forestSphere2Translate;
     delete earthOrbitRotation;
     delete earthOrbitTranslation;
+    delete earthSelfRotation;
     delete moonOrbitRotation;
     delete moonOrbitTranslation;
     delete moonEarthOrbitCopy;

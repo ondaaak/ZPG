@@ -37,6 +37,17 @@ uniform vec3 viewPos;
 
 void main(void)
 {
+
+    if (material.diffuse == vec3(0.0)) {
+        if (useTexture == 1) {
+            vec3 textureColor = texture(textureSampler, texCoord).rgb;
+            fragColor = vec4(material.ambient * textureColor, 1.0);
+        } else {       
+            fragColor = vec4(material.ambient, 1.0);
+        }
+        return;
+    }
+
     vec3 fragmentWorldPos = worldPos.xyz / worldPos.w;
 
     vec3 norm = normalize(worldNorm);
@@ -45,6 +56,7 @@ void main(void)
     vec3 ambientTotal = vec3(0.0); 
     vec3 diffuseTotal = vec3(0.0);
     vec3 specularTotal = vec3(0.0);
+    
     for (int i = 0; i < numLights; i++) 
     {
         if (lights[i].type == TYPE_AMBIENT) {
@@ -56,8 +68,8 @@ void main(void)
         float attenuation = 1.0; 
         float intensity = 1.0;
         if (lights[i].type == TYPE_POINT) {
-            lightDir = normalize(lights[i].position - fragmentWorldPos); // Použijte opravenou pozici
-            float distance = length(lights[i].position - fragmentWorldPos); // Použijte opravenou pozici
+            lightDir = normalize(lights[i].position - fragmentWorldPos);
+            float distance = length(lights[i].position - fragmentWorldPos);
             attenuation = 1.0 / (1.0 + 0.2 * distance + 0.3 * distance * distance);
         }
         else if (lights[i].type == TYPE_DIRECTIONAL) {
@@ -65,8 +77,8 @@ void main(void)
             attenuation = 1.0; 
         }
         else if (lights[i].type == TYPE_SPOT) {
-            lightDir = normalize(lights[i].position - fragmentWorldPos); // Použijte opravenou pozici
-            float distance = length(lights[i].position - fragmentWorldPos); // Použijte opravenou pozici
+            lightDir = normalize(lights[i].position - fragmentWorldPos);
+            float distance = length(lights[i].position - fragmentWorldPos);
             attenuation = 1.0 / (1.0 + 0.2 * distance + 0.3 * distance * distance);
             vec3 lightToFragDir = normalize(-lightDir);
             float theta = dot(lightToFragDir, normalize(lights[i].direction));
@@ -83,8 +95,8 @@ void main(void)
         float diff = max(dot(norm, lightDir), 0.0);
         vec3 reflectDir = reflect(-lightDir, norm);
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-        diffuseTotal+= intensity * attenuation * diff * lights[i].diffuse;        
-        specularTotal+= intensity * attenuation * spec * lights[i].specular;
+        diffuseTotal += intensity * attenuation * diff * lights[i].diffuse;        
+        specularTotal += intensity * attenuation * spec * lights[i].specular;
     }    
 
     vec3 baseColor = vec3(1.0);
@@ -92,14 +104,8 @@ void main(void)
         baseColor = texture(textureSampler, texCoord).rgb; 
     }
 
-    if (material.diffuse == vec3(0.0)){ // constant
-        fragColor = vec4(material.ambient, 1.0);
-    }
-    else
-    {
-        vec3 ambient = ambientTotal * material.ambient;
-        vec3 diffuse = diffuseTotal * material.diffuse * baseColor; 
-        vec3 specular = specularTotal * material.specular;
-        fragColor = vec4(ambient + diffuse + specular, 1.0);
-    }
+    vec3 ambient = ambientTotal * material.ambient;
+    vec3 diffuse = diffuseTotal * material.diffuse * baseColor; 
+    vec3 specular = specularTotal * material.specular;
+    fragColor = vec4(ambient + diffuse + specular, 1.0);
 }
