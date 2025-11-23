@@ -250,6 +250,8 @@ void Application::run() {
         scene3->addObject(obj);
     }
 
+    //planets
+
     DrawableObject* slunce = new DrawableObject(planetModel, phongShaderProgram, sun, (currentId < 255 ? currentId++ : 255), sunTexture);
     DrawableObject* zeme = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), earthTexture);
     DrawableObject* mesic = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), moonTexture);
@@ -262,41 +264,34 @@ void Application::run() {
 	DrawableObject* neptune = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), neptuneTexture);
 
     slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
+
     Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, 5.0f, 5.0f));
     AmbientLight* ambientLight = new AmbientLight(glm::vec3(0.1f, 0.1f, 0.1f));
     scene4Lights.push_back(sunLight);
     scene4Lights.push_back(ambientLight);
     for (Light* light : scene4Lights) { light->addObserver(phongShaderProgram); }
 
-    Rotate* earthOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-    Translate* earthOrbitTranslation = new Translate(glm::vec3(3.0f, 0.0f, 0.0f));
-
-    Rotate* earthSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 1.0f));
-
-    Rotate* moonOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-    Translate* moonOrbitTranslation = new Translate(glm::vec3(0.8f, 0.0f, 0.0f));
-
-    Rotate* moonEarthOrbitCopy = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-    Translate* earthTranslationCopy = new Translate(glm::vec3(3.0f, 0.0f, 0.0f));
 
     Rotate* mercuryOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* mercuryOrbitTranslation = new Translate(glm::vec3(1.2f, 0.0f, 0.0f));
     Rotate* mercurySelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-
     mercury->addTransformation(mercuryOrbitRotation);
     mercury->addTransformation(mercuryOrbitTranslation);
     mercury->addTransformation(mercurySelfRotation);
     mercury->addTransformation(new Scale(glm::vec3(0.15f, 0.15f, 0.15f)));
 
+
     Rotate* venusOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* venusOrbitTranslation = new Translate(glm::vec3(2.0f, 0.0f, 0.0f));
     Rotate* venusSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-
     venus->addTransformation(venusOrbitRotation);
     venus->addTransformation(venusOrbitTranslation);
     venus->addTransformation(venusSelfRotation);
     venus->addTransformation(new Scale(glm::vec3(0.28f, 0.28f, 0.28f)));
 
+    Rotate* earthOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    Translate* earthOrbitTranslation = new Translate(glm::vec3(3.0f, 0.0f, 0.0f));
+    Rotate* earthSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 1.0f));
     zeme->addTransformation(earthOrbitRotation);
     zeme->addTransformation(earthOrbitTranslation);
     zeme->addTransformation(earthSelfRotation);
@@ -305,7 +300,6 @@ void Application::run() {
     Rotate* marsOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* marsOrbitTranslation = new Translate(glm::vec3(4.0f, 0.0f, 0.0f));
     Rotate* marsSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-
     mars->addTransformation(marsOrbitRotation);
     mars->addTransformation(marsOrbitTranslation);
     mars->addTransformation(marsSelfRotation);
@@ -314,7 +308,6 @@ void Application::run() {
     Rotate* jupiterOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* jupiterOrbitTranslation = new Translate(glm::vec3(6.0f, 0.0f, 0.0f));
     Rotate* jupiterSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-
     jupiter->addTransformation(jupiterOrbitRotation);
     jupiter->addTransformation(jupiterOrbitTranslation);
     jupiter->addTransformation(jupiterSelfRotation);
@@ -323,7 +316,6 @@ void Application::run() {
     Rotate* saturnOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* saturnOrbitTranslation = new Translate(glm::vec3(8.0f, 0.0f, 0.0f));
     Rotate* saturnSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-
     saturn->addTransformation(saturnOrbitRotation);
     saturn->addTransformation(saturnOrbitTranslation);
     saturn->addTransformation(saturnSelfRotation);
@@ -332,7 +324,6 @@ void Application::run() {
     Rotate* uranusOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* uranusOrbitTranslation = new Translate(glm::vec3(10.0f, 0.0f, 0.0f));
     Rotate* uranusSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-
     uranus->addTransformation(uranusOrbitRotation);
     uranus->addTransformation(uranusOrbitTranslation);
     uranus->addTransformation(uranusSelfRotation);
@@ -341,47 +332,39 @@ void Application::run() {
     Rotate* neptuneOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* neptuneOrbitTranslation = new Translate(glm::vec3(12.0f, 0.0f, 0.0f));
     Rotate* neptuneSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-
     neptune->addTransformation(neptuneOrbitRotation);
     neptune->addTransformation(neptuneOrbitTranslation);
     neptune->addTransformation(neptuneSelfRotation);
     neptune->addTransformation(new Scale(glm::vec3(0.38f, 0.38f, 0.38f)));
 
-    mesic->addTransformation(moonEarthOrbitCopy);    
-    mesic->addTransformation(earthTranslationCopy); 
+
+    Rotate* moonOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    Translate* moonOrbitTranslation = new Translate(glm::vec3(0.8f, 0.0f, 0.0f));
+    mesic->addTransformation(earthOrbitRotation);
+    mesic->addTransformation(earthOrbitTranslation);
     mesic->addTransformation(moonOrbitRotation);
     mesic->addTransformation(moonOrbitTranslation);
     mesic->addTransformation(new Scale(glm::vec3(0.1f, 0.1f, 0.1f)));
 
-    grassObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
+	
 
+
+
+    grassObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
     shrekObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 1.2f)));
     shrekObject->addTransformation(new CustomTransform(3.0f));
     shrekObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
-
     fionaObject->addTransformation(new Translate(glm::vec3(2.8f, 0.0f, 1.5f)));
     fionaObject->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
 
 
-    std::vector<glm::vec3> mole1Path = {
-        glm::vec3(0.0f, 2.5f, 0.0f),   
-        glm::vec3(0.0f, 2.5f, 2.5f)    
-    };
 
-    std::vector<glm::vec3> mole2Path = {
-        glm::vec3(2.5f, 0.0f, 0.0f),   
-        glm::vec3(2.5f, 0.0f, 2.5f)
-    };
 
-    std::vector<glm::vec3> mole3Path = {
-        glm::vec3(0.0f, -2.5f, 0.0f),  
-        glm::vec3(0.0f, -2.5f, 2.5f)
-    };
 
-    std::vector<glm::vec3> mole4Path = {
-        glm::vec3(-2.5f, 0.0f, 0.0f),  
-        glm::vec3(-2.5f, 0.0f, 2.5f)
-    };
+    std::vector<glm::vec3> mole1Path = {glm::vec3(0.0f, 2.5f, 0.0f), glm::vec3(0.0f, 2.5f, 2.5f) };
+    std::vector<glm::vec3> mole2Path = {glm::vec3(2.5f, 0.0f, 0.0f), glm::vec3(2.5f, 0.0f, 2.5f)};
+    std::vector<glm::vec3> mole3Path = {glm::vec3(0.0f, -2.5f, 0.0f), glm::vec3(0.0f, -2.5f, 2.5f)};
+    std::vector<glm::vec3> mole4Path = {glm::vec3(-2.5f, 0.0f, 0.0f), glm::vec3(-2.5f, 0.0f, 2.5f)};
 
     PathTransform* mole1Anim = new PathTransform(mole1Path, 3.0f);
     PathTransform* mole2Anim = new PathTransform(mole2Path, 3.0f);
@@ -445,9 +428,7 @@ void Application::run() {
     scene3->setSkybox(skybox);
 
     float lastFrame = glfwGetTime();
-    float earthAngle = 0.0f;
-    float moonAngle = 0.0f;
-    float earthSelfAngle = 0.0f;
+
 
     glEnable(GL_DEPTH_TEST);
     glClearStencil(0); 
@@ -528,7 +509,10 @@ void Application::run() {
             static float saturnAngle = 0.0f;
             static float uranusAngle = 0.0f;
             static float neptuneAngle = 0.0f;
+            static float earthAngle = 0.0f;
+            static float moonAngle = 0.0f;
 
+            static float earthSelfAngle = 0.0f;
             static float mercurySelfAngle = 0.0f;
             static float venusSelfAngle = 0.0f;
             static float marsSelfAngle = 0.0f;
@@ -551,12 +535,11 @@ void Application::run() {
             venusSelfAngle += 0.0008f;
             earthSelfAngle += 0.002f;
             marsSelfAngle += 0.0019f;
-            jupiterSelfAngle += 0.004f;  // Jupiter se točí nejrychleji
+            jupiterSelfAngle += 0.004f; 
             saturnSelfAngle += 0.0038f;
             uranusSelfAngle += 0.003f;
             neptuneSelfAngle += 0.0032f;
 
-            // Aplikuj rotace
             mercuryOrbitRotation->setAngle(mercuryAngle);
             mercurySelfRotation->setAngle(mercurySelfAngle);
 
@@ -564,7 +547,6 @@ void Application::run() {
             venusSelfRotation->setAngle(venusSelfAngle);
 
             earthOrbitRotation->setAngle(earthAngle);
-            moonEarthOrbitCopy->setAngle(earthAngle);
             earthSelfRotation->setAngle(earthSelfAngle);
 
             marsOrbitRotation->setAngle(marsAngle);
@@ -654,8 +636,6 @@ void Application::run() {
     delete earthSelfRotation;
     delete moonOrbitRotation;
     delete moonOrbitTranslation;
-    delete moonEarthOrbitCopy;
-    delete earthTranslationCopy;
     delete mercuryOrbitRotation;
     delete mercuryOrbitTranslation;
     delete mercurySelfRotation;
