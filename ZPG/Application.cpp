@@ -151,6 +151,13 @@ void Application::run() {
 	Texture* earthTexture = new Texture("../assets/2k_earth.jpg");
 	Texture* sunTexture = new Texture("../assets/2k_sun.jpg");
 	Texture* moonTexture = new Texture("../assets/2k_moon.jpg");
+	Texture* mercuryTexture = new Texture("../assets/2k_mercury.jpg");
+	Texture* venusTexture = new Texture("../assets/2k_venus.jpg");
+	Texture* marsTexture = new Texture("../assets/2k_mars.jpg");
+	Texture* jupiterTexture = new Texture("../assets/2k_jupiter.jpg");
+	Texture* saturnTexture = new Texture("../assets/2k_saturn.jpg");
+	Texture* uranusTexture = new Texture("../assets/2k_uranus.jpg");
+	Texture* neptuneTexture = new Texture("../assets/2k_neptune.jpg");
 
     std::vector<std::string> faces = {
         "../assets/posx.jpg", "../assets/negx.jpg",
@@ -246,9 +253,19 @@ void Application::run() {
     DrawableObject* slunce = new DrawableObject(planetModel, phongShaderProgram, sun, (currentId < 255 ? currentId++ : 255), sunTexture);
     DrawableObject* zeme = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), earthTexture);
     DrawableObject* mesic = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), moonTexture);
+	DrawableObject* mercury = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), mercuryTexture);
+	DrawableObject* venus = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), venusTexture);
+	DrawableObject* mars = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), marsTexture);
+	DrawableObject* jupiter = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), jupiterTexture);
+	DrawableObject* saturn = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), saturnTexture);
+	DrawableObject* uranus = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), uranusTexture);
+	DrawableObject* neptune = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), neptuneTexture);
+
     slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
-    Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(3.0f, 3.0f, 3.0f));
+    Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, 5.0f, 5.0f));
+    AmbientLight* ambientLight = new AmbientLight(glm::vec3(0.1f, 0.1f, 0.1f));
     scene4Lights.push_back(sunLight);
+    scene4Lights.push_back(ambientLight);
     for (Light* light : scene4Lights) { light->addObserver(phongShaderProgram); }
 
     Rotate* earthOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -262,10 +279,73 @@ void Application::run() {
     Rotate* moonEarthOrbitCopy = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     Translate* earthTranslationCopy = new Translate(glm::vec3(3.0f, 0.0f, 0.0f));
 
+    Rotate* mercuryOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    Translate* mercuryOrbitTranslation = new Translate(glm::vec3(1.2f, 0.0f, 0.0f));
+    Rotate* mercurySelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    mercury->addTransformation(mercuryOrbitRotation);
+    mercury->addTransformation(mercuryOrbitTranslation);
+    mercury->addTransformation(mercurySelfRotation);
+    mercury->addTransformation(new Scale(glm::vec3(0.15f, 0.15f, 0.15f)));
+
+    Rotate* venusOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    Translate* venusOrbitTranslation = new Translate(glm::vec3(2.0f, 0.0f, 0.0f));
+    Rotate* venusSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    venus->addTransformation(venusOrbitRotation);
+    venus->addTransformation(venusOrbitTranslation);
+    venus->addTransformation(venusSelfRotation);
+    venus->addTransformation(new Scale(glm::vec3(0.28f, 0.28f, 0.28f)));
+
     zeme->addTransformation(earthOrbitRotation);
     zeme->addTransformation(earthOrbitTranslation);
     zeme->addTransformation(earthSelfRotation);
     zeme->addTransformation(new Scale(glm::vec3(0.3f, 0.3f, 0.3f)));
+
+    Rotate* marsOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    Translate* marsOrbitTranslation = new Translate(glm::vec3(4.0f, 0.0f, 0.0f));
+    Rotate* marsSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    mars->addTransformation(marsOrbitRotation);
+    mars->addTransformation(marsOrbitTranslation);
+    mars->addTransformation(marsSelfRotation);
+    mars->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
+
+    Rotate* jupiterOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    Translate* jupiterOrbitTranslation = new Translate(glm::vec3(6.0f, 0.0f, 0.0f));
+    Rotate* jupiterSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    jupiter->addTransformation(jupiterOrbitRotation);
+    jupiter->addTransformation(jupiterOrbitTranslation);
+    jupiter->addTransformation(jupiterSelfRotation);
+    jupiter->addTransformation(new Scale(glm::vec3(0.6f, 0.6f, 0.6f)));
+
+    Rotate* saturnOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    Translate* saturnOrbitTranslation = new Translate(glm::vec3(8.0f, 0.0f, 0.0f));
+    Rotate* saturnSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    saturn->addTransformation(saturnOrbitRotation);
+    saturn->addTransformation(saturnOrbitTranslation);
+    saturn->addTransformation(saturnSelfRotation);
+    saturn->addTransformation(new Scale(glm::vec3(0.55f, 0.55f, 0.55f)));
+
+    Rotate* uranusOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    Translate* uranusOrbitTranslation = new Translate(glm::vec3(10.0f, 0.0f, 0.0f));
+    Rotate* uranusSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    uranus->addTransformation(uranusOrbitRotation);
+    uranus->addTransformation(uranusOrbitTranslation);
+    uranus->addTransformation(uranusSelfRotation);
+    uranus->addTransformation(new Scale(glm::vec3(0.4f, 0.4f, 0.4f)));
+
+    Rotate* neptuneOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    Translate* neptuneOrbitTranslation = new Translate(glm::vec3(12.0f, 0.0f, 0.0f));
+    Rotate* neptuneSelfRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    neptune->addTransformation(neptuneOrbitRotation);
+    neptune->addTransformation(neptuneOrbitTranslation);
+    neptune->addTransformation(neptuneSelfRotation);
+    neptune->addTransformation(new Scale(glm::vec3(0.38f, 0.38f, 0.38f)));
 
     mesic->addTransformation(moonEarthOrbitCopy);    
     mesic->addTransformation(earthTranslationCopy); 
@@ -274,8 +354,6 @@ void Application::run() {
     mesic->addTransformation(new Scale(glm::vec3(0.1f, 0.1f, 0.1f)));
 
     grassObject->addTransformation(new Scale(glm::vec3(5.5f, 1.0f, 5.5f)));
-
-
 
     shrekObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 1.2f)));
     shrekObject->addTransformation(new CustomTransform(3.0f));
@@ -351,10 +429,14 @@ void Application::run() {
     scene4->addObject(slunce);
     scene4->addObject(zeme);
     scene4->addObject(mesic);
-    
-
-
-	scene5->addObject(mole1);
+	scene4->addObject(mercury);
+	scene4->addObject(venus);
+	scene4->addObject(mars);
+	scene4->addObject(jupiter);
+	scene4->addObject(saturn);
+	scene4->addObject(uranus);
+	scene4->addObject(neptune);
+    scene5->addObject(mole1);
 	scene5->addObject(mole2);
 	scene5->addObject(mole3);
 	scene5->addObject(mole4);
@@ -439,19 +521,69 @@ void Application::run() {
             flashlight->setDirection(camera.getCameraFront());
         }
         else if (activeScene == scene4) {
-            earthAngle += 0.0001f;
+            static float mercuryAngle = 0.0f;
+            static float venusAngle = 0.0f;
+            static float marsAngle = 0.0f;
+            static float jupiterAngle = 0.0f;
+            static float saturnAngle = 0.0f;
+            static float uranusAngle = 0.0f;
+            static float neptuneAngle = 0.0f;
+
+            static float mercurySelfAngle = 0.0f;
+            static float venusSelfAngle = 0.0f;
+            static float marsSelfAngle = 0.0f;
+            static float jupiterSelfAngle = 0.0f;
+            static float saturnSelfAngle = 0.0f;
+            static float uranusSelfAngle = 0.0f;
+            static float neptuneSelfAngle = 0.0f;
+
+            mercuryAngle += 0.00048f;  
+            venusAngle += 0.00035f;
+            earthAngle += 0.0003f;
+            marsAngle += 0.00024f;
+            jupiterAngle += 0.00013f;
+            saturnAngle += 0.00010f;
+            uranusAngle += 0.00007f;
+            neptuneAngle += 0.00005f; 
             moonAngle += 0.0001f;
-            
-            earthSelfAngle += 0.0001f; 
+
+            mercurySelfAngle += 0.001f;
+            venusSelfAngle += 0.0008f;
+            earthSelfAngle += 0.002f;
+            marsSelfAngle += 0.0019f;
+            jupiterSelfAngle += 0.004f;  // Jupiter se točí nejrychleji
+            saturnSelfAngle += 0.0038f;
+            uranusSelfAngle += 0.003f;
+            neptuneSelfAngle += 0.0032f;
+
+            // Aplikuj rotace
+            mercuryOrbitRotation->setAngle(mercuryAngle);
+            mercurySelfRotation->setAngle(mercurySelfAngle);
+
+            venusOrbitRotation->setAngle(venusAngle);
+            venusSelfRotation->setAngle(venusSelfAngle);
 
             earthOrbitRotation->setAngle(earthAngle);
-            moonEarthOrbitCopy->setAngle(earthAngle); 
-
-            
+            moonEarthOrbitCopy->setAngle(earthAngle);
             earthSelfRotation->setAngle(earthSelfAngle);
 
-            moonOrbitRotation->setAngle(moonAngle);
+            marsOrbitRotation->setAngle(marsAngle);
+            marsSelfRotation->setAngle(marsSelfAngle);
 
+            jupiterOrbitRotation->setAngle(jupiterAngle);
+            jupiterSelfRotation->setAngle(jupiterSelfAngle);
+
+            saturnOrbitRotation->setAngle(saturnAngle);
+            saturnSelfRotation->setAngle(saturnSelfAngle);
+
+            uranusOrbitRotation->setAngle(uranusAngle);
+            uranusSelfRotation->setAngle(uranusSelfAngle);
+
+            neptuneOrbitRotation->setAngle(neptuneAngle);
+            neptuneSelfRotation->setAngle(neptuneSelfAngle);
+
+            moonOrbitRotation->setAngle(moonAngle);
+            
             phongShaderProgram->setLightsPointer(&scene4Lights);
             phongShaderProgram->setLightUniforms(scene4Lights);
         }
@@ -524,7 +656,33 @@ void Application::run() {
     delete moonOrbitTranslation;
     delete moonEarthOrbitCopy;
     delete earthTranslationCopy;
+    delete mercuryOrbitRotation;
+    delete mercuryOrbitTranslation;
+    delete mercurySelfRotation;
 
+    delete venusOrbitRotation;
+    delete venusOrbitTranslation;
+    delete venusSelfRotation;
+
+    delete marsOrbitRotation;
+    delete marsOrbitTranslation;
+    delete marsSelfRotation;
+
+    delete jupiterOrbitRotation;
+    delete jupiterOrbitTranslation;
+    delete jupiterSelfRotation;
+
+    delete saturnOrbitRotation;
+    delete saturnOrbitTranslation;
+    delete saturnSelfRotation;
+
+    delete uranusOrbitRotation;
+    delete uranusOrbitTranslation;
+    delete uranusSelfRotation;
+
+    delete neptuneOrbitRotation;
+    delete neptuneOrbitTranslation;
+    delete neptuneSelfRotation;
 
 
 
@@ -562,6 +720,10 @@ void Application::cleanup() {
     }
     scene4Lights.clear();
 
+    for (Light* light : scene5Lights) {
+        delete light;
+	}
+	scene5Lights.clear();
 
     if (window) {
         glfwDestroyWindow(window);
