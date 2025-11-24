@@ -142,6 +142,8 @@ void Application::run() {
     Model* shrekModel = new Model("shrek.obj");
     Model* fionaModel = new Model("fiona.obj");
     Model* grassModel = new Model(plain, sizeof(plain) / sizeof(float) / 8, 2);
+	Model* loginModel = new Model("login.obj");
+
 
     Texture* grassTexture = new Texture("../assets/grass.png");
     Texture* catTexture = new Texture("../assets/Cat_diffuse.jpg");
@@ -186,6 +188,8 @@ void Application::run() {
     DrawableObject* sphere2 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
     DrawableObject* sphere3 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
     DrawableObject* sphere4 = new DrawableObject(sphereModel, spheresProgram, white, currentId++, nullptr);
+
+	DrawableObject* loginObject = new DrawableObject(loginModel, phongShaderProgram, white, currentId++, nullptr);
 
     Rotate* rotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 1.0f));
     Rotate* rotation2 = new Rotate(0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -397,6 +401,9 @@ void Application::run() {
     for (Light* light : scene5Lights) { light->addObserver(spheresProgram); }
 
 
+	loginObject->addTransformation(new Translate(glm::vec3(0.0f, 2.0f, 0.0f)));
+	loginObject->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
+
     scene3->addObject(grassObject);
     scene1->addObject(triangleObject);
     scene2->addObject(sphere1);
@@ -424,7 +431,7 @@ void Application::run() {
 	scene5->addObject(mole3);
 	scene5->addObject(mole4);
 	scene5->addObject(moleBarrier);
-    
+	scene3->addObject(loginObject);
     scene3->setSkybox(skybox);
 
     float lastFrame = glfwGetTime();
@@ -578,7 +585,7 @@ void Application::run() {
             static int activeMole = rand() % 4;
             frameCounter++;
 
-            if (frameCounter >= 3000) {
+            if (frameCounter >= 50) { // 3000
                 frameCounter = 0;
                 
 
