@@ -266,8 +266,10 @@ void Application::run() {
 	DrawableObject* saturn = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), saturnTexture);
 	DrawableObject* uranus = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), uranusTexture);
 	DrawableObject* neptune = new DrawableObject(planetModel, phongShaderProgram, white, (currentId < 255 ? currentId++ : 255), neptuneTexture);
-
+    
+    Rotate* sunSelfRotation = new Rotate(0.0f, glm::vec3(1.0f, 1.0f, 0.0f));
     slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
+	slunce->addTransformation(sunSelfRotation);
 
     Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, 5.0f, 5.0f));
     AmbientLight* ambientLight = new AmbientLight(glm::vec3(0.1f, 0.1f, 0.1f));
@@ -528,6 +530,7 @@ void Application::run() {
             static float uranusSelfAngle = 0.0f;
             static float neptuneSelfAngle = 0.0f;
 
+            /*     
             mercuryAngle += 0.00048f;  
             venusAngle += 0.00035f;
             earthAngle += 0.0003f;
@@ -546,6 +549,28 @@ void Application::run() {
             saturnSelfAngle += 0.0038f;
             uranusSelfAngle += 0.003f;
             neptuneSelfAngle += 0.0032f;
+            */
+
+            mercuryAngle += 0.0048f;
+            venusAngle += 0.0035f;
+            earthAngle += 0.003f;
+            marsAngle += 0.0024f;
+            jupiterAngle += 0.0013f;
+            saturnAngle += 0.0010f;
+            uranusAngle += 0.0007f;
+            neptuneAngle += 0.0005f;
+            moonAngle += 0.001f;
+
+            mercurySelfAngle += 0.01f;
+            venusSelfAngle += 0.008f;
+            earthSelfAngle += 0.02f;
+            marsSelfAngle += 0.019f;
+            jupiterSelfAngle += 0.04f;
+            saturnSelfAngle += 0.038f;
+            uranusSelfAngle += 0.03f;
+            neptuneSelfAngle += 0.032f;
+
+            sunSelfRotation->setAngle(earthAngle);
 
             mercuryOrbitRotation->setAngle(mercuryAngle);
             mercurySelfRotation->setAngle(mercurySelfAngle);
@@ -634,6 +659,7 @@ void Application::run() {
     delete fionaModel;
     delete grassModel;
 
+    delete sunSelfRotation;
     delete rotation;
     delete rotation2;
     delete forestSphere1Translate;
