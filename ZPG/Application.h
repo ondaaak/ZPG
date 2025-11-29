@@ -38,6 +38,7 @@
 #include "Skybox.h" 
 #include "Translate.h"
 #include "PathTransform.h"
+#include "BezierTransform.h"
 
 class Application {
 public:
@@ -57,12 +58,14 @@ private:
     Scene* scene3;
     Scene* scene4; 
     Scene* scene5;
+	Scene* scene6;
     Skybox* skybox;
 
     std::vector<Light*> scene2Lights;
     std::vector<Light*> scene3Lights;
     std::vector<Light*> scene4Lights;
     std::vector<Light*> scene5Lights;
+    std::vector<Light*> scene6Lights;
 
     Controller* controller;
 

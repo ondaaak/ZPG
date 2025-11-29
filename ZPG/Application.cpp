@@ -28,6 +28,7 @@ void Application::switchScene(int sceneNumber) {
     case 3: activeScene = scene3; printf("Switched to Scene 3\n"); break;
     case 4: activeScene = scene4; printf("Switched to Scene 4\n"); break;
     case 5: activeScene = scene5; printf("Switched to Scene 5\n"); break;
+    case 6: activeScene = scene6; printf("Switched to Scene 6\n"); break;
     default: printf("Invalid scene number: %d\n", sceneNumber); break;
     }
 
@@ -43,7 +44,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_KP_3 && action == GLFW_PRESS) app->switchScene(3);
     if (key == GLFW_KEY_KP_4 && action == GLFW_PRESS) app->switchScene(4);
     if (key == GLFW_KEY_KP_5 && action == GLFW_PRESS) app->switchScene(5);
-
+    if (key == GLFW_KEY_KP_6 && action == GLFW_PRESS) app->switchScene(6);
     if (key == GLFW_KEY_DELETE && action == GLFW_PRESS) {
         if (app && app->getActiveScene()) {
             app->getActiveScene()->deleteSelectedObject();
@@ -53,7 +54,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 Application::Application()
     : window(nullptr), activeScene(nullptr),
-    scene1(nullptr), scene2(nullptr), scene3(nullptr), scene4(nullptr), scene5(nullptr),
+	scene1(nullptr), scene2(nullptr), scene3(nullptr), scene4(nullptr), scene5(nullptr), scene6(nullptr),
     skybox(nullptr), 
     controller(nullptr),
     flashlight(nullptr),
@@ -109,6 +110,7 @@ void Application::run() {
     scene3 = new Scene();
     scene4 = new Scene();
 	scene5 = new Scene();
+	scene6 = new Scene();
     activeScene = scene1;
 
     ShaderProgram* phongShaderProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_fragment_shader.glsl"));
@@ -127,6 +129,8 @@ void Application::run() {
     Material mat_firefly_white; mat_firefly_white.ambient = glm::vec3(1.0f, 1.0f, 1.0f); mat_firefly_white.diffuse = glm::vec3(0.0f, 0.0f, 0.0f); mat_firefly_white.specular = glm::vec3(0.0f, 0.0f, 0.0f); mat_firefly_white.shininess = 1.0f;
     Material sun; sun.ambient = glm::vec3(1.0f, 1.0f, 1.0f); sun.diffuse = glm::vec3(0.0f, 0.0f, 0.0f); sun.specular = glm::vec3(0.0f, 0.0f, 0.0f); sun.shininess = 1.0f;
     Material basic; basic.ambient = glm::vec3(1.0f, 1.0f, 1.0f); basic.diffuse = glm::vec3(1.0f, 1.0f, 1.0f); basic.specular = glm::vec3(1.0f, 1.0f, 1.0f); basic.shininess = 32.0f;
+    Material formula;formula.ambient = glm::vec3(0.0f, 0.0f, 0.0f);formula.diffuse = glm::vec3(0.8f, 0.1f, 0.1f);formula.specular = glm::vec3(1.0f, 0.8f, 0.8f);formula.shininess = 128.0f;
+
 
     Camera camera;
     controller = new Controller(&camera, window, activeScene);
@@ -143,6 +147,7 @@ void Application::run() {
     Model* fionaModel = new Model("fiona.obj");
     Model* grassModel = new Model(plain, sizeof(plain) / sizeof(float) / 8, 2);
 	Model* loginModel = new Model("login.obj");
+    Model* formulaModel = new Model("formula1.obj");
 
 
     Texture* grassTexture = new Texture("../assets/grass.png");
@@ -160,6 +165,7 @@ void Application::run() {
 	Texture* saturnTexture = new Texture("../assets/2k_saturn.jpg");
 	Texture* uranusTexture = new Texture("../assets/2k_uranus.jpg");
 	Texture* neptuneTexture = new Texture("../assets/2k_neptune.jpg");
+    Texture* formulaTexture = new Texture("../assets/2k_sun.jpg");
 
     std::vector<std::string> faces = {
         "../assets/posx.jpg", "../assets/negx.jpg",
@@ -406,6 +412,31 @@ void Application::run() {
 	loginObject->addTransformation(new Translate(glm::vec3(0.0f, 2.0f, 0.0f)));
 	loginObject->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
 
+    std::vector<glm::vec3> splinePoints = {
+        // Segment 1
+        glm::vec3(-5, 0, 5), glm::vec3(-5, 0, -5), glm::vec3(5, 0, -5), glm::vec3(5, 0, 5),
+        // Segment 2 (navazuje na první)
+        // glm::vec3(5, 0, 5), // tento bod je již definován jako konec předchozího
+        glm::vec3(5, 5, -5), glm::vec3(-5, 5, -5), glm::vec3(-5, 0, 5)
+    };
+
+    BezierTransform* bezierSplineAnim = new BezierTransform(splinePoints, 0.2f, true); // loop = true
+
+    DrawableObject* formulaObject = new DrawableObject(formulaModel, phongShaderProgram, white, currentId++, formulaTexture);
+    
+    formulaObject->addTransformation(bezierSplineAnim);
+    
+	formulaObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+    formulaObject->addTransformation(new Scale(glm::vec3(0.05f)));
+
+    // Přidání světla do nové scény
+    std::vector<Light*> scene6Lights;
+    scene6Lights.push_back(new DirectionalLight(glm::vec3(0, -1, 0), glm::vec3(1.0f)));
+    scene6Lights.push_back(new AmbientLight(glm::vec3(0.3f)));
+    for (Light* light : scene6Lights) { light->addObserver(phongShaderProgram); }
+
+
+
     scene3->addObject(grassObject);
     scene1->addObject(triangleObject);
     scene2->addObject(sphere1);
@@ -435,6 +466,8 @@ void Application::run() {
 	scene5->addObject(moleBarrier);
 	scene3->addObject(loginObject);
     scene3->setSkybox(skybox);
+
+    scene6->addObject(formulaObject);
 
     float lastFrame = glfwGetTime();
 
@@ -530,7 +563,7 @@ void Application::run() {
             static float uranusSelfAngle = 0.0f;
             static float neptuneSelfAngle = 0.0f;
 
-            /*     
+                
             mercuryAngle += 0.00048f;  
             venusAngle += 0.00035f;
             earthAngle += 0.0003f;
@@ -549,8 +582,8 @@ void Application::run() {
             saturnSelfAngle += 0.0038f;
             uranusSelfAngle += 0.003f;
             neptuneSelfAngle += 0.0032f;
-            */
-
+            
+            /*
             mercuryAngle += 0.0048f;
             venusAngle += 0.0035f;
             earthAngle += 0.003f;
@@ -569,7 +602,7 @@ void Application::run() {
             saturnSelfAngle += 0.038f;
             uranusSelfAngle += 0.03f;
             neptuneSelfAngle += 0.032f;
-
+            */
             sunSelfRotation->setAngle(earthAngle);
 
             mercuryOrbitRotation->setAngle(mercuryAngle);
@@ -610,7 +643,7 @@ void Application::run() {
             static int activeMole = rand() % 4;
             frameCounter++;
 
-            if (frameCounter >= 50) { // 3000
+            if (frameCounter >= 3000) { // 50
                 frameCounter = 0;
                 
 
@@ -626,6 +659,12 @@ void Application::run() {
             
         }
         
+        else if (activeScene == scene6) { // NOVÉ
+            phongShaderProgram->setLightsPointer(&scene6Lights);
+            phongShaderProgram->setLightUniforms(scene6Lights);
+            bezierSplineAnim->update(deltaTime); // Změna názvu proměnné
+        }
+
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
@@ -658,6 +697,10 @@ void Application::run() {
     delete shrekModel;
     delete fionaModel;
     delete grassModel;
+	delete loginModel;
+	delete planetModel;
+	delete mercuryTexture;
+	delete formulaModel;
 
     delete sunSelfRotation;
     delete rotation;
@@ -707,6 +750,7 @@ void Application::cleanup() {
     delete scene3;
     delete scene4;
     delete scene5;
+    delete scene6;
 
     if (skybox) {
         delete skybox;
@@ -737,6 +781,11 @@ void Application::cleanup() {
         delete light;
 	}
 	scene5Lights.clear();
+
+    for (Light* light : scene6Lights) {
+        delete light;
+    }
+    scene6Lights.clear();
 
     if (window) {
         glfwDestroyWindow(window);
