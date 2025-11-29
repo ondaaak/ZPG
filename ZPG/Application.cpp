@@ -129,7 +129,7 @@ void Application::run() {
     Material mat_firefly_white; mat_firefly_white.ambient = glm::vec3(1.0f, 1.0f, 1.0f); mat_firefly_white.diffuse = glm::vec3(0.0f, 0.0f, 0.0f); mat_firefly_white.specular = glm::vec3(0.0f, 0.0f, 0.0f); mat_firefly_white.shininess = 1.0f;
     Material sun; sun.ambient = glm::vec3(1.0f, 1.0f, 1.0f); sun.diffuse = glm::vec3(0.0f, 0.0f, 0.0f); sun.specular = glm::vec3(0.0f, 0.0f, 0.0f); sun.shininess = 1.0f;
     Material basic; basic.ambient = glm::vec3(1.0f, 1.0f, 1.0f); basic.diffuse = glm::vec3(1.0f, 1.0f, 1.0f); basic.specular = glm::vec3(1.0f, 1.0f, 1.0f); basic.shininess = 32.0f;
-    Material formula;formula.ambient = glm::vec3(0.0f, 0.0f, 0.0f);formula.diffuse = glm::vec3(0.8f, 0.1f, 0.1f);formula.specular = glm::vec3(1.0f, 0.8f, 0.8f);formula.shininess = 128.0f;
+    Material formula;formula.ambient = glm::vec3(1.0f, 1.0f, 1.0f);formula.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);formula.specular = glm::vec3(1.0f, 1.0f, 1.0f);formula.shininess = 128.0f;
 
 
     Camera camera;
@@ -422,7 +422,7 @@ void Application::run() {
 
     BezierTransform* bezierSplineAnim = new BezierTransform(splinePoints, 0.2f, true); // loop = true
 
-    DrawableObject* formulaObject = new DrawableObject(formulaModel, phongShaderProgram, white, currentId++, formulaTexture);
+    DrawableObject* formulaObject = new DrawableObject(formulaModel, phongShaderProgram, formula, currentId++, formulaTexture);
     
     formulaObject->addTransformation(bezierSplineAnim);
     
