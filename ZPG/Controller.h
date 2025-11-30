@@ -5,15 +5,12 @@
 #include <GLFW/glfw3.h>
 #include <vector>  
 
-
-
 class Controller {
 public:
     Controller(Camera* camera, GLFWwindow* window, Scene* scene);
     void processInput(float deltaTime);
     void setActiveScene(Scene* scene);
 
-    // Vše ostatní zùstává, jen pøidáme promìnné níže
 
 private:
     Camera* camera;

@@ -166,6 +166,7 @@ void Application::run() {
 	Texture* uranusTexture = new Texture("../assets/2k_uranus.jpg");
 	Texture* neptuneTexture = new Texture("../assets/2k_neptune.jpg");
     Texture* formulaTexture = new Texture("../assets/2k_sun.jpg");
+    Texture* carpetTexture = new Texture("../assets/carpet.png");
 
     std::vector<std::string> faces = {
         "../assets/posx.jpg", "../assets/negx.jpg",
@@ -426,13 +427,14 @@ void Application::run() {
     formulaObject->addTransformation(new Scale(glm::vec3(0.05f)));
 
     // 4. Přidáme podlahu, na kterou budeme klikat
-    DrawableObject* floorObject = new DrawableObject(grassModel, phongShaderProgram, basic, currentId++, grassTexture);
+    DrawableObject* floorObject = new DrawableObject(grassModel, phongShaderProgram, basic, currentId++, carpetTexture);
     floorObject->addTransformation(new Scale(glm::vec3(20.0f))); // Zvětšíme podlahu
 
     // Přidání světla do nové scény
     std::vector<Light*> scene6Lights;
-    scene6Lights.push_back(new DirectionalLight(glm::vec3(0.5f, -1.0f, 0.5f), glm::vec3(1.0f)));
-    scene6Lights.push_back(new AmbientLight(glm::vec3(0.3f)));
+    //scene6Lights.push_back(new DirectionalLight(glm::vec3(0.5f, -1.0f, 0.5f), glm::vec3(1.0f)));
+    Light* formulelight = new Light(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(5.0f, 5.0f, 5.0f));
+    scene6Lights.push_back(formulelight);
     for (Light* light : scene6Lights) { light->addObserver(phongShaderProgram); }
 
 
@@ -660,11 +662,11 @@ void Application::run() {
             
         }
         
-        else if (activeScene == scene6) { // NOVÉ
+        else if (activeScene == scene6) {
             phongShaderProgram->setLightsPointer(&scene6Lights);
             phongShaderProgram->setLightUniforms(scene6Lights);
+			
 
-            // Důležité: Získání ukazatele na transformaci a její aktualizace
             auto transformations = formulaObject->getTransformations();
             if (!transformations.empty()) {
                 auto* bezier = dynamic_cast<BezierTransform*>(transformations[0]);
@@ -672,6 +674,7 @@ void Application::run() {
                     bezier->update(deltaTime);
                 }
             }
+
         }
 
         int width, height;
