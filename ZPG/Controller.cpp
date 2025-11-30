@@ -82,46 +82,30 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
     {
         if (controller->bezierObject == nullptr) return;
 
-        glm::mat4 view = controller->camera->getViewMatrix();
-        glm::mat4 proj = controller->camera->getProjectionMatrix();
-        glm::vec4 viewport = glm::vec4(0, 0, width, height);
+        GLfloat depth = 0.0f;
+        glReadPixels(x, y_new, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
 
-        glm::vec3 screenPosStart = glm::vec3(xpos, y_new, 0.0f); 
-        glm::vec3 screenPosEnd = glm::vec3(xpos, y_new, 1.0f);   
+        if (depth < 1.0f) {
+            glm::vec3 screenPos = glm::vec3(xpos, y_new, depth);
 
-        glm::vec3 worldPosStart = glm::unProject(screenPosStart, view, proj, viewport);
-        glm::vec3 worldPosEnd = glm::unProject(screenPosEnd, view, proj, viewport);
+            glm::vec3 intersectionPoint = glm::unProject(screenPos, controller->camera->getViewMatrix(), controller->camera->getProjectionMatrix(), glm::vec4(0, 0, width, height));
 
-        glm::vec3 ray_dir = glm::normalize(worldPosEnd - worldPosStart);
-        glm::vec3 ray_origin = controller->camera->getCameraPosition();
+            controller->controlPoints.push_back(intersectionPoint);
 
-        glm::vec3 plane_normal = glm::vec3(0.0f, 1.0f, 0.0f);
-        float denom = glm::dot(plane_normal, ray_dir);
-
-        if (std::abs(denom) > 1e-6) {
-            float t = glm::dot(glm::vec3(0, 0, 0) - ray_origin, plane_normal) / denom;
-            if (t >= 0) {
-                glm::vec3 intersectionPoint = ray_origin + t * ray_dir;
-                controller->controlPoints.push_back(intersectionPoint);
-
-                // Vizuální znaèka
-                Material redMarker; redMarker.ambient = glm::vec3(1, 0, 0); redMarker.diffuse = glm::vec3(1, 0, 0);
-                DrawableObject* marker = new DrawableObject(controller->pointMarkerModel, controller->markerShader, redMarker, 0, nullptr);
-                marker->addTransformation(new Translate(intersectionPoint));
-                marker->addTransformation(new Scale(glm::vec3(0.1f)));
-                controller->activeScene->addObject(marker);
-
-                // Aktualizace køivky
-                if (controller->controlPoints.size() >= 4 && (controller->controlPoints.size() - 4) % 3 == 0) {
-                    controller->bezierObject->removeTransformation(controller->bezierObject->getTransformations()[0]);
-                    BezierTransform* newBezier = new BezierTransform(controller->controlPoints, 0.3f, true);
-                    controller->bezierObject->addTransformationToFront(newBezier);
-                }
+            Material matMarker; matMarker.ambient = glm::vec3(1, 0, 1); matMarker.diffuse = glm::vec3(1, 0, 1);
+            DrawableObject* marker = new DrawableObject(controller->pointMarkerModel, controller->markerShader, matMarker, 0, nullptr);
+            marker->addTransformation(new Translate(intersectionPoint));
+            marker->addTransformation(new Scale(glm::vec3(0.1f)));
+            controller->activeScene->addObject(marker);
+ 
+            if (controller->controlPoints.size() >= 4 && (controller->controlPoints.size() - 4) % 3 == 0) {
+                controller->bezierObject->removeTransformation(controller->bezierObject->getTransformations()[0]);
+                BezierTransform* newBezier = new BezierTransform(controller->controlPoints, 0.3f, true);
+                controller->bezierObject->addTransformationToFront(newBezier);
             }
         }
-        return; // Ukonèíme funkci, aby se nespustil další kód pro výbìr objektù
+        return;
     }
-    // --- KONEC NOVÉ LOGIKY ---
 
 
     if (button == GLFW_MOUSE_BUTTON_LEFT) {

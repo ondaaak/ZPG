@@ -44,7 +44,6 @@ glm::vec3 BezierTransform::evaluateTangent(float t, float& localT, int& segmentI
     glm::vec3 p2 = controlPoints[p0_idx + 2];
     glm::vec3 p3 = controlPoints[p0_idx + 3];
 
-    // Derivace kubické Bézierovy køivky
     float oneMinusT = 1.0f - localT;
     return 3.0f * oneMinusT * oneMinusT * (p1 - p0) +
         6.0f * oneMinusT * localT * (p2 - p1) +
