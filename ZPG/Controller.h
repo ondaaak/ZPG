@@ -24,10 +24,8 @@ private:
     static double lastX, lastY;
     static bool firstMouse;
 
-    // --- PØIDÁME JEN TOTO ---
     std::vector<glm::vec3> controlPoints;
     DrawableObject* bezierObject = nullptr;
     Model* pointMarkerModel = nullptr;
     ShaderProgram* markerShader = nullptr;
-    // --- KONEC PØIDANÉ ÈÁSTI ---
 };

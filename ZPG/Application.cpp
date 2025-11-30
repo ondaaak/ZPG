@@ -112,10 +112,6 @@ void Application::run() {
     ShaderProgram* spheresProgram = new ShaderProgram(std::string("main_vertex_shader.glsl"), std::string("phong_simple.glsl"));
     ShaderProgram* skyboxShaderProgram = new ShaderProgram(std::string("skybox_vertex.glsl"), std::string("skybox_fragment.glsl"));
 
-    //phongShaderProgram->setShaderProgram();
-    //phongShaderProgram->SetUniform("textureSampler", 0);
-    //phongShaderProgram->SetUniform("useTexture", 0);
-
     phongShaderProgram->SetUniform("w", 500.0f);
 
     Material white; white.ambient = glm::vec3(0.5f, 0.5f, 0.5f); white.diffuse = glm::vec3(1.0f, 1.0f, 1.0f); white.specular = glm::vec3(1.0f, 1.0f, 1.0f); white.shininess = 32.0f;
@@ -171,7 +167,6 @@ void Application::run() {
     std::vector<std::string> facesPlanets = {
     "../assets/left.png", "../assets/right.png",
     "../assets/top.png", "../assets/bottom.png",
-    
     "../assets/front.png", "../assets/back.png"
     };
 
@@ -209,21 +204,42 @@ void Application::run() {
     DrawableObject* formulaObject = new DrawableObject(formulaModel, phongShaderProgram, formula, currentId++, formulaTexture);
     DrawableObject* floorObject = new DrawableObject(grassModel, phongShaderProgram, basic, currentId++, carpetTexture);
 
+    glm::vec3 flashlightDiffuseColor = glm::vec3(0.0f);
+    glm::vec3 flashlightSpecularColor = glm::vec3(0.0f);
+    bool isFlashlightOn = true;
+    bool fKeyPressedLastFrame = false;
+
     Light* forestLight1_ptr = new Light(glm::vec3(2.0f, 0.2f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f));
     Light* forestLight2_ptr = new Light(glm::vec3(-2.0f, 0.2f, 1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
-    SpotLight* flashlight = new SpotLight(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::radians(20.0f), glm::radians(30.0f));
-
     Light* light1_ptr = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
     Light* sunLight = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, 5.0f, 5.0f));
     AmbientLight* ambientLight = new AmbientLight(glm::vec3(0.1f, 0.1f, 0.1f));
-
     Light* scene5Light = new Light(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
     Light* formulelight = new Light(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(5.0f, 5.0f, 5.0f));
 
+    SpotLight* flashlight = new SpotLight(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::radians(20.0f), glm::radians(30.0f));
+    flashlightDiffuseColor = flashlight->getDiffuse();
+    flashlightSpecularColor = flashlight->getSpecular();
+    
+
+    scene2Lights.push_back(light1_ptr);
+    scene3Lights.push_back(forestLight1_ptr);
+    scene3Lights.push_back(forestLight2_ptr);
+    scene3Lights.push_back(flashlight);
+    scene4Lights.push_back(sunLight);
+    scene4Lights.push_back(ambientLight);
+    scene5Lights.push_back(scene5Light);
+    scene6Lights.push_back(formulelight);
+
+    for (Light* light : scene2Lights) { light->addObserver(spheresProgram); }
+    for (Light* light : scene3Lights) { light->addObserver(phongShaderProgram); }
+    for (Light* light : scene4Lights) { light->addObserver(phongShaderProgram); }
+    for (Light* light : scene5Lights) { light->addObserver(spheresProgram); }
+    for (Light* light : scene6Lights) { light->addObserver(phongShaderProgram); }
 
 
-
-
+    Rotate* rotation2 = new Rotate(0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+    triangleObject->addTransformation(rotation2);
 
     catObject->addTransformation(new Translate(glm::vec3(0.0f, 0.0f, 1.0f)));
     catObject->addTransformation(new Scale(glm::vec3(0.005f, 0.005f, 0.005f)));
@@ -232,11 +248,7 @@ void Application::run() {
     foxObject->addTransformation(new Translate(glm::vec3(1.0f, 0.0f, 0.5f)));
     foxObject->addTransformation(new Scale(glm::vec3(0.0025f, 0.0025f, 0.0025f)));
     foxObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-
     
-
-    Rotate* rotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 1.0f));
-    Rotate* rotation2 = new Rotate(0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 
     sphere1->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
     sphere2->addTransformation(new Scale(glm::vec3(0.2f, 0.2f, 0.2f)));
@@ -246,23 +258,17 @@ void Application::run() {
     sphere2->addTransformation(new Translate(glm::vec3(2.5f, 0.0f, 0.0f)));
     sphere3->addTransformation(new Translate(glm::vec3(0.0f, -2.5f, 0.0f)));
     sphere4->addTransformation(new Translate(glm::vec3(-2.5f, 0.0f, 0.0f)));
-    triangleObject->addTransformation(rotation2);
+    
 
-    glm::vec3 flashlightDiffuseColor = glm::vec3(0.0f);
-    glm::vec3 flashlightSpecularColor = glm::vec3(0.0f);
-    bool isFlashlightOn = true;
-    bool fKeyPressedLastFrame = false;
+  
 
    
-    flashlightDiffuseColor = flashlight->getDiffuse();
-    flashlightSpecularColor = flashlight->getSpecular();
-    scene3Lights.push_back(forestLight1_ptr);
-    scene3Lights.push_back(forestLight2_ptr);
-    scene3Lights.push_back(flashlight);
-
+   
     Translate* forestSphere1Translate = new Translate(forestLight1_ptr->getPosition());
-    firefly1->addTransformation(forestSphere1Translate);
     Translate* forestSphere2Translate = new Translate(forestLight2_ptr->getPosition());
+    
+    firefly1->addTransformation(forestSphere1Translate);
+    
     firefly2->addTransformation(forestSphere2Translate);
     firefly1->addTransformation(new Scale(glm::vec3(0.005f)));
     firefly2->addTransformation(new Scale(glm::vec3(0.005f)));
@@ -272,9 +278,7 @@ void Application::run() {
     camera.addObserver(skyboxShaderProgram);
 
    
-    scene2Lights.push_back(light1_ptr);
-    for (Light* light : scene2Lights) { light->addObserver(spheresProgram); }
-    for (Light* light : scene3Lights) { light->addObserver(phongShaderProgram); }
+
 
     float randomX, randomZ;
     float alpha = 0.0f;
@@ -304,10 +308,7 @@ void Application::run() {
     slunce->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
 	slunce->addTransformation(sunSelfRotation);
 
-    
-    scene4Lights.push_back(sunLight);
-    scene4Lights.push_back(ambientLight);
-    for (Light* light : scene4Lights) { light->addObserver(phongShaderProgram); }
+
 
 
     Rotate* mercuryOrbitRotation = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -427,8 +428,6 @@ void Application::run() {
     
 
     
-    scene5Lights.push_back(scene5Light);
-    for (Light* light : scene5Lights) { light->addObserver(spheresProgram); }
 
 
 	loginObject->addTransformation(new Translate(glm::vec3(0.0f, 2.0f, 0.0f)));
@@ -447,25 +446,24 @@ void Application::run() {
     floorObject->addTransformation(new Scale(glm::vec3(20.0f))); 
 
 
-    //std::vector<Light*> scene6Lights;
+
+
     
-    scene6Lights.push_back(formulelight);
-    for (Light* light : scene6Lights) { light->addObserver(phongShaderProgram); }
-
-
-
-    scene3->addObject(grassObject);
     scene1->addObject(triangleObject);
     scene2->addObject(sphere1);
     scene2->addObject(sphere2);
     scene2->addObject(sphere3);
     scene2->addObject(sphere4);
+    scene3->addObject(grassObject);
     scene3->addObject(firefly1);
     scene3->addObject(firefly2);
     scene3->addObject(catObject);
     scene3->addObject(foxObject);
     scene3->addObject(shrekObject);
     scene3->addObject(fionaObject);
+    scene3->addObject(loginObject);
+    scene3->setSkybox(skybox);
+
     scene4->addObject(slunce);
     scene4->addObject(zeme);
     scene4->addObject(mesic);
@@ -476,19 +474,18 @@ void Application::run() {
 	scene4->addObject(saturn);
 	scene4->addObject(uranus);
 	scene4->addObject(neptune);
+    scene4->setSkybox(skyboxPlanets);
+
     scene5->addObject(mole1);
 	scene5->addObject(mole2);
 	scene5->addObject(mole3);
 	scene5->addObject(mole4);
 	scene5->addObject(moleBarrier);
-	scene3->addObject(loginObject);
-    scene3->setSkybox(skybox);
-	scene4->setSkybox(skyboxPlanets);
+	
     scene6->addObject(formulaObject);
     scene6->addObject(floorObject);
 
     float lastFrame = glfwGetTime();
-
 
     glEnable(GL_DEPTH_TEST);
     glClearStencil(0); 
@@ -506,7 +503,7 @@ void Application::run() {
         controller->processInput(deltaTime);
 
         alpha += 0.0005f;
-        rotation->setAngle(alpha);
+
         rotation2->setAngle(alpha);
 
         if (activeScene == scene1) {
@@ -732,7 +729,6 @@ void Application::run() {
 	delete formulaModel;
 
     delete sunSelfRotation;
-    delete rotation;
     delete rotation2;
     delete forestSphere1Translate;
     delete forestSphere2Translate;

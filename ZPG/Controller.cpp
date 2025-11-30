@@ -21,7 +21,6 @@ Controller::Controller(Camera* camera, GLFWwindow* window, Scene* scene)
     glfwSetCursorPosCallback(window, cursorPosCallback);
     glfwSetWindowUserPointer(window, this);
 
-    // Pøipravíme si zdroje pro vizuální znaèky bodù
     pointMarkerModel = new Model(sphere, sizeof(sphere) / sizeof(float) / 6, 1);
     markerShader = new ShaderProgram("main_vertex_shader.glsl", "phong_simple.glsl");
     if (camera) {
@@ -31,14 +30,13 @@ Controller::Controller(Camera* camera, GLFWwindow* window, Scene* scene)
 
 void Controller::setActiveScene(Scene* scene) {
     this->activeScene = scene;
-    bezierObject = nullptr; // Resetujeme ukazatel
+    bezierObject = nullptr; 
 
-    // ZJEDNODUŠENÍ: Pokud jsme ve scénì 6 a má nìjaké objekty,
-    // pøedpokládáme, že ten první je naše formule.
+
     if (activeScene && activeScene == app->getScene6()) {
         const auto& objects = activeScene->getObjects();
         if (!objects.empty()) {
-            bezierObject = objects[0]; // Vezmeme první objekt
+            bezierObject = objects[0];
             std::cout << "Formula object assigned for Bezier curve." << std::endl;
         }
     }
@@ -54,10 +52,6 @@ void Controller::processInput(float deltaTime)
         camera->processKeyboard(GLFW_KEY_A, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera->processKeyboard(GLFW_KEY_D, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        camera->processKeyboard(GLFW_KEY_SPACE, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-        camera->processKeyboard(GLFW_KEY_LEFT_CONTROL, deltaTime);
 }
 
 void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
@@ -84,18 +78,16 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
     GLint y_new = height - (GLint)ypos;
     GLint x = (GLint)xpos;
 
-    // --- NOVÁ LOGIKA PRO SCÉNU 6 ---
     if (button == GLFW_MOUSE_BUTTON_LEFT && controller->activeScene == app->getScene6())
     {
         if (controller->bezierObject == nullptr) return;
 
-        // Ray-Casting pro nalezení bodu na podlaze
         glm::mat4 view = controller->camera->getViewMatrix();
         glm::mat4 proj = controller->camera->getProjectionMatrix();
         glm::vec4 viewport = glm::vec4(0, 0, width, height);
 
-        glm::vec3 screenPosStart = glm::vec3(xpos, y_new, 0.0f); // Bod na blízké rovinì
-        glm::vec3 screenPosEnd = glm::vec3(xpos, y_new, 1.0f);   // Bod na vzdálené rovinì
+        glm::vec3 screenPosStart = glm::vec3(xpos, y_new, 0.0f); 
+        glm::vec3 screenPosEnd = glm::vec3(xpos, y_new, 1.0f);   
 
         glm::vec3 worldPosStart = glm::unProject(screenPosStart, view, proj, viewport);
         glm::vec3 worldPosEnd = glm::unProject(screenPosEnd, view, proj, viewport);
