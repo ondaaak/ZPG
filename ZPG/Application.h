@@ -60,7 +60,6 @@ private:
     Scene* scene4; 
     Scene* scene5;
 	Scene* scene6;
-    Skybox* skybox;
 
     std::vector<Light*> scene2Lights;
     std::vector<Light*> scene3Lights;
@@ -69,12 +68,6 @@ private:
     std::vector<Light*> scene6Lights;
 
     Controller* controller;
-
-    SpotLight* flashlight;
-    glm::vec3 flashlightDiffuseColor;
-    glm::vec3 flashlightSpecularColor;
-    bool isFlashlightOn;
-    bool fKeyPressedLastFrame;
 
     bool init();
     void cleanup();
