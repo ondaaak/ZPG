@@ -14,7 +14,7 @@ public:
     void addObject(DrawableObject* object);
     void render();
     void setSkybox(Skybox* sb);
-
+    const std::vector<DrawableObject*>& getObjects() const;
     void selectObjectByID(int id);
     void deleteSelectedObject();
     DrawableObject* getSelectedObject() const;

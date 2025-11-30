@@ -17,7 +17,7 @@ public:
     void addTransformationToFront(Transformation* t) {
         transformations.insert(transformations.begin(), t);
     }
-
+    void removeTransformation(Transformation* t);
     glm::mat4 getMatrix() const;
     void render() const;
     int getID() const { return id; }

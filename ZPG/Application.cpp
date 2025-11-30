@@ -412,26 +412,26 @@ void Application::run() {
 	loginObject->addTransformation(new Translate(glm::vec3(0.0f, 2.0f, 0.0f)));
 	loginObject->addTransformation(new Scale(glm::vec3(0.5f, 0.5f, 0.5f)));
 
-    std::vector<glm::vec3> splinePoints = {
-        // Segment 1
-        glm::vec3(-5, 0, 5), glm::vec3(-5, 0, -5), glm::vec3(5, 0, -5), glm::vec3(5, 0, 5),
-        // Segment 2 (navazuje na první)
-        // glm::vec3(5, 0, 5), // tento bod je již definován jako konec předchozího
-        glm::vec3(5, 5, -5), glm::vec3(-5, 5, -5), glm::vec3(-5, 0, 5)
-    };
+    // 1. Vytvoříme prázdnou křivku. Formule bude na začátku stát.
+    std::vector<glm::vec3> initialPoints;
+    BezierTransform* bezierSplineAnim = new BezierTransform(initialPoints, 0.3f, true);
 
-    BezierTransform* bezierSplineAnim = new BezierTransform(splinePoints, 0.2f, true); // loop = true
-
+    // 2. Použijeme náš červený materiál 'formula'
     DrawableObject* formulaObject = new DrawableObject(formulaModel, phongShaderProgram, formula, currentId++, formulaTexture);
-    
+
     formulaObject->addTransformation(bezierSplineAnim);
-    
-	formulaObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+
+    // 3. Otočíme formuli správným směrem (o -90 stupňů, aby "čumák" mířil dopředu)
+    formulaObject->addTransformation(new Rotate(glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
     formulaObject->addTransformation(new Scale(glm::vec3(0.05f)));
+
+    // 4. Přidáme podlahu, na kterou budeme klikat
+    DrawableObject* floorObject = new DrawableObject(grassModel, phongShaderProgram, basic, currentId++, grassTexture);
+    floorObject->addTransformation(new Scale(glm::vec3(20.0f))); // Zvětšíme podlahu
 
     // Přidání světla do nové scény
     std::vector<Light*> scene6Lights;
-    scene6Lights.push_back(new DirectionalLight(glm::vec3(0, -1, 0), glm::vec3(1.0f)));
+    scene6Lights.push_back(new DirectionalLight(glm::vec3(0.5f, -1.0f, 0.5f), glm::vec3(1.0f)));
     scene6Lights.push_back(new AmbientLight(glm::vec3(0.3f)));
     for (Light* light : scene6Lights) { light->addObserver(phongShaderProgram); }
 
@@ -468,6 +468,7 @@ void Application::run() {
     scene3->setSkybox(skybox);
 
     scene6->addObject(formulaObject);
+    scene6->addObject(floorObject);
 
     float lastFrame = glfwGetTime();
 
@@ -662,7 +663,15 @@ void Application::run() {
         else if (activeScene == scene6) { // NOVÉ
             phongShaderProgram->setLightsPointer(&scene6Lights);
             phongShaderProgram->setLightUniforms(scene6Lights);
-            bezierSplineAnim->update(deltaTime); // Změna názvu proměnné
+
+            // Důležité: Získání ukazatele na transformaci a její aktualizace
+            auto transformations = formulaObject->getTransformations();
+            if (!transformations.empty()) {
+                auto* bezier = dynamic_cast<BezierTransform*>(transformations[0]);
+                if (bezier) {
+                    bezier->update(deltaTime);
+                }
+            }
         }
 
         int width, height;

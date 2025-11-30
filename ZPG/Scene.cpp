@@ -65,6 +65,7 @@ DrawableObject* Scene::getSelectedObject() const {
     return selectedObject;
 }
 
+
 DrawableObject* Scene::findObjectByID(int id) const {
     for (DrawableObject* obj : objects) {
         if (obj->getID() == id) {
@@ -87,6 +88,10 @@ void Scene::resetObjectAnimation(DrawableObject* obj) {
     }
 
     printf("No PathTransform found for object ID %d\n", obj->getID());
+}
+
+const std::vector<DrawableObject*>& Scene::getObjects() const {
+    return objects;
 }
 
 void Scene::render() {

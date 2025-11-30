@@ -48,6 +48,7 @@ public:
     void switchScene(int sceneNumber);
     Scene* getActiveScene() { return activeScene; }
     Scene* getScene5() const { return scene5; }
+    Scene* getScene6() const { return scene6; }
     int currentId;
     
 private:

@@ -48,6 +48,13 @@ void DrawableObject::setTranslation(const glm::vec3& newPosition) {
     transformations.insert(transformations.begin(), new Translate(newPosition));
 }
 
+void DrawableObject::removeTransformation(Transformation* t) {
+    auto it = std::find(transformations.begin(), transformations.end(), t);
+    if (it != transformations.end()) {
+        delete* it; 
+        transformations.erase(it);
+    }
+}
 
 void DrawableObject::render() const {
     shaderProgram->setShaderProgram();
