@@ -9,6 +9,7 @@ public:
     glm::mat4 getMatrix() const override;
     void update(float deltaTime);
     Transformation* clone() const override;
+	void setControlPoints(const std::vector<glm::vec3>& points);
 
 private:
     glm::vec3 evaluateTangent(float t, float& localT, int& segmentIndex) const;

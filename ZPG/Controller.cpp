@@ -99,9 +99,10 @@ void Controller::mouseButtonCallback(GLFWwindow* window, int button, int action,
             controller->activeScene->addObject(marker);
  
             if (controller->controlPoints.size() >= 4 && (controller->controlPoints.size() - 4) % 3 == 0) {
-                controller->bezierObject->removeTransformation(controller->bezierObject->getTransformations()[0]);
-                BezierTransform* newBezier = new BezierTransform(controller->controlPoints, 0.3f, true);
-                controller->bezierObject->addTransformationToFront(newBezier);
+                auto* bezier = dynamic_cast<BezierTransform*>(controller->bezierObject->getTransformations()[0]);
+                if (bezier) {
+                    bezier->setControlPoints(controller->controlPoints);
+                }
             }
         }
         return;
